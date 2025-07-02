@@ -1,17 +1,29 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.List;
+
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "warehouse")
+@Table(name = "\"WAREHOUSE\"")
 public class Warehouse {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "address_id", nullable = false)
-    private Long addressId;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address")
+    private Address address;
 
     @Column(nullable = false)
     private String type; // Można później zamienić na Enum
@@ -19,31 +31,13 @@ public class Warehouse {
     @Column(nullable = false)
     private Long capacity;
 
-    // Konstruktor bezargumentowy wymagany przez JPA
-    protected Warehouse() {}
 
-    // Konstruktor użytkowy
-    public Warehouse(Long addressId, String type, Long capacity) {
-        this.addressId = addressId;
-        this.type = type;
-        this.capacity = capacity;
-    }
+    @OneToMany(mappedBy = "sourceWarehouse")
+    private List<StockMovement> sourceMovements;
 
-    // Gettery
+    @OneToMany(mappedBy = "targetWarehouse")
+    private List<StockMovement> targetMovements;
 
-    public Long getId() {
-        return id;
-    }
 
-    public Long getAddressId() {
-        return addressId;
-    }
 
-    public String getType() {
-        return type;
-    }
-
-    public Long getCapacity() {
-        return capacity;
-    }
 }

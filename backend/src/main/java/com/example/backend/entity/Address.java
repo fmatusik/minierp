@@ -1,13 +1,21 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "address")
+@Table(name = "\"ADDRESS\"")
 public class Address {
 
     @Id
@@ -37,50 +45,8 @@ public class Address {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    // Konstruktor bezargumentowy wymagany przez Hibernate
-    protected Address() {}
+    @ManyToOne
+    @JoinColumn(name = "client_contact_id", nullable = false)
+    private ClientContact clientContact;
 
-    // Konstruktor z wymaganymi polami (bez id, createdAt, updatedAt)
-    public Address(String buildingNumber, String apartmentNumber, String postalCode,
-                   String city, String province) {
-        this.buildingNumber = buildingNumber;
-        this.apartmentNumber = apartmentNumber;
-        this.postalCode = postalCode;
-        this.city = city;
-        this.province = province;
-    }
-
-    // Getter'y
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getBuildingNumber() {
-        return buildingNumber;
-    }
-
-    public String getApartmentNumber() {
-        return apartmentNumber;
-    }
-
-    public String getPostalCode() {
-        return postalCode;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public String getProvince() {
-        return province;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
 }

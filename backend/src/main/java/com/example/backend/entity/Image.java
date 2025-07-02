@@ -1,9 +1,17 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "image")
+@Table(name = "\"IMAGE\"")
 public class Image {
 
     @Id
@@ -22,36 +30,8 @@ public class Image {
     @Column(name = "is_thumbnail", nullable = false)
     private Boolean isThumbnail;
 
-    // Konstruktor bezargumentowy wymagany przez JPA
-    protected Image() {}
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
-    // Konstruktor z polami (bez id)
-    public Image(String path, String alt, Long size, Boolean isThumbnail) {
-        this.path = path;
-        this.alt = alt;
-        this.size = size;
-        this.isThumbnail = isThumbnail;
-    }
-
-    // Getter'y
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public String getAlt() {
-        return alt;
-    }
-
-    public Long getSize() {
-        return size;
-    }
-
-    public Boolean getIsThumbnail() {
-        return isThumbnail;
-    }
 }

@@ -11,26 +11,25 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "\"ORDER_ITEM\"")
-public class OrderItem {
+@Table(name = "\"STOCK_LEVEL\"")
+public class StockLevel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "order_id", referencedColumnName = "id")
-    private Order order;
-
-    @OneToOne
-    @JoinColumn(name = "product", referencedColumnName = "id")
+    @ManyToOne
+    @JoinColumn(name = "product")
     private Product product;
+
+
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "warehouse_id")
+    private Warehouse warehouse;
 
     @Column(nullable = false)
     private Long quantity;
-
-    @Column(nullable = false)
-    private Long price;
 
 
 }

@@ -1,24 +1,32 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "`order`") // ORDER to słowo zastrzeżone w SQL – należy ująć w cudzysłowy
+@Table(name = "\"ORDER_INFO\"") // ORDER to słowo zastrzeżone w SQL – należy ująć w cudzysłowy
 public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "client_id", nullable = false)
-    private Long clientId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "client")
+    private Client client;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "order_status")
     private String orderStatus; //add object
 
@@ -48,65 +56,5 @@ public class Order {
     @Column(name = "sale_place", nullable = false)
     private String salePlace;
 
-    // Konstruktor bezargumentowy wymagany przez JPA
-    protected Order() {}
 
-    // Konstruktor z polami (bez ID i timestampów)
-    public Order(Long clientId, String orderStatus, Long price, String paymentStatus,
-                 Long shippingAddressId, LocalDate deliveryDate, Long documentNumber, String salePlace) {
-        this.clientId = clientId;
-        this.orderStatus = orderStatus;
-        this.price = price;
-        this.paymentStatus = paymentStatus;
-        this.shippingAddressId = shippingAddressId;
-        this.deliveryDate = deliveryDate;
-        this.documentNumber = documentNumber;
-        this.salePlace = salePlace;
-    }
-
-    // Gettery
-
-    public Long getId() {
-        return id;
-    }
-
-    public Long getClientId() {
-        return clientId;
-    }
-
-    public String getOrderStatus() {
-        return orderStatus;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public Long getPrice() {
-        return price;
-    }
-
-    public String getPaymentStatus() {
-        return paymentStatus;
-    }
-
-    public Long getShippingAddressId() {
-        return shippingAddressId;
-    }
-
-    public LocalDate getDeliveryDate() {
-        return deliveryDate;
-    }
-
-    public Long getDocumentNumber() {
-        return documentNumber;
-    }
-
-    public String getSalePlace() {
-        return salePlace;
-    }
 }

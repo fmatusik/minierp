@@ -1,13 +1,22 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "client")
+@Table(name = "\"CLIENT\"")
 public class Client {
 
     @Id
@@ -19,58 +28,22 @@ public class Client {
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime created_at;
 
     @UpdateTimestamp
     @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    private LocalDateTime updated_at;
 
     private String notes;
 
-    @Column(nullable = false)
-    private Long statusId;
+    //status
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "status_id")
+    private Status status;
 
-    @Column(nullable = false)
-    private Long clientContactId;
+    //client contact
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ClientContact> clientContacts;
 
-    // Konstruktor bezargumentowy wymagany przez JPA
-    protected Client() {}
 
-    // Konstruktor z wymaganymi polami (bez id, timestamps)
-    public Client(String name, String notes, Long statusId, Long clientContactId) {
-        this.name = name;
-        this.notes = notes;
-        this.statusId = statusId;
-        this.clientContactId = clientContactId;
-    }
-
-    // Getter'y
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public Long getStatusId() {
-        return statusId;
-    }
-
-    public Long getClientContactId() {
-        return clientContactId;
-    }
 }

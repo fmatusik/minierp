@@ -1,49 +1,36 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "stock_movement_item")
+@Table(name = "\"STOCK_MOVEMENT_ITEM\"")
 public class StockMovementItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "stock_movement_id", nullable = false)
-    private Long stockMovementId;
 
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "stock_movement_id")
+    private StockMovement stockMovement;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     @Column(nullable = false)
     private Long quantity;
 
-    // Konstruktor bezargumentowy wymagany przez JPA
-    protected StockMovementItem() {}
 
-    // Konstruktor użytkowy
-    public StockMovementItem(Long stockMovementId, Long productId, Long quantity) {
-        this.stockMovementId = stockMovementId;
-        this.productId = productId;
-        this.quantity = quantity;
-    }
 
-    // Gettery
 
-    public Long getId() {
-        return id;
-    }
-
-    public Long getStockMovementId() {
-        return stockMovementId;
-    }
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public Long getQuantity() {
-        return quantity;
-    }
 }

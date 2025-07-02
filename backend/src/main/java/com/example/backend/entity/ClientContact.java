@@ -1,9 +1,19 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.List;
+
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "client_contact")
+@Table(name = "\"CLIENT_CONTACT\"")
 public class ClientContact {
 
     @Id
@@ -25,50 +35,13 @@ public class ClientContact {
     @Column(nullable = false)
     private String position;
 
-    @Column(nullable = true)
-    private Long addressId;
 
-    // Konstruktor bezargumentowy wymagany przez JPA
-    protected ClientContact() {}
+    @OneToMany(mappedBy = "clientContact", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Address> addresses;
 
-    // Konstruktor z wymaganymi polami
-    public ClientContact(String firstname, String lastname, String email,
-                         String phonenumber, String position, Long addressId) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.email = email;
-        this.phonenumber = phonenumber;
-        this.position = position;
-        this.addressId = addressId;
-    }
+    @ManyToOne
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
 
-    // Getter'y
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPhonenumber() {
-        return phonenumber;
-    }
-
-    public String getPosition() {
-        return position;
-    }
-
-    public Long getAddressId() {
-        return addressId;
-    }
 }

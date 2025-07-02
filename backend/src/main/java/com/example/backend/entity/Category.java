@@ -1,13 +1,21 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "category")
+@Table(name = "\"CATEGORY\"")
 public class Category {
 
     @Id
@@ -25,29 +33,8 @@ public class Category {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    // Konstruktor bezargumentowy wymagany przez JPA
-    protected Category() {}
+    @ManyToOne
+    @JoinColumn(name="product_id")
+    private Product product;
 
-    // Konstruktor z wymaganymi polami (bez id, timestamps)
-    public Category(String name) {
-        this.name = name;
-    }
-
-    // Getter'y
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
 }

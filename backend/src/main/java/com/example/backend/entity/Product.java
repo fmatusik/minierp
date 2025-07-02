@@ -1,11 +1,20 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "product")
+@Table(name = "\"PRODUCT\"")
 public class Product {
 
     @Id
@@ -39,83 +48,18 @@ public class Product {
     @Column
     private Float dimensions;
 
-    @Column(name = "status_id", nullable = false)
-    private Long statusId;
 
-    @Column(name = "categories_id", nullable = false)
-    private Long categoriesId;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "status_id")
+    private Status status_id;
 
-    // Konstruktor bezargumentowy wymagany przez JPA
-    public Product() {}
+    @OneToMany(mappedBy = "id")
+    private List<Category> categories;
 
-    // Konstruktor z wymaganymi polami (bez ID)
-    public Product(String name, Float price, LocalDate createdAt, LocalDate updatedAt,
-                   String description, String notes, String sku, Float weight,
-                   Float dimensions, Long statusId, Long categoriesId) {
-        this.name = name;
-        this.price = price;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.description = description;
-        this.notes = notes;
-        this.sku = sku;
-        this.weight = weight;
-        this.dimensions = dimensions;
-        this.statusId = statusId;
-        this.categoriesId = categoriesId;
-    }
+    @OneToMany(mappedBy = "id")
+    private List<Image> images;
 
-    // Gettery
+    @OneToMany(mappedBy = "id")
+    private List<StockLevel> StockLevels;
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Float getPrice() {
-        return price;
-    }
-
-    public LocalDate getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDate getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public String getSku() {
-        return sku;
-    }
-
-    public Float getWeight() {
-        return weight;
-    }
-
-    public Float getDimensions() {
-        return dimensions;
-    }
-
-    public Long getStatusId() {
-        return statusId;
-    }
-
-    public Long getCategoriesId() {
-        return categoriesId;
-    }
-
-    public void setName(String testowyProdukt) {
-        this.name = testowyProdukt;
-    }
 }
