@@ -31,7 +31,7 @@ public class ClientContact {
     private String phoneNumber;
 
     @Column(nullable = false)
-    private String position;
+    private String position; //moze enum, dopytac !!!
 
 
     @OneToMany(mappedBy = "clientContact", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.example.backend.enums.WarehouseType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,7 +25,7 @@ public class Warehouse {
     private Address address;
 
     @Column(nullable = false)
-    private String type; // Można później zamienić na Enum
+    private WarehouseType type;
 
     @Column(nullable = false)
     private Long capacity;
