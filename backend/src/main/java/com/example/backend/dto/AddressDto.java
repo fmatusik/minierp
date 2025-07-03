@@ -21,6 +21,4 @@ public class AddressDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private ClientContact clientContact;
-
-
 }

@@ -5,8 +5,7 @@ import com.example.backend.entity.Warehouse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Builder
@@ -17,6 +16,6 @@ public class StockMovementDto {
     private Warehouse targetWarehouse;
     private Order relatedOrder;
     private String note;
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

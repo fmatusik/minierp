@@ -7,8 +7,7 @@ import com.example.backend.entity.StockLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -18,8 +17,8 @@ public class ProductDto {
     private Long id;
     private String name;
     private Float price;
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String description;
     private String notes;
     private String sku;
