@@ -1,13 +1,12 @@
 package com.example.backend.mapper;
 
-import com.example.backend.dto.AddressDto;
 import com.example.backend.dto.ClientDto;
 import com.example.backend.entity.Client;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ClientMapper {
-
 
     public static ClientDto toDto(Client client) {
         return ClientDto.builder()
@@ -17,10 +16,7 @@ public class ClientMapper {
                 .notes(client.getNotes())
                 .status(client.getStatus())
                 .clientContact(client.getClientContacts() != null
-                            ? client.getClientContacts().stream()
-                        .map(ClientContactMapper::toDto)
-                        .collect(Collectors.toList()) : null
-                )
+                        ? ClientContactMapper.toDtoList(client.getClientContacts()) : null)
                 .build();
     }
 
@@ -32,10 +28,20 @@ public class ClientMapper {
                 .notes(clientDto.getNotes())
                 .status(clientDto.getStatus())
                 .clientContacts(clientDto.getClientContact() != null
-                        ? clientDto.getClientContact().stream()
-                                .map(ClientContactMapper::toEntity)
-                                .collect(Collectors.toList()) : null
-                        )
+                        ? ClientContactMapper.toEntityList(clientDto.getClientContact())
+                        : null)
                 .build();
+    }
+
+    public static List<ClientDto> toDtoList(List<Client> entityList) {
+        return entityList.stream()
+                .map(ClientMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public static List<Client> toEntityList(List<ClientDto> dtoList) {
+        return dtoList.stream()
+                .map(ClientMapper::toEntity)
+                .collect(Collectors.toList());
     }
 }

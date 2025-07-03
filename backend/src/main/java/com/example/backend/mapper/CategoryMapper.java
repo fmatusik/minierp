@@ -3,8 +3,10 @@ package com.example.backend.mapper;
 import com.example.backend.dto.CategoryDto;
 import com.example.backend.entity.Category;
 
-public class CategoryMapper {
+import java.util.List;
+import java.util.stream.Collectors;
 
+public class CategoryMapper {
 
     public static Category toEntity(CategoryDto dto) {
         return Category.builder()
@@ -15,7 +17,6 @@ public class CategoryMapper {
                 .build();
     }
 
-
     public static CategoryDto toDto(Category category) {
         return CategoryDto.builder()
                 .id(category.getId())
@@ -25,4 +26,15 @@ public class CategoryMapper {
                 .build();
     }
 
+    public static List<Category> toEntityList(List<CategoryDto> dtoList) {
+        return dtoList.stream()
+                .map(CategoryMapper::toEntity)
+                .collect(Collectors.toList());
+    }
+
+    public static List<CategoryDto> toDtoList(List<Category> entityList) {
+        return entityList.stream()
+                .map(CategoryMapper::toDto)
+                .collect(Collectors.toList());
+    }
 }

@@ -2,6 +2,8 @@ package com.example.backend.mapper;
 
 import com.example.backend.dto.ClientContactDto;
 import com.example.backend.entity.ClientContact;
+
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ClientContactMapper {
@@ -15,10 +17,7 @@ public class ClientContactMapper {
                 .phoneNumber(clientContact.getPhoneNumber())
                 .position(clientContact.getPosition())
                 .addresses(clientContact.getAddresses() != null
-                        ? clientContact.getAddresses().stream()
-                        .map(AddressMapper::toDto)
-                        .collect(Collectors.toList())
-                        : null)
+                        ? AddressMapper.toDtoList(clientContact.getAddresses()) : null)
                 .client(clientContact.getClient() != null
                         ? ClientMapper.toDto(clientContact.getClient()) : null)
                 .data(clientContact.getData())
@@ -34,12 +33,22 @@ public class ClientContactMapper {
                 .phoneNumber(clientContactDto.getPhoneNumber())
                 .position(clientContactDto.getPosition())
                 .addresses(clientContactDto.getAddresses() != null
-                        ? clientContactDto.getAddresses().stream()
-                        .map(AddressMapper::toEntity)
-                        .collect(Collectors.toList())
-                        : null)
-                .client(clientContactDto.getClient() != null ?  ClientMapper.toEntity(clientContactDto.getClient()) : null)
+                        ? AddressMapper.toEntityList(clientContactDto.getAddresses()) : null)
+                .client(clientContactDto.getClient() != null
+                        ? ClientMapper.toEntity(clientContactDto.getClient()) : null)
                 .data(clientContactDto.getData())
                 .build();
+    }
+
+    public static List<ClientContactDto> toDtoList(List<ClientContact> entityList) {
+        return entityList.stream()
+                .map(ClientContactMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public static List<ClientContact> toEntityList(List<ClientContactDto> dtoList) {
+        return dtoList.stream()
+                .map(ClientContactMapper::toEntity)
+                .collect(Collectors.toList());
     }
 }

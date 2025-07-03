@@ -3,6 +3,7 @@ package com.example.backend.mapper;
 import com.example.backend.dto.WarehouseDto;
 import com.example.backend.entity.Warehouse;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class WarehouseMapper {
@@ -16,14 +17,10 @@ public class WarehouseMapper {
                 .type(warehouse.getType())
                 .capacity(warehouse.getCapacity())
                 .sourceMovements(warehouse.getSourceMovements() != null
-                        ? warehouse.getSourceMovements().stream()
-                        .map(StockMovementMapper::toDto)
-                        .collect(Collectors.toList())
+                        ? StockMovementMapper.toDtoList(warehouse.getSourceMovements())
                         : null)
                 .targetMovements(warehouse.getTargetMovements() != null
-                        ? warehouse.getTargetMovements().stream()
-                        .map(StockMovementMapper::toDto)
-                        .collect(Collectors.toList())
+                        ? StockMovementMapper.toDtoList(warehouse.getTargetMovements())
                         : null)
                 .data(warehouse.getData())
                 .build();
@@ -38,16 +35,24 @@ public class WarehouseMapper {
                 .type(warehouseDto.getType())
                 .capacity(warehouseDto.getCapacity())
                 .sourceMovements(warehouseDto.getSourceMovements() != null
-                        ? warehouseDto.getSourceMovements().stream()
-                        .map(StockMovementMapper::toEntity)
-                        .collect(Collectors.toList())
+                        ? StockMovementMapper.toEntityList(warehouseDto.getSourceMovements())
                         : null)
                 .targetMovements(warehouseDto.getTargetMovements() != null
-                        ? warehouseDto.getTargetMovements().stream()
-                        .map(StockMovementMapper::toEntity)
-                        .collect(Collectors.toList())
+                        ? StockMovementMapper.toEntityList(warehouseDto.getTargetMovements())
                         : null)
                 .data(warehouseDto.getData())
                 .build();
+    }
+
+    public static List<WarehouseDto> toDtoList(List<Warehouse> entityList) {
+        return entityList.stream()
+                .map(WarehouseMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public static List<Warehouse> toEntityList(List<WarehouseDto> dtoList) {
+        return dtoList.stream()
+                .map(WarehouseMapper::toEntity)
+                .collect(Collectors.toList());
     }
 }

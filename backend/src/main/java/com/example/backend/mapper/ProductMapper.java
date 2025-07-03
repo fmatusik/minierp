@@ -1,9 +1,10 @@
 package com.example.backend.mapper;
 
 import com.example.backend.dto.ProductDto;
-import com.example.backend.entity.Category;
+import com.example.backend.entity.Image;
 import com.example.backend.entity.Product;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProductMapper {
@@ -21,20 +22,14 @@ public class ProductMapper {
                 .description(product.getDescription())
                 .status(product.getStatus() != null ? StatusMapper.toDto(product.getStatus()) : null)
                 .categories(product.getCategories() != null
-                            ? product.getCategories().stream()
-                                .map(CategoryMapper::toDto)
-                                .collect(Collectors.toList())
-                        : null
-                        )
+                        ? CategoryMapper.toDtoList(product.getCategories())
+                        : null)
                 .images(product.getImages() != null
-                        ? product.getImages().stream()
-                                .map(ImageMapper::toDto)
-                                .collect(Collectors.toList())
-                        : null
-                        )
-                .stockLevels(product.getStockLevels() != null ? product.getStockLevels().stream()
-                        .map(StockLevelMapper::toDto)
-                        .collect(Collectors.toList()) : null)
+                        ? ImageMapper.toDtoList(product.getImages())
+                        : null)
+                .stockLevels(product.getStockLevels() != null
+                        ? StockLevelMapper.toDtoList(product.getStockLevels())
+                        : null)
                 .build();
     }
 
@@ -51,18 +46,26 @@ public class ProductMapper {
                 .dimensions(productDto.getDimensions())
                 .status(productDto.getStatus() != null ? StatusMapper.toEntity(productDto.getStatus()) : null)
                 .categories(productDto.getCategories() != null
-                    ? productDto.getCategories().stream()
-                        .map(CategoryMapper::toEntity)
-                        .collect(Collectors.toList())
-                        :null )
-                .images(productDto.getImages() != null ? productDto.getImages().stream()
-                        .map(ImageMapper::toEntity)
-                        .collect(Collectors.toList())
+                        ? CategoryMapper.toEntityList(productDto.getCategories())
                         : null)
-                .stockLevels(productDto.getStockLevels() != null ? productDto.getStockLevels().stream()
-                                .map(StockLevelMapper::toEntity)
-                                .collect(Collectors.toList()) : null
-                        )
+                .images(productDto.getImages() != null
+                        ? ImageMapper.toEntityList(productDto.getImages())
+                        : null)
+                .stockLevels(productDto.getStockLevels() != null
+                        ? StockLevelMapper.toEntityList(productDto.getStockLevels())
+                        : null)
                 .build();
+    }
+
+    public static List<ProductDto> toDtoList(List<Product> entityList) {
+        return entityList.stream()
+                .map(ProductMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public static List<Product> toEntityList(List<ProductDto> dtoList) {
+        return dtoList.stream()
+                .map(ProductMapper::toEntity)
+                .collect(Collectors.toList());
     }
 }

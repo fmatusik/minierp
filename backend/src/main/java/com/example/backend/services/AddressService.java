@@ -6,8 +6,11 @@ import org.springframework.stereotype.Service;
 @Service
 public interface AddressService {
     //wszystkie metody jak add update/change, delete albo get/select
+    //tutaj takie rzeczy z logiką a takie proste zapytania w stylu findById wrzucać do Repository
+    //bardziej chodzi ze nie tu logika ale w impl (ale no wiadomo)
     //jak nie ma gotowca to w repo tworze własne rzeczy
     AddressDto addAddress(AddressDto  addressDto);
+
 
 
 

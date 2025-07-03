@@ -3,6 +3,9 @@ package com.example.backend.mapper;
 import com.example.backend.dto.StockLevelDto;
 import com.example.backend.entity.StockLevel;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class StockLevelMapper {
 
     public static StockLevel toEntity(StockLevelDto stockLevelDto) {
@@ -25,4 +28,15 @@ public class StockLevelMapper {
                 .build();
     }
 
+    public static List<StockLevelDto> toDtoList(List<StockLevel> entityList) {
+        return entityList.stream()
+                .map(StockLevelMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public static List<StockLevel> toEntityList(List<StockLevelDto> dtoList) {
+        return dtoList.stream()
+                .map(StockLevelMapper::toEntity)
+                .collect(Collectors.toList());
+    }
 }

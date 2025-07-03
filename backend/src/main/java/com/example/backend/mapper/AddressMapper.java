@@ -3,6 +3,9 @@ package com.example.backend.mapper;
 import com.example.backend.dto.AddressDto;
 import com.example.backend.entity.Address;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class AddressMapper {
 
     public static Address toEntity(AddressDto dto) {
@@ -29,5 +32,17 @@ public class AddressMapper {
                 .clientContact(entity.getClientContact() != null ? ClientContactMapper.toDto(entity.getClientContact()) : null)
                 .data(entity.getData())
                 .build();
+    }
+
+    public static List<Address> toEntityList(List<AddressDto> dtoList) {
+        return dtoList.stream()
+                .map(AddressMapper::toEntity)
+                .collect(Collectors.toList());
+    }
+
+    public static List<AddressDto> toDtoList(List<Address> entityList) {
+        return entityList.stream()
+                .map(AddressMapper::toDto)
+                .collect(Collectors.toList());
     }
 }
