@@ -6,28 +6,28 @@ import com.example.backend.entity.Address;
 public class AddressMapper {
 
     public static Address toEntity(AddressDto dto) {
-        Address address = new Address();
-        address.setId(dto.getId());
-        address.setBuildingNumber(dto.getBuildingNumber());
-        address.setApartmentNumber(dto.getApartmentNumber());
-        address.setPostalCode(dto.getPostalCode());
-        address.setCity(dto.getCity());
-        address.setProvince(dto.getProvince());
-        address.setClientContact(dto.getClientContact());  // Upewnij się, że klient istnieje!
-        return address;
+        return Address.builder()
+                .id(dto.getId())
+                .buildingNumber(dto.getBuildingNumber())
+                .apartmentNumber(dto.getApartmentNumber())
+                .postalCode(dto.getPostalCode())
+                .city(dto.getCity())
+                .province(dto.getProvince())
+                .clientContact(dto.getClientContact())
+                .build();
     }
 
     public static AddressDto toDto(Address entity) {
-        return new AddressDto(
-                entity.getId(),
-                entity.getBuildingNumber(),
-                entity.getApartmentNumber(),
-                entity.getPostalCode(),
-                entity.getCity(),
-                entity.getProvince(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt(),
-                entity.getClientContact()
-        );
+        return AddressDto.builder()
+                .id(entity.getId())
+                .buildingNumber(entity.getBuildingNumber())
+                .apartmentNumber(entity.getApartmentNumber())
+                .postalCode(entity.getPostalCode())
+                .city(entity.getCity())
+                .province(entity.getProvince())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .clientContact(entity.getClientContact())
+                .build();
     }
 }

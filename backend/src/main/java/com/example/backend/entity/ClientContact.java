@@ -1,13 +1,11 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
+@Builder
 @Setter
 @Getter
 @NoArgsConstructor
@@ -30,7 +28,7 @@ public class ClientContact {
     private String email;
 
     @Column(nullable = false)
-    private String phonenumber;
+    private String phoneNumber;
 
     @Column(nullable = false)
     private String position;

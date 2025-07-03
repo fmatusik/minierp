@@ -1,13 +1,11 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
+@Builder
 @Setter
 @Getter
 @NoArgsConstructor
@@ -31,8 +29,11 @@ public class StockMovement {
     private Warehouse targetWarehouse;
 
 
-    @Column(name = "related_order_id", nullable = false)
-    private Long relatedOrderId;
+
+    @ManyToOne
+    @JoinColumn(name = "related_order")
+    private Order relatedOrder;
+
 
     @Column
     private String note;

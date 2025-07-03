@@ -1,16 +1,15 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
+@Builder
 @Setter
 @Getter
 @NoArgsConstructor
@@ -44,8 +43,9 @@ public class Order {
     @Column(name = "payment_status", nullable = false)
     private String paymentStatus;
 
-    @Column(name = "shipping_address_id", nullable = false)
-    private Long shippingAddressId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address")
+    private Address address;
 
     @Column(name = "delivery_date", nullable = false)
     private LocalDate deliveryDate;
@@ -55,6 +55,9 @@ public class Order {
 
     @Column(name = "sale_place", nullable = false)
     private String salePlace;
+
+    @OneToMany(mappedBy = "relatedOrder")
+    private List<StockMovement> stockMovements;
 
 
 }

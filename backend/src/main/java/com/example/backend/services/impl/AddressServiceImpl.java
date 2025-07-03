@@ -18,6 +18,8 @@ public class AddressServiceImpl implements AddressService {
         this.addressRepository = addressRepository;
     }
 
+    //basically convert z dto na entity i potem dodanie do bazy
+    //return dto
     @Override
     public AddressDto addAddress(AddressDto addressDto) {
         Address addressEntity = AddressMapper.toEntity(addressDto);

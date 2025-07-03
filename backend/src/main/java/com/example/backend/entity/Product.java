@@ -1,14 +1,12 @@
 package com.example.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Builder
 @Setter
 @Getter
 @NoArgsConstructor
@@ -50,8 +48,8 @@ public class Product {
 
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "status_id")
-    private Status status_id;
+    @JoinColumn(name = "status")
+    private Status status;
 
     @OneToMany(mappedBy = "id")
     private List<Category> categories;
@@ -60,6 +58,6 @@ public class Product {
     private List<Image> images;
 
     @OneToMany(mappedBy = "id")
-    private List<StockLevel> StockLevels;
+    private List<StockLevel> stockLevels;
 
 }
