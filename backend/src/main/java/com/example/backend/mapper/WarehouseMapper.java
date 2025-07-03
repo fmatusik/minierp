@@ -15,4 +15,15 @@ public class WarehouseMapper {
                 .targetMovements(warehouse.getTargetMovements())
                 .build();
     }
+
+    public static Warehouse toEntity(WarehouseDto warehouseDto){
+        return Warehouse.builder()
+                .id(warehouseDto.getId())
+                .address(warehouseDto.getAddress())
+                .type(warehouseDto.getType())
+                .capacity(warehouseDto.getCapacity())
+                .sourceMovements(warehouseDto.getSourceMovements())
+                .targetMovements(warehouseDto.getTargetMovements())
+                .build();
+    }
 }
