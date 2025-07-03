@@ -8,10 +8,5 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource
 public interface AddressRepository extends JpaRepository<Address, Long> {
 
-    Address findAddressById(Long id);
-
-    Address findAddressByClientContact_Client_name(String clientContactClientName);
-
-    Address findAddressByClientContact_Client_email(String clientContactClientEmail);
 
 }

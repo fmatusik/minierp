@@ -1,12 +1,13 @@
 package com.example.backend.mapper;
 
 import com.example.backend.dto.ProductDto;
-import com.example.backend.entity.Image;
 import com.example.backend.entity.Product;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class ProductMapper {
 
     public static ProductDto toDto(Product product) {
