@@ -30,5 +30,9 @@ public class OrderItem {
     @Column(nullable = false)
     private Long price;
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "data")
+    private Data data;
+
 
 }

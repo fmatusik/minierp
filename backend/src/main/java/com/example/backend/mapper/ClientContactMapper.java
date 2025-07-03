@@ -2,6 +2,7 @@ package com.example.backend.mapper;
 
 import com.example.backend.dto.ClientContactDto;
 import com.example.backend.entity.ClientContact;
+import java.util.stream.Collectors;
 
 public class ClientContactMapper {
 
@@ -13,8 +14,14 @@ public class ClientContactMapper {
                 .email(clientContact.getEmail())
                 .phoneNumber(clientContact.getPhoneNumber())
                 .position(clientContact.getPosition())
-                .addresses(clientContact.getAddresses())
-                .client(clientContact.getClient())
+                .addresses(clientContact.getAddresses() != null
+                        ? clientContact.getAddresses().stream()
+                        .map(AddressMapper::toDto)
+                        .collect(Collectors.toList())
+                        : null)
+                .client(clientContact.getClient() != null
+                        ? ClientMapper.toDto(clientContact.getClient()) : null)
+                .data(clientContact.getData())
                 .build();
     }
 
@@ -26,8 +33,13 @@ public class ClientContactMapper {
                 .email(clientContactDto.getEmail())
                 .phoneNumber(clientContactDto.getPhoneNumber())
                 .position(clientContactDto.getPosition())
-                .addresses(clientContactDto.getAddresses())
-                .client(clientContactDto.getClient())
+                .addresses(clientContactDto.getAddresses() != null
+                        ? clientContactDto.getAddresses().stream()
+                        .map(AddressMapper::toEntity)
+                        .collect(Collectors.toList())
+                        : null)
+                .client(clientContactDto.getClient() != null ?  ClientMapper.toEntity(clientContactDto.getClient()) : null)
+                .data(clientContactDto.getData())
                 .build();
     }
 }

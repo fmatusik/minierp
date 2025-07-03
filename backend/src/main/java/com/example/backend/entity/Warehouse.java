@@ -37,6 +37,10 @@ public class Warehouse {
     @OneToMany(mappedBy = "targetWarehouse")
     private List<StockMovement> targetMovements;
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "data")
+    private Data data;
+
 
 
 }

@@ -10,9 +10,8 @@ public class CategoryMapper {
         return Category.builder()
                 .id(dto.getId())
                 .name(dto.getName())
-                .createdAt(dto.getCreatedAt())
-                .updatedAt(dto.getUpdatedAt())
-                .product(dto.getProduct())
+                .data(dto.getData())
+                .product(dto.getProduct() != null ? ProductMapper.toEntity(dto.getProduct()) : null)
                 .build();
     }
 
@@ -21,9 +20,8 @@ public class CategoryMapper {
         return CategoryDto.builder()
                 .id(category.getId())
                 .name(category.getName())
-                .createdAt(category.getCreatedAt())
-                .updatedAt(category.getUpdatedAt())
-                .product(category.getProduct())
+                .data(category.getData())
+                .product(category.getProduct() != null ? ProductMapper.toDto(category.getProduct()) : null)
                 .build();
     }
 

@@ -1,9 +1,6 @@
 package com.example.backend.dto;
 
-import com.example.backend.entity.Category;
-import com.example.backend.entity.Image;
-import com.example.backend.entity.Status;
-import com.example.backend.entity.StockLevel;
+import com.example.backend.entity.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,15 +14,14 @@ public class ProductDto {
     private Long id;
     private String name;
     private Float price;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Data data;
     private String description;
     private String notes;
     private String sku;
     private Float weight;
     private Float dimensions;
-    private Status status;
-    private List<Category> categories;
-    private List<Image> images;
-    private List<StockLevel> stockLevels;
+    private StatusDto status;
+    private List<CategoryDto> categories;
+    private List<ImageDto> images;
+    private List<StockLevelDto> stockLevels;
 }

@@ -35,16 +35,15 @@ public class Address {
     @Column(nullable = false)
     private String province;
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "client_contact_id", nullable = false)
     private ClientContact clientContact;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "data")
+    private Data data;
+
+
 
 }

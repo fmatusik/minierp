@@ -1,5 +1,6 @@
 package com.example.backend.dto;
 
+import com.example.backend.entity.Data;
 import com.example.backend.entity.Order;
 import com.example.backend.entity.Warehouse;
 import lombok.AllArgsConstructor;
@@ -12,10 +13,9 @@ import java.time.LocalDateTime;
 @Getter
 public class StockMovementDto {
     private Long id;
-    private Warehouse sourceWarehouse;
-    private Warehouse targetWarehouse;
-    private Order relatedOrder;
+    private WarehouseDto sourceWarehouse;
+    private WarehouseDto targetWarehouse;
+    private OrderDto relatedOrder;
     private String note;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Data data;
 }

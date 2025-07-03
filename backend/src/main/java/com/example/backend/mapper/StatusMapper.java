@@ -9,6 +9,7 @@ public class StatusMapper {
         return StatusDto.builder()
                 .id(status.getId())
                 .active(status.getActive())
+                .data(status.getData())
                 .build();
     }
 
@@ -16,6 +17,7 @@ public class StatusMapper {
         return Status.builder()
                 .id(statusDto.getId())
                 .active(statusDto.getActive())
+                .data(statusDto.getData())
                 .build();
     }
 }

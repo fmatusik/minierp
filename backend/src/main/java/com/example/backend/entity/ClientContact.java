@@ -41,5 +41,9 @@ public class ClientContact {
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "data")
+    private Data data;
+
 
 }

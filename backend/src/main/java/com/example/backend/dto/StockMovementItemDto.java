@@ -1,5 +1,6 @@
 package com.example.backend.dto;
 
+import com.example.backend.entity.Data;
 import com.example.backend.entity.Product;
 import com.example.backend.entity.StockMovement;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,8 @@ import lombok.Getter;
 @Builder
 public class StockMovementItemDto {
     private Long id;
-    private StockMovement stockMovement;
-    private Product product;
+    private StockMovementDto stockMovement;
+    private ProductDto product;
     private Long quantity;
+    private Data data;
 }

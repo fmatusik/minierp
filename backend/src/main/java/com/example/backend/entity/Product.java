@@ -26,11 +26,9 @@ public class Product {
     @Column(nullable = false)
     private Float price;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "data")
+    private Data data;
 
     @Column
     private String description;

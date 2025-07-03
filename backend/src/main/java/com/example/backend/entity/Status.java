@@ -19,6 +19,10 @@ public class Status {
     @Column(nullable = false)
     private Boolean active;
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "data")
+    private Data data;
+
 
 
 }

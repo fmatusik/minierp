@@ -29,5 +29,9 @@ public class StockLevel {
     @Column(nullable = false)
     private Long quantity;
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "data")
+    private Data data;
+
 
 }

@@ -2,6 +2,7 @@ package com.example.backend.dto;
 
 import com.example.backend.entity.Address;
 import com.example.backend.entity.Client;
+import com.example.backend.entity.Data;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +19,8 @@ public class ClientContactDto {
     private String email;
     private String phoneNumber;
     private String position;
-    private List<Address> addresses;
-    private Client client;
+    private List<AddressDto> addresses;
+    private ClientDto client;
+    private Data data;
 
 }

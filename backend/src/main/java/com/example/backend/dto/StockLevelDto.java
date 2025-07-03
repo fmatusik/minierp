@@ -1,5 +1,6 @@
 package com.example.backend.dto;
 
+import com.example.backend.entity.Data;
 import com.example.backend.entity.Product;
 import com.example.backend.entity.Warehouse;
 import lombok.AllArgsConstructor;
@@ -12,9 +13,10 @@ import lombok.Getter;
 public class StockLevelDto {
 
     private Long id;
-    private Product product;
-    private Warehouse warehouse;
+    private ProductDto product;
+    private WarehouseDto warehouse;
     private Long quantity;
+    private Data data;
 
 
 }

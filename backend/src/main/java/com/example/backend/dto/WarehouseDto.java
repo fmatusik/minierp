@@ -1,6 +1,7 @@
 package com.example.backend.dto;
 
 import com.example.backend.entity.Address;
+import com.example.backend.entity.Data;
 import com.example.backend.entity.StockMovement;
 import com.example.backend.enums.WarehouseType;
 import lombok.AllArgsConstructor;
@@ -13,10 +14,11 @@ import java.util.List;
 @Builder
 public class WarehouseDto {
     private Long id;
-    private Address address;
+    private AddressDto address;
     private WarehouseType type;
     private Long capacity;
-    private List<StockMovement> sourceMovements;
-    private List<StockMovement> targetMovements;
+    private List<StockMovementDto> sourceMovements;
+    private List<StockMovementDto> targetMovements;
+    private Data data;
 
 }

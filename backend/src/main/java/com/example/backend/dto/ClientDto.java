@@ -1,6 +1,7 @@
 package com.example.backend.dto;
 
 import com.example.backend.entity.ClientContact;
+import com.example.backend.entity.Data;
 import com.example.backend.entity.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,14 +19,12 @@ public class ClientDto {
 
     private String name;
 
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
+    private Data data;
 
     private String notes;
 
     private Status status;
 
-    private List<ClientContact> clientContact;
+    private List<ClientContactDto> clientContact;
 
 }

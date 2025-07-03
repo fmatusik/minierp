@@ -1,5 +1,6 @@
 package com.example.backend.dto;
 
+import com.example.backend.entity.Data;
 import com.example.backend.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,5 +15,6 @@ public class ImageDto {
     private String alt;
     private Long size;
     private Boolean isThumbnail;
-    private Product product;
+    private ProductDto product;
+    private Data data;
 }

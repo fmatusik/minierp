@@ -13,7 +13,8 @@ public class AddressMapper {
                 .postalCode(dto.getPostalCode())
                 .city(dto.getCity())
                 .province(dto.getProvince())
-                .clientContact(dto.getClientContact())
+                .clientContact(dto.getClientContact() != null ? ClientContactMapper.toEntity(dto.getClientContact()) : null)
+                .data(dto.getData())
                 .build();
     }
 
@@ -25,9 +26,8 @@ public class AddressMapper {
                 .postalCode(entity.getPostalCode())
                 .city(entity.getCity())
                 .province(entity.getProvince())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
-                .clientContact(entity.getClientContact())
+                .clientContact(entity.getClientContact() != null ? ClientContactMapper.toDto(entity.getClientContact()) : null)
+                .data(entity.getData())
                 .build();
     }
 }

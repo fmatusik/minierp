@@ -32,4 +32,8 @@ public class Image {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "data")
+    private Data data;
+
 }

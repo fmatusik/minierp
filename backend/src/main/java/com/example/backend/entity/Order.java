@@ -29,13 +29,9 @@ public class Order {
     @Column(name = "order_status")
     private String orderStatus; //add object
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "data")
+    private Data data;
 
     @Column(nullable = false)
     private Long price;
@@ -48,7 +44,7 @@ public class Order {
     private Address address;
 
     @Column(name = "delivery_date", nullable = false)
-    private LocalDate deliveryDate;
+    private LocalDateTime deliveryDate;
 
     @Column(name = "document_number", nullable = false)
     private Long documentNumber;

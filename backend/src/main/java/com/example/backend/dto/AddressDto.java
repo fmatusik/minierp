@@ -1,6 +1,7 @@
 package com.example.backend.dto;
 
 import com.example.backend.entity.ClientContact;
+import com.example.backend.entity.Data;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +19,6 @@ public class AddressDto {
     private String postalCode;
     private String city;
     private String province;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private ClientContact clientContact;
+    private Data data;
+    private ClientContactDto clientContact;
 }

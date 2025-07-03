@@ -8,24 +8,22 @@ public class StockMovementMapper {
     public static StockMovementDto toDto(StockMovement stockMovement) {
         return StockMovementDto.builder()
                 .id(stockMovement.getId())
-                .sourceWarehouse(stockMovement.getSourceWarehouse())
-                .targetWarehouse(stockMovement.getTargetWarehouse())
-                .relatedOrder(stockMovement.getRelatedOrder())
+                .sourceWarehouse(stockMovement.getSourceWarehouse() != null ? WarehouseMapper.toDto(stockMovement.getSourceWarehouse()) : null)
+                .targetWarehouse(stockMovement.getTargetWarehouse() != null ? WarehouseMapper.toDto(stockMovement.getTargetWarehouse()) : null)
+                .relatedOrder(stockMovement.getRelatedOrder() != null ? OrderMapper.toDto(stockMovement.getRelatedOrder()) : null)
                 .note(stockMovement.getNote())
-                .createdAt(stockMovement.getCreatedAt())
-                .updatedAt(stockMovement.getUpdatedAt())
+                .data(stockMovement.getData())
                 .build();
     }
 
     public static StockMovement toEntity(StockMovementDto stockMovementDto) {
         return StockMovement.builder()
                 .id(stockMovementDto.getId())
-                .sourceWarehouse(stockMovementDto.getSourceWarehouse())
-                .targetWarehouse(stockMovementDto.getTargetWarehouse())
-                .relatedOrder(stockMovementDto.getRelatedOrder())
+                .sourceWarehouse(stockMovementDto.getSourceWarehouse() != null ? WarehouseMapper.toEntity(stockMovementDto.getSourceWarehouse()) : null)
+                .targetWarehouse(stockMovementDto.getTargetWarehouse() != null ? WarehouseMapper.toEntity(stockMovementDto.getTargetWarehouse()) : null)
+                .relatedOrder(stockMovementDto.getRelatedOrder()  != null ? OrderMapper.toEntity(stockMovementDto.getRelatedOrder()) : null)
                 .note(stockMovementDto.getNote())
-                .createdAt(stockMovementDto.getCreatedAt())
-                .updatedAt(stockMovementDto.getUpdatedAt())
+                .data(stockMovementDto.getData())
                 .build();
     }
 }

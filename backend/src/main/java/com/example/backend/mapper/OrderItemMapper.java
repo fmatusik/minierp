@@ -9,9 +9,10 @@ public class OrderItemMapper {
         return OrderItemDto.builder()
                 .id(orderItem.getId())
                 .order(orderItem.getOrder())
-                .product(orderItem.getProduct())
+                .product(orderItem.getProduct() != null ? ProductMapper.toDto(orderItem.getProduct()) : null)
                 .quantity(orderItem.getQuantity())
                 .price(orderItem.getPrice())
+                .data(orderItem.getData())
                 .build();
     }
 
@@ -19,9 +20,10 @@ public class OrderItemMapper {
         return OrderItem.builder()
                 .id(orderItemDto.getId())
                 .order(orderItemDto.getOrder())
-                .product(orderItemDto.getProduct())
+                .product(orderItemDto.getProduct() != null ? ProductMapper.toEntity(orderItemDto.getProduct()) : null)
                 .quantity(orderItemDto.getQuantity())
                 .price(orderItemDto.getPrice())
+                .data(orderItemDto.getData())
                 .build();
     }
 }

@@ -1,6 +1,7 @@
 package com.example.backend.dto;
 
 import com.example.backend.entity.Category;
+import com.example.backend.entity.Data;
 import com.example.backend.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,10 +18,8 @@ public class CategoryDto {
 
     private String name;
 
-    private LocalDateTime createdAt;
+    private Data data;
 
-    private LocalDateTime updatedAt;
-
-    private Product product;
+    private ProductDto product;
 
 }
