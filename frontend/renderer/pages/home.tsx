@@ -13,6 +13,15 @@ import {
   Database,
   Truck
 } from "lucide-react";
+import ZamowieniaPage from "./orders";
+import ProduktyPage from "./products";
+import KategoriePage from "./categories";
+import KlienciPage from "./clients";
+import StockLevelsPage from "./stockLevels";
+import StockMovesPage from "./stockMoves";
+import WarehousesPage from "./warehouses";
+import StatusesPage from "./statuses";
+import SystemDataPage from "./systemData";
 
 export default function HomePage() {
   const [activeView, setActiveView] = useState("home");
@@ -32,7 +41,7 @@ export default function HomePage() {
     {
       section: "Magazyn",
       items: [
-        { label: "Poziomy zapasów", key: "stockLevels", icon: <Box size={18} /> },
+        { label: "Stany magazynowe", key: "stockLevels", icon: <Box size={18} /> },
         { label: "Ruchy magazynowe", key: "stockMoves", icon: <Truck size={18} /> },
         { label: "Magazyny", key: "warehouses", icon: <Warehouse size={18} /> },
       ],
@@ -107,6 +116,45 @@ export default function HomePage() {
       );
     }
 
+    if(activeView == "orders"){
+      return(
+        <ZamowieniaPage/>
+      )
+    }
+
+    if(activeView == "products") {
+      return (
+        <ProduktyPage/>
+      )
+    }
+
+    if(activeView == "categories") {
+      return <KategoriePage/>
+    }
+
+    if(activeView == "clients") {
+      return <KlienciPage/>
+    }
+
+    if(activeView == "stockLevels") {
+      return <StockLevelsPage/>
+    }
+
+    if(activeView == "stockMoves") {
+      return <StockMovesPage/>
+    }
+
+    if(activeView == "warehouses") {
+      return <WarehousesPage/>
+    }
+    if(activeView == "statuses") {
+      return <StatusesPage/>
+    }
+
+    if(activeView == "systemData") {
+      return <SystemDataPage/>
+    }
+
     // Placeholdery dla innych zakładek
     return <h1 className="text-2xl font-bold">{menuItems.flatMap(s => s.items).find(i => i.key === activeView)?.label}</h1>;
   };
@@ -117,7 +165,8 @@ export default function HomePage() {
         <title>Home - Zakładki</title>
       </Head>
 
-      <div className="flex min-h-screen bg-gray-50 text-gray-900">
+    <div className="flex h-screen overflow-hidden bg-gray-50 text-gray-900">
+
         {/* Sidebar */}
         <aside className="w-64 border-r p-4 space-y-6">
           <div className="text-2xl font-bold px-2 text-primary">Bizo</div>
@@ -145,7 +194,8 @@ export default function HomePage() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 p-6 overflow-auto">{renderContent()}</main>
+        <main className="flex-1 overflow-auto p-6 h-full">
+          {renderContent()}</main>
       </div>
     </>
   );
