@@ -32,7 +32,7 @@ public class Client {
 
     //status
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "status_id")
+    @JoinColumn(name = "status")
     private Status status;
 
     //client contact

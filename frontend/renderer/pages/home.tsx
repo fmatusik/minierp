@@ -13,15 +13,15 @@ import {
   Database,
   Truck
 } from "lucide-react";
-import ZamowieniaPage from "./orders";
-import ProduktyPage from "./products";
-import KategoriePage from "./categories";
-import KlienciPage from "./clients";
-import StockLevelsPage from "./stockLevels";
-import StockMovesPage from "./stockMoves";
-import WarehousesPage from "./warehouses";
-import StatusesPage from "./statuses";
-import SystemDataPage from "./systemData";
+import ZamowieniaPage from "./zamowienia/orders";
+import ProduktyPage from "./produkty/products";
+import KategoriePage from "./kategorie/categories";
+import KlienciPage from "./klienci/clients";
+import StockLevelsPage from "./stany_magazynowe/stockLevels";
+import StockMovesPage from "./ruchy_magazynowe/stockMoves";
+import WarehousesPage from "./magazyny/warehouses";
+import StatusesPage from "./statusy/statuses";
+import SystemDataPage from "./dane_systemowe/systemData";
 
 export default function HomePage() {
   const [activeView, setActiveView] = useState("home");

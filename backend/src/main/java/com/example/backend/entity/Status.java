@@ -17,7 +17,7 @@ public class Status {
     private Long id;
 
     @Column(nullable = false)
-    private Boolean active;
+    private String name;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "data")

@@ -10,6 +10,6 @@ import lombok.Getter;
 @Builder
 public class StatusDto {
     private Long id;
-    private Boolean active;
+    private String name;
     private Data data;
 }

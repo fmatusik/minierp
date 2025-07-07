@@ -18,11 +18,11 @@ public class StockMovementItem {
 
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "stock_movement_id")
+    @JoinColumn(name = "\"stockMovement\"")
     private StockMovement stockMovement;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product")
     private Product product;
 
     @Column(nullable = false)

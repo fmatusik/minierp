@@ -26,7 +26,7 @@ public class Order {
     @JoinColumn(name = "client")
     private Client client;
 
-    @Column(name = "order_status")
+    @Column(name = "\"orderStatus\"")
     private String orderStatus; //add object
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -36,23 +36,23 @@ public class Order {
     @Column(nullable = false)
     private Long price;
 
-    @Column(name = "payment_status", nullable = false)
+    @Column(name = "\"paymentStatus\"", nullable = false)
     private String paymentStatus;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address")
     private Address address;
 
-    @Column(name = "delivery_date", nullable = false)
+    @Column(name = "\"deliveryDate\"", nullable = false)
     private LocalDateTime deliveryDate;
 
-    @Column(name = "document_number", nullable = false)
+    @Column(name = "\"documentNumber\"", nullable = false)
     private Long documentNumber;
 
-    @Column(name = "sale_place", nullable = false)
+    @Column(name = "\"salePlace\"", nullable = false)
     private String salePlace;
 
-    @OneToMany(mappedBy = "relatedOrder")
+    @OneToMany(mappedBy = "relatedOrder", cascade = CascadeType.ALL)
     private List<StockMovement> stockMovements;
 
 

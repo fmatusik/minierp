@@ -1,5 +1,9 @@
-import React from "react";
-
+import React, { useState } from "react";
+import ProductDashboard from "./dashboard";
+import clsx from 'clsx';
+import EditProduct from "./edit";
+import ProductPage from "./page";
+const tabs = ['Podsumowanie', 'Strona produktu', 'Edycja'];
 const dummyProducts = [
   {
     id: 1,
@@ -28,6 +32,44 @@ const dummyProducts = [
 ];
 
 export default function ProduktyPage() {
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [activeTab, setActiveTab] = useState('Podsumowanie');
+  if (selectedProduct) {
+    // Dashboard widoku produktu
+    return (
+      <div className="space-y-6">
+        <button
+          onClick={() => setSelectedProduct(null)}
+          className="text-sm text-blue-600 hover:underline"
+        >
+          ← Powrót do listy produktów
+        </button>
+        <br />
+
+        <div className="inline-flex rounded-md bg-gray-100 p-1 relative left-[50%] translate-x-[-50%]">
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={clsx(
+                'px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-200',
+                activeTab === tab
+                  ? 'bg-white rounded-md shadow-sm'
+                  : 'hover:text-black'
+              )}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+        {(activeTab === "Podsumowanie" && <ProductDashboard/>)}
+        {(activeTab === "Edycja" && <EditProduct/>)}
+        {(activeTab === "Strona produktu" && <ProductPage/>)}
+      </div>
+    );
+  }
+
+  // Widok listy produktów
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -57,7 +99,11 @@ export default function ProduktyPage() {
       {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
         {dummyProducts.map((product) => (
-          <div key={product.id} className="border rounded-lg shadow-sm hover:shadow-md transition">
+          <div
+            key={product.id}
+            onClick={() => setSelectedProduct(product)}
+            className="cursor-pointer border rounded-lg shadow-sm hover:shadow-md transition"
+          >
             <div className="h-40 bg-gray-200 overflow-hidden">
               <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
             </div>

@@ -11,7 +11,7 @@ public class StatusMapper {
     public static StatusDto toDto(Status status) {
         return StatusDto.builder()
                 .id(status.getId())
-                .active(status.getActive())
+                .name(status.getName())
                 .data(status.getData())
                 .build();
     }
@@ -19,7 +19,7 @@ public class StatusMapper {
     public static Status toEntity(StatusDto statusDto) {
         return Status.builder()
                 .id(statusDto.getId())
-                .active(statusDto.getActive())
+                .name(statusDto.getName())
                 .data(statusDto.getData())
                 .build();
     }

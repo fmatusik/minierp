@@ -11,8 +11,8 @@ public class ClientContactMapper {
     public static ClientContactDto toDto(ClientContact clientContact) {
         return ClientContactDto.builder()
                 .id(clientContact.getId())
-                .firstName(clientContact.getFirstname())
-                .lastName(clientContact.getLastname())
+                .firstName(clientContact.getFirstName())
+                .lastName(clientContact.getLastName())
                 .email(clientContact.getEmail())
                 .phoneNumber(clientContact.getPhoneNumber())
                 .position(clientContact.getPosition())
@@ -27,8 +27,8 @@ public class ClientContactMapper {
     public static ClientContact toEntity(ClientContactDto clientContactDto) {
         return ClientContact.builder()
                 .id(clientContactDto.getId())
-                .firstname(clientContactDto.getFirstName())
-                .lastname(clientContactDto.getLastName())
+                .firstName(clientContactDto.getFirstName())
+                .lastName(clientContactDto.getLastName())
                 .email(clientContactDto.getEmail())
                 .phoneNumber(clientContactDto.getPhoneNumber())
                 .position(clientContactDto.getPosition())

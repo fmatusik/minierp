@@ -25,11 +25,11 @@ public class Image {
     @Column(nullable = false)
     private Long size;
 
-    @Column(name = "is_thumbnail", nullable = false)
+    @Column(nullable = false)
     private Boolean isThumbnail;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product")
     private Product product;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

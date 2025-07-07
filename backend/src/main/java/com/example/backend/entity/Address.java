@@ -20,24 +20,24 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name="\"buildingNumber\"")
     private String buildingNumber;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "\"apartmentNumber\"")
     private String apartmentNumber;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "\"postalCode\"")
     private String postalCode;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "city")
     private String city;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "province")
     private String province;
 
 
     @ManyToOne
-    @JoinColumn(name = "client_contact_id", nullable = false)
+    @JoinColumn(name = "\"clientContact\"", nullable = false)
     private ClientContact clientContact;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

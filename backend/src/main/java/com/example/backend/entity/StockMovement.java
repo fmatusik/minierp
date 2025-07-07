@@ -22,17 +22,17 @@ public class StockMovement {
 
 
     @ManyToOne
-    @JoinColumn(name = "source_warehouse")
+    @JoinColumn(name = "\"sourceWarehouse\"")
     private Warehouse sourceWarehouse;
 
     @ManyToOne
-    @JoinColumn(name = "target_warehouse")
+    @JoinColumn(name = "\"targetWarehouse\"")
     private Warehouse targetWarehouse;
 
 
 
     @ManyToOne
-    @JoinColumn(name = "related_order")
+    @JoinColumn(name = "\"relatedOrder\"")
     private Order relatedOrder;
 
 

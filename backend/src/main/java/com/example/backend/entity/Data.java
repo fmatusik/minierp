@@ -20,13 +20,13 @@ public class Data {
     private Long id;
 
     @CreationTimestamp
-    @Column(nullable = false)
+    @Column(nullable = false, name = "\"createdAt\"")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(nullable = false)
+    @Column(nullable = false, name = "\"updatedAt\"")
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "\"deletedAt\"")
     private LocalDateTime deletedAt;
 }

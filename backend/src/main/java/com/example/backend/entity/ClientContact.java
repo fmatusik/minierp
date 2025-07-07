@@ -18,27 +18,27 @@ public class ClientContact {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String firstname;
+    @Column(nullable = false, name = "\"firstName\"")
+    private String firstName;
 
-    @Column(nullable = false)
-    private String lastname;
+    @Column(nullable = false, name = "\"lastName\"")
+    private String lastName;
 
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "\"phoneNumber\"")
     private String phoneNumber;
 
     @Column(nullable = false)
-    private String position; //moze enum, dopytac !!!
+    private String position;
 
 
     @OneToMany(mappedBy = "clientContact", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses;
 
     @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
+    @JoinColumn(name = "client", nullable = false)
     private Client client;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

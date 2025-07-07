@@ -17,7 +17,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "name")
     private String name;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -25,7 +25,7 @@ public class Category {
     private Data data;
 
     @ManyToOne
-    @JoinColumn(name="product_id")
+    @JoinColumn(name="product")
     private Product product;
 
 }

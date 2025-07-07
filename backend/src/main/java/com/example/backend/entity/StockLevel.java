@@ -23,7 +23,7 @@ public class StockLevel {
 
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "warehouse_id")
+    @JoinColumn(name = "warehouse")
     private Warehouse warehouse;
 
     @Column(nullable = false)

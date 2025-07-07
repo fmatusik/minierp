@@ -11,7 +11,10 @@ module.exports = {
       gray: colors.gray,
       blue: colors.blue,
       black: colors.black, 
-      primary: "#a9def9",   
+      primary: "#76caf5",   
+      primaryhover: "#4fc3ff",
+      red: colors.red,
+      green: colors.green
     },
     extend: {},
   },
