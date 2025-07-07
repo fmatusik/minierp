@@ -1,39 +1,38 @@
 import React, { useState } from "react";
+import { products, images, categories } from '../dummyData'; // Import from dummyData.js
 import ProductDashboard from "./dashboard";
-import clsx from 'clsx';
 import EditProduct from "./edit";
 import ProductPage from "./page";
+import clsx from 'clsx';
+
 const tabs = ['Podsumowanie', 'Strona produktu', 'Edycja'];
-const dummyProducts = [
-  {
-    id: 1,
-    name: "Laptop HP EliteBook",
-    category: "Laptopy",
-    price: "4 599 PLN",
-    status: "Aktywny",
-    image: "https://via.placeholder.com/300x200",
-  },
-  {
-    id: 2,
-    name: "Smartfon Samsung Galaxy",
-    category: "Smartfony",
-    price: "3 299 PLN",
-    status: "Aktywny",
-    image: "https://via.placeholder.com/300x200",
-  },
-  {
-    id: 3,
-    name: "Słuchawki Bose 700",
-    category: "Słuchawki",
-    price: "1 199 PLN",
-    status: "Wycofany",
-    image: "https://via.placeholder.com/300x200",
-  },
-];
 
 export default function ProduktyPage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [activeTab, setActiveTab] = useState('Podsumowanie');
+
+  // Map categories to products for easier lookup
+  const categoryMap = categories.reduce((acc, category) => ({
+    ...acc,
+    [category.product.id]: category.name
+  }), {});
+
+  // Map images to products for easier lookup
+  const imageMap = images.reduce((acc, image) => ({
+    ...acc,
+    [image.product.id]: image.path
+  }), {});
+
+  // Prepare product data for display
+  const formattedProducts = products.map(product => ({
+    id: product.id,
+    name: product.name,
+    category: categoryMap[product.id] || 'Brak kategorii', // Use category from categories array
+    price: `${product.price.toFixed(2)} PLN`, // Format price with PLN
+    status: product.status.name, // Use status name (Aktywne, Nieaktywne, Oczekujące)
+    image: imageMap[product.id] || 'https://via.placeholder.com/300x200' // Use image path or fallback
+  }));
+
   if (selectedProduct) {
     // Dashboard widoku produktu
     return (
@@ -62,9 +61,9 @@ export default function ProduktyPage() {
             </button>
           ))}
         </div>
-        {(activeTab === "Podsumowanie" && <ProductDashboard/>)}
-        {(activeTab === "Edycja" && <EditProduct/>)}
-        {(activeTab === "Strona produktu" && <ProductPage/>)}
+        {activeTab === "Podsumowanie" && <ProductDashboard />}
+        {activeTab === "Edycja" && <EditProduct product={selectedProduct} />}
+        {activeTab === "Strona produktu" && <ProductPage selectedProduct={selectedProduct} />}
       </div>
     );
   }
@@ -90,15 +89,15 @@ export default function ProduktyPage() {
         />
         <select className="px-3 py-2 border rounded-md">
           <option>Kategoria</option>
-          <option>Laptopy</option>
-          <option>Smartfony</option>
-          <option>Słuchawki</option>
+          {Object.values(categories).map(category => (
+            <option key={category.id} value={category.name}>{category.name}</option>
+          ))}
         </select>
       </div>
 
       {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-        {dummyProducts.map((product) => (
+        {formattedProducts.map((product) => (
           <div
             key={product.id}
             onClick={() => setSelectedProduct(product)}
@@ -112,11 +111,14 @@ export default function ProduktyPage() {
               <p className="text-sm text-gray-500">{product.category}</p>
               <p className="text-sm text-gray-800">{product.price}</p>
               <span
-                className={`inline-block text-xs px-2 py-1 rounded ${
+                className={clsx(
+                  'inline-block text-xs px-2 py-1 rounded',
                   product.status === "Aktywny"
                     ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
-                }`}
+                    : product.status === "Nieaktywne"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-blue-100 text-blue-800"
+                )}
               >
                 {product.status}
               </span>

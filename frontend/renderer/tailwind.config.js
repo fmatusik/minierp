@@ -14,7 +14,8 @@ module.exports = {
       primary: "#76caf5",   
       primaryhover: "#4fc3ff",
       red: colors.red,
-      green: colors.green
+      green: colors.green,
+      purple: colors.purple
     },
     extend: {},
   },

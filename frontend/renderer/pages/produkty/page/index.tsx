@@ -1,10 +1,24 @@
 import { useRef, useState } from "react";
+import { products, images, categories } from '../../dummyData'; // Import from dummyData.js
 
-export default function ProductPage() {
-  const carouselRef = useRef<HTMLDivElement>(null);
+export default function ProductPage({ selectedProduct }) {
+  const carouselRef = useRef(null);
   const [activePage, setActivePage] = useState(0);
 
-  const handleDotClick = (index: number) => {
+  // Find the full product data from products array
+  const product = products.find(p => p.id === selectedProduct.id) || {};
+  // Get category for the product
+  const category = categories.find(c => c.product.id === selectedProduct.id)?.name || 'Brak kategorii';
+  // Get images for the product (use multiple images if available, or repeat the primary image)
+  const productImages = images
+    .filter(img => img.product.id === selectedProduct.id)
+    .map(img => img.path);
+  // If fewer than 9 images, repeat the first image to fill the carousel
+  const carouselImages = productImages.length > 0
+    ? [...productImages, ...Array(Math.max(0, 9 - productImages.length)).fill(productImages[0] || 'https://via.placeholder.com/300x200')]
+    : Array(9).fill('https://via.placeholder.com/300x200');
+
+  const handleDotClick = (index) => {
     const container = carouselRef.current;
     if (container) {
       const scrollWidth = container.scrollWidth;
@@ -29,11 +43,13 @@ export default function ProductPage() {
             ref={carouselRef}
             className="flex overflow-x-hidden gap-3 snap-x snap-mandatory scroll-smooth scrollbar-hide transition-all duration-300"
           >
-            {[...Array(9)].map((_, idx) => (
+            {carouselImages.map((image, idx) => (
               <div
                 key={idx}
-                className="min-w-[33.3333%] h-64 bg-gray-300 snap-start transition-transform duration-500 ease-out"
-              />
+                className="min-w-[33.3333%] h-64 snap-start transition-transform duration-500 ease-out"
+              >
+                <img src={image} alt={`${product.name || 'Product'} ${idx + 1}`} className="w-full h-full object-cover" />
+              </div>
             ))}
           </div>
         </div>
@@ -54,48 +70,49 @@ export default function ProductPage() {
         {/* Product Info */}
         <div className="flex justify-between items-center px-6 pb-6">
           <div>
-            <h2 className="text-lg font-medium">Lenovo H2</h2>
-            <p className="text-gray-500 text-sm">Laptopy</p>
+            <h2 className="text-lg font-medium">{selectedProduct.name}</h2>
+            <p className="text-gray-500 text-sm">{category}</p>
           </div>
-          <div className="text-xl font-bold">50 000 zł</div>
+          <div className="text-xl font-bold">{selectedProduct.price}</div>
         </div>
         
         {/* Product description */}
-
-        <p className="px-10 py-10">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Repellendus autem repellat nam voluptates enim nihil, dolorum corrupti similique perferendis, quibusdam eveniet earum iste? Expedita in quos nobis velit minima quaerat. Temporibus accusantium accusamus cupiditate repellat in nesciunt quis, illum ducimus voluptatibus porro qui facere? Delectus deserunt assumenda repellendus iure quo ipsam eveniet dolores fugiat dignissimos cumque architecto consectetur possimus doloribus mollitia tempora maiores magnam, commodi rem, quae minus harum consequuntur facere officiis a! Veritatis unde cumque nulla accusantium veniam porro, aliquid sapiente minima tempore aspernatur, consequatur voluptatibus neque! Mollitia nostrum numquam amet sed rerum eveniet saepe est ducimus debitis cumque?</p>
+        <p className="px-10 py-10">{product.description || 'Brak opisu'}</p>
 
         {/* Product info table */}
-        <div className="w-full px-5 pb-10 flex justify-center ">
-            <table className="min-w-[60%] text-sm border rounded-lg">
-                <tr>
-                    <th className="px-4 py-2 text-left bg-gray-100 border">Nazwa</th>
-                    <td className="px-4 py-2 text-left border">name</td>
-                </tr>
-                                <tr>
-                    <th className="px-4 py-2 text-left bg-gray-100 border">SKU</th>
-                    <td className="px-4 py-2 text-left border">123FF</td>
-                </tr>
-                                <tr>
-                    <th className="px-4 py-2 text-left bg-gray-100 border">Waga</th>
-                    <td className="px-4 py-2 text-left border">weight</td>
-                </tr>
-                                <tr>
-                    <th className="px-4 py-2 text-left bg-gray-100 border">Wymiary</th>
-                    <td className="px-4 py-2 text-left border">dimensions</td>
-                </tr>
-                                <tr>
-                    <th className="px-4 py-2 text-left bg-gray-100 border">Dodano</th>
-                    <td className="px-4 py-2 text-left border">07-07-2025</td>
-                </tr>
-                                <tr>
-                    <th className="px-4 py-2 text-left bg-gray-100 border">Status</th>
-                    <td className="px-4 py-2 text-left border">Aktywny</td>
-                </tr>
-                                <tr>
-                    <th className="px-4 py-2 text-left bg-gray-100 border">Notatki</th>
-                    <td className="px-4 py-2 text-left border">note</td>
-                </tr>
-            </table>
+        <div className="w-full px-5 pb-10 flex justify-center">
+          <table className="min-w-[60%] text-sm border rounded-lg">
+            <tbody>
+              <tr>
+                <th className="px-4 py-2 text-left bg-gray-100 border">Nazwa</th>
+                <td className="px-4 py-2 text-left border">{product.name || 'Brak nazwy'}</td>
+              </tr>
+              <tr>
+                <th className="px-4 py-2 text-left bg-gray-100 border">SKU</th>
+                <td className="px-4 py-2 text-left border">{product.sku || 'Brak SKU'}</td>
+              </tr>
+              <tr>
+                <th className="px-4 py-2 text-left bg-gray-100 border">Waga</th>
+                <td className="px-4 py-2 text-left border">{product.weight ? `${product.weight} kg` : 'Brak danych'}</td>
+              </tr>
+              <tr>
+                <th className="px-4 py-2 text-left bg-gray-100 border">Wymiary</th>
+                <td className="px-4 py-2 text-left border">{product.dimensions ? `${product.dimensions} cm` : 'Brak danych'}</td>
+              </tr>
+              <tr>
+                <th className="px-4 py-2 text-left bg-gray-100 border">Dodano</th>
+                <td className="px-4 py-2 text-left border">{product.data?.createdAt || 'Brak danych'}</td>
+              </tr>
+              <tr>
+                <th className="px-4 py-2 text-left bg-gray-100 border">Status</th>
+                <td className="px-4 py-2 text-left border">{selectedProduct.status || 'Brak statusu'}</td>
+              </tr>
+              <tr>
+                <th className="px-4 py-2 text-left bg-gray-100 border">Notatki</th>
+                <td className="px-4 py-2 text-left border">{product.notes || 'Brak notatek'}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
