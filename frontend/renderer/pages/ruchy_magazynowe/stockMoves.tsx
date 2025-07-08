@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
-const dummyMoves = [
+const initialMoves = [
   {
     id: 1,
     product: "Laptop HP EliteBook",
     type: "przyjęcie",
     quantity: 10,
-    warehouseFrom: null,
-    warehouseTo: "Magazyn Warszawa",
+    sourceWarehouse: null,
+    targetWarehouse: "Magazyn Warszawa",
     date: "2025-07-01",
   },
   {
@@ -15,8 +15,8 @@ const dummyMoves = [
     product: "Smartfon Samsung",
     type: "wydanie",
     quantity: -5,
-    warehouseFrom: "Magazyn Kraków",
-    warehouseTo: null,
+    sourceWarehouse: "Magazyn Kraków",
+    targetWarehouse: null,
     date: "2025-07-02",
   },
   {
@@ -24,32 +24,77 @@ const dummyMoves = [
     product: "Monitor Dell 27\"",
     type: "przesunięcie",
     quantity: -3,
-    warehouseFrom: "Magazyn Warszawa",
-    warehouseTo: "Magazyn Gdańsk",
+    sourceWarehouse: "Magazyn Warszawa",
+    targetWarehouse: "Magazyn Gdańsk",
     date: "2025-07-03",
   },
 ];
 
-const uniqueWarehouses = [
-  ...new Set(
-    dummyMoves.flatMap((m) => [m.warehouseFrom, m.warehouseTo]).filter(Boolean)
-  ),
-];
-
 export default function StockMovesPage() {
+  const [moves, setMoves] = useState(initialMoves);
   const [search, setSearch] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [selectedWarehouse, setSelectedWarehouse] = useState("");
+  const [editingMove, setEditingMove] = useState(null);
+  const modalRef = useRef(null);
 
-  const filtered = dummyMoves.filter((move) => {
+  const uniqueWarehouses = [
+    ...new Set(
+      moves.flatMap((m) => [m.sourceWarehouse, m.targetWarehouse]).filter(Boolean)
+    ),
+  ];
+
+  const filtered = moves.filter((move) => {
     const matchType = !selectedType || move.type === selectedType;
     const matchWarehouse =
       !selectedWarehouse ||
-      move.warehouseFrom === selectedWarehouse ||
-      move.warehouseTo === selectedWarehouse;
+      move.sourceWarehouse === selectedWarehouse ||
+      move.targetWarehouse === selectedWarehouse;
     const matchSearch = move.product.toLowerCase().includes(search.toLowerCase());
     return matchType && matchWarehouse && matchSearch;
   });
+
+  const handleEditChange = (field, value) => {
+    setEditingMove((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const saveEdit = () => {
+    if (editingMove.isDuplicate) {
+      const newId = Math.max(...moves.map((m) => m.id)) + 1;
+      setMoves((prev) => [
+        ...prev,
+        { ...editingMove, id: newId, isDuplicate: undefined },
+      ]);
+    } else {
+      setMoves((prev) =>
+        prev.map((m) => (m.id === editingMove.id ? editingMove : m))
+      );
+    }
+    setEditingMove(null);
+  };
+
+  const handleDelete = (id) => {
+    setMoves((prev) => prev.filter((m) => m.id !== id));
+  };
+
+  const handleDuplicate = (move) => {
+    setEditingMove({ ...move, isDuplicate: true });
+  };
+
+  // Close modal when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (modalRef.current && !modalRef.current.contains(e.target)) {
+        setEditingMove(null);
+      }
+    };
+    if (editingMove) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [editingMove]);
 
   return (
     <div className="space-y-6">
@@ -102,17 +147,20 @@ export default function StockMovesPage() {
         <table className="w-full text-sm">
           <thead className="bg-gray-100 text-gray-700">
             <tr>
+              <th className="text-left px-4 py-3">Numer</th>
               <th className="text-left px-4 py-3">Produkt</th>
               <th className="text-left px-4 py-3">Typ ruchu</th>
               <th className="text-left px-4 py-3">Ilość</th>
               <th className="text-left px-4 py-3">Magazyn źródłowy</th>
               <th className="text-left px-4 py-3">Magazyn docelowy</th>
               <th className="text-left px-4 py-3">Data</th>
+              <th className="text-left px-4 py-3">Akcje</th>
             </tr>
           </thead>
           <tbody>
-            {filtered.map((move) => (
+            {filtered.map((move, idx) => (
               <tr key={move.id} className="border-t">
+                <td className="px-4 py-3 text-primary font-semibold">MOV-{String(idx).padStart(3, "0")}</td>
                 <td className="px-4 py-3">{move.product}</td>
                 <td className="px-4 py-3">
                   <span
@@ -128,14 +176,36 @@ export default function StockMovesPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3">{move.quantity}</td>
-                <td className="px-4 py-3">{move.warehouseFrom || "-"}</td>
-                <td className="px-4 py-3">{move.warehouseTo || "-"}</td>
+                <td className="px-4 py-3">{move.sourceWarehouse || "-"}</td>
+                <td className="px-4 py-3">{move.targetWarehouse || "-"}</td>
                 <td className="px-4 py-3">{move.date}</td>
+                <td className="px-4 py-3 flex gap-1">
+                  <button
+                    onClick={() => setEditingMove(move)}
+                    className="text-gray-700 hover:underline"
+                  >
+                    Edytuj
+                  </button>
+                  /
+                  <button
+                    onClick={() => handleDuplicate(move)}
+                    className="text-blue-600 hover:underline"
+                  >
+                    Duplikuj
+                  </button>
+                  /
+                  <button
+                    onClick={() => handleDelete(move.id)}
+                    className="text-red-600 hover:underline"
+                  >
+                    Usuń
+                  </button>
+                </td>
               </tr>
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={6} className="text-center text-gray-500 py-6">
+                <td colSpan={8} className="text-center text-gray-500 py-6">
                   Brak wyników
                 </td>
               </tr>
@@ -143,6 +213,81 @@ export default function StockMovesPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Edit Modal */}
+      {editingMove && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div ref={modalRef} className="bg-white p-6 rounded-md w-full max-w-md space-y-4">
+            <h2 className="text-xl font-semibold">
+              {editingMove.isDuplicate ? "Duplikuj" : "Edytuj"} ruch magazynowy
+            </h2>
+
+            <input
+              type="text"
+              className="w-full border px-3 py-2 rounded"
+              value={editingMove.product}
+              onChange={(e) => handleEditChange("product", e.target.value)}
+              placeholder="Produkt"
+            />
+
+            <select
+              className="w-full border px-3 py-2 rounded"
+              value={editingMove.type}
+              onChange={(e) => handleEditChange("type", e.target.value)}
+            >
+              <option value="przyjęcie">Przyjęcie</option>
+              <option value="wydanie">Wydanie</option>
+              <option value="przesunięcie">Przesunięcie</option>
+            </select>
+
+            <input
+              type="number"
+              className="w-full border px-3 py-2 rounded"
+              value={editingMove.quantity}
+              onChange={(e) => handleEditChange("quantity", parseInt(e.target.value))}
+              placeholder="Ilość"
+            />
+
+            <input
+              type="text"
+              className="w-full border px-3 py-2 rounded"
+              value={editingMove.sourceWarehouse || ""}
+              onChange={(e) => handleEditChange("sourceWarehouse", e.target.value)}
+              placeholder="Magazyn źródłowy"
+            />
+
+            <input
+              type="text"
+              className="w-full border px-3 py-2 rounded"
+              value={editingMove.targetWarehouse || ""}
+              onChange={(e) => handleEditChange("targetWarehouse", e.target.value)}
+              placeholder="Magazyn docelowy"
+            />
+
+            <input
+              type="date"
+              className="w-full border px-3 py-2 rounded"
+              value={editingMove.date}
+              onChange={(e) => handleEditChange("date", e.target.value)}
+            />
+
+            <div className="flex justify-end gap-2 pt-4">
+              <button
+                className="px-4 py-2 bg-gray-200 rounded"
+                onClick={() => setEditingMove(null)}
+              >
+                Anuluj
+              </button>
+              <button
+                className="px-4 py-2 bg-primary hover:bg-primaryhover transition-all text-white rounded"
+                onClick={saveEdit}
+              >
+                Zapisz
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

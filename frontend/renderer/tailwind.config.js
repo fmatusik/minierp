@@ -15,7 +15,12 @@ module.exports = {
       primaryhover: "#4fc3ff",
       red: colors.red,
       green: colors.green,
-      purple: colors.purple
+      purple: colors.purple,
+      yellow: colors.yellow,
+      orange: colors.orange,
+      cyan: colors.cyan,
+      lime: colors.lime,
+      pink: colors.pink
     },
     extend: {},
   },
