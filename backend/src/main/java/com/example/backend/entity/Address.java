@@ -37,7 +37,7 @@ public class Address {
 
 
     @ManyToOne
-    @JoinColumn(name = "\"clientContact\"", nullable = false)
+    @JoinColumn(name = "\"clientContact\"", nullable = true)
     private ClientContact clientContact;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

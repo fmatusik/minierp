@@ -43,7 +43,7 @@ export default function KlienciPage() {
   const [selectedClient, setSelectedClient] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("date-desc");
-  const modalRef = useRef();
+  const modalRef =  useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     function handleOutsideClick(e) {
@@ -74,10 +74,10 @@ export default function KlienciPage() {
       } else if (sortOption === "name-desc") {
         return `${b.firstName} ${b.lastName}`.localeCompare(`${a.firstName} ${a.lastName}`);
       } else if (sortOption === "date-asc") {
-        return new Date(a.createdAt) - new Date(b.createdAt);
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       } else {
         // default to date-desc
-        return new Date(b.createdAt) - new Date(a.createdAt);
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       }
     });
 

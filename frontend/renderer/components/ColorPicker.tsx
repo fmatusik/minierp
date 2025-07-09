@@ -16,7 +16,7 @@ const tailwindColors = [
 
 export default function ColorPicker({ selectedColor, onSelect }) {
   const [isOpen, setIsOpen] = useState(false);
-  const ref = useRef();
+  const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

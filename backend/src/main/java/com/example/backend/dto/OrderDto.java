@@ -20,7 +20,7 @@ public class OrderDto {
     private String paymentStatus;
     private AddressDto address;
     private LocalDateTime deliveryDate;
-    private Long documentNumber;
+    private String documentNumber;
     private String salePlace;
     private List<StockMovementDto> stockMovements;
 

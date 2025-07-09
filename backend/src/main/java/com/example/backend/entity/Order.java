@@ -47,7 +47,7 @@ public class Order {
     private LocalDateTime deliveryDate;
 
     @Column(name = "\"documentNumber\"", nullable = false)
-    private Long documentNumber;
+    private String documentNumber;
 
     @Column(name = "\"salePlace\"", nullable = false)
     private String salePlace;

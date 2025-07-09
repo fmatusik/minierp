@@ -2,10 +2,12 @@ package com.example.backend.mapper;
 
 import com.example.backend.dto.OrderDto;
 import com.example.backend.entity.Order;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class OrderMapper {
 
     public static OrderDto toDto(Order order) {
