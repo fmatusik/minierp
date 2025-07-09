@@ -14,11 +14,11 @@ import java.util.List;
 @Builder
 public class WarehouseDto {
     private Long id;
-    private AddressDto address;
+    private AddressDto addressDto;
     private WarehouseType type;
     private Long capacity;
-    private List<StockMovementDto> sourceMovements;
-    private List<StockMovementDto> targetMovements;
+    private List<StockMovementDto> sourceMovementsDto;
+    private List<StockMovementDto> targetMovementsDto;
     private Data data;
 
 }

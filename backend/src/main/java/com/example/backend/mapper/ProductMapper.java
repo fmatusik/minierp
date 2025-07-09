@@ -21,14 +21,14 @@ public class ProductMapper {
                 .sku(product.getSku())
                 .weight(product.getWeight())
                 .description(product.getDescription())
-                .status(product.getStatus() != null ? StatusMapper.toDto(product.getStatus()) : null)
-                .categories(product.getCategories() != null
+                .statusDto(product.getStatus() != null ? StatusMapper.toDto(product.getStatus()) : null)
+                .categoriesDto(product.getCategories() != null
                         ? CategoryMapper.toDtoList(product.getCategories())
                         : null)
-                .images(product.getImages() != null
+                .imagesDto(product.getImages() != null
                         ? ImageMapper.toDtoList(product.getImages())
                         : null)
-                .stockLevels(product.getStockLevels() != null
+                .stockLevelsDto(product.getStockLevels() != null
                         ? StockLevelMapper.toDtoList(product.getStockLevels())
                         : null)
                 .build();
@@ -45,15 +45,15 @@ public class ProductMapper {
                 .sku(productDto.getSku())
                 .weight(productDto.getWeight())
                 .dimensions(productDto.getDimensions())
-                .status(productDto.getStatus() != null ? StatusMapper.toEntity(productDto.getStatus()) : null)
-                .categories(productDto.getCategories() != null
-                        ? CategoryMapper.toEntityList(productDto.getCategories())
+                .status(productDto.getStatusDto() != null ? StatusMapper.toEntity(productDto.getStatusDto()) : null)
+                .categories(productDto.getCategoriesDto() != null
+                        ? CategoryMapper.toEntityList(productDto.getCategoriesDto())
                         : null)
-                .images(productDto.getImages() != null
-                        ? ImageMapper.toEntityList(productDto.getImages())
+                .images(productDto.getImagesDto() != null
+                        ? ImageMapper.toEntityList(productDto.getImagesDto())
                         : null)
-                .stockLevels(productDto.getStockLevels() != null
-                        ? StockLevelMapper.toEntityList(productDto.getStockLevels())
+                .stockLevels(productDto.getStockLevelsDto() != null
+                        ? StockLevelMapper.toEntityList(productDto.getStockLevelsDto())
                         : null)
                 .build();
     }

@@ -3,6 +3,8 @@ package com.example.backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Builder
 @Setter
 @Getter
@@ -16,12 +18,9 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "order", referencedColumnName = "id")
-    private Order order;
 
-    @OneToOne
-    @JoinColumn(name = "product", referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "\"orderItems\"")
     private Product product;
 
     @Column(nullable = false)

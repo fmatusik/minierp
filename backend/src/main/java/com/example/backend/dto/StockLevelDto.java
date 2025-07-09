@@ -13,8 +13,8 @@ import lombok.Getter;
 public class StockLevelDto {
 
     private Long id;
-    private ProductDto product;
-    private WarehouseDto warehouse;
+    private ProductDto productDto;
+    private WarehouseDto warehouseDto;
     private Long quantity;
     private Data data;
 

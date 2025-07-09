@@ -13,16 +13,17 @@ import java.util.List;
 @Getter
 public class OrderDto {
     private Long id;
-    private ClientDto client;
-    private String orderStatus;
+    private ClientDto clientDto;
+    private Status status;
     private Data data;
     private Long price;
     private String paymentStatus;
-    private AddressDto address;
+    private AddressDto addressDto;
     private LocalDateTime deliveryDate;
     private String documentNumber;
     private String salePlace;
-    private List<StockMovementDto> stockMovements;
+    private List<StockMovementDto> stockMovementsDto;
+    private OrderItemDto orderItemDto;
 
 }
 

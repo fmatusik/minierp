@@ -12,8 +12,8 @@ import lombok.Getter;
 @Builder
 public class StockMovementItemDto {
     private Long id;
-    private StockMovementDto stockMovement;
-    private ProductDto product;
+    private StockMovementDto stockMovementDto;
+    private ProductDto productDto;
     private Long quantity;
     private Data data;
 }

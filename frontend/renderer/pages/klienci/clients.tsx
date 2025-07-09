@@ -81,6 +81,20 @@ export default function KlienciPage() {
       }
     });
 
+      const openAddPanel = () => {
+
+    const width = 1200;
+    const height = 900;
+
+    const left = window.screenX + (window.innerWidth - width) / 2;
+    const top = window.screenY + (window.innerHeight - height) / 2;
+
+    const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbar=yes`;
+
+    window.open('/klienci/add', "_blank", features);
+
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -89,7 +103,9 @@ export default function KlienciPage() {
           <h1 className="text-3xl font-bold">Klienci</h1>
           <p className="text-gray-600 text-sm">Lista zarejestrowanych klientów</p>
         </div>
-        <button className="px-4 py-2 bg-black text-white rounded-md">+ Nowy klient</button>
+        <button
+         onClick={openAddPanel}
+         className="px-4 py-2 bg-black text-white rounded-md">+ Nowy klient</button>
       </div>
 
       {/* Search & Sort Controls */}

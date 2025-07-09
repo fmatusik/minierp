@@ -11,15 +11,15 @@ public class WarehouseMapper {
     public static WarehouseDto toDto(Warehouse warehouse) {
         return WarehouseDto.builder()
                 .id(warehouse.getId())
-                .address(warehouse.getAddress() != null
+                .addressDto(warehouse.getAddress() != null
                         ? AddressMapper.toDto(warehouse.getAddress())
                         : null)
                 .type(warehouse.getType())
                 .capacity(warehouse.getCapacity())
-                .sourceMovements(warehouse.getSourceMovements() != null
+                .sourceMovementsDto(warehouse.getSourceMovements() != null
                         ? StockMovementMapper.toDtoList(warehouse.getSourceMovements())
                         : null)
-                .targetMovements(warehouse.getTargetMovements() != null
+                .targetMovementsDto(warehouse.getTargetMovements() != null
                         ? StockMovementMapper.toDtoList(warehouse.getTargetMovements())
                         : null)
                 .data(warehouse.getData())
@@ -29,16 +29,16 @@ public class WarehouseMapper {
     public static Warehouse toEntity(WarehouseDto warehouseDto) {
         return Warehouse.builder()
                 .id(warehouseDto.getId())
-                .address(warehouseDto.getAddress() != null
-                        ? AddressMapper.toEntity(warehouseDto.getAddress())
+                .address(warehouseDto.getAddressDto() != null
+                        ? AddressMapper.toEntity(warehouseDto.getAddressDto())
                         : null)
                 .type(warehouseDto.getType())
                 .capacity(warehouseDto.getCapacity())
-                .sourceMovements(warehouseDto.getSourceMovements() != null
-                        ? StockMovementMapper.toEntityList(warehouseDto.getSourceMovements())
+                .sourceMovements(warehouseDto.getSourceMovementsDto() != null
+                        ? StockMovementMapper.toEntityList(warehouseDto.getSourceMovementsDto())
                         : null)
-                .targetMovements(warehouseDto.getTargetMovements() != null
-                        ? StockMovementMapper.toEntityList(warehouseDto.getTargetMovements())
+                .targetMovements(warehouseDto.getTargetMovementsDto() != null
+                        ? StockMovementMapper.toEntityList(warehouseDto.getTargetMovementsDto())
                         : null)
                 .data(warehouseDto.getData())
                 .build();

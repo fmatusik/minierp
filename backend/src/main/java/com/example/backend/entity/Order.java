@@ -2,10 +2,7 @@ package com.example.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDate;
+import com.example.backend.entity.Status;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,8 +23,9 @@ public class Order {
     @JoinColumn(name = "client")
     private Client client;
 
-    @Column(name = "\"orderStatus\"")
-    private String orderStatus; //add object
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "status")
+    private Status status; //add object
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "data")
@@ -55,5 +53,8 @@ public class Order {
     @OneToMany(mappedBy = "relatedOrder", cascade = CascadeType.ALL)
     private List<StockMovement> stockMovements;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "\"orderItem\"")
+    private OrderItem orderItem;
 
 }

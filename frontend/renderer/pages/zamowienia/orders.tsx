@@ -1,11 +1,12 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-
-import dummyOrders from "./DummyOrders";
+import { RefreshCcw } from "lucide-react";
+import axios from "axios";
+import { products } from "../dummyData";
 
 const ITEMS_PER_LOAD = 20;
 
 export default function ZamowieniaPage() {
-  const [orders, setOrders] = useState(dummyOrders);
+  const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [sortOption, setSortOption] = useState("");
@@ -16,7 +17,22 @@ export default function ZamowieniaPage() {
   const loaderRef = useRef(null);
   const modalRef = useRef(null);
 
+  // Fetch all orders on mount
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:8080/api/orders/all");
+        setOrders(data);
+        console.log(data);
+      } catch (err) {
+        console.error("Failed to fetch orders", err);
+      }
+    };
 
+    fetchOrders();
+  }, []);
+
+  // Close modal if clicked outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -32,7 +48,6 @@ export default function ZamowieniaPage() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [selectedOrder]);
-
 
   const filteredOrders = useMemo(() => {
     let filtered = [...orders];
@@ -112,25 +127,96 @@ export default function ZamowieniaPage() {
 
     const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
 
-    const win = window.open(`/zamowienia/editor?id=${order.id}`, "_blank", features);
+    window.open(`/zamowienia/editor?id=${order.id}`, "_blank", features);
   };
 
+  const openAddPanel = () => {
 
+    const width = 1200;
+    const height = 900;
 
-  const handleDuplicate = (order) => {
-    const newOrder = {
-      ...order,
-      id: `COPY-${Date.now()}`,
-      createdAt: new Date().toISOString().split("T")[0],
-    };
-    setOrders((prev) => [...prev, newOrder]);
-  };
+    const left = window.screenX + (window.innerWidth - width) / 2;
+    const top = window.screenY + (window.innerHeight - height) / 2;
 
-  const handleDelete = (id) => {
-    if (window.confirm("Czy na pewno chcesz usunąć to zamówienie?")) {
-      setOrders((prev) => prev.filter((order) => order.id !== id));
+    const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbar=yes`;
+
+    window.open('/zamowienia/add', "_blank", features);
+
+  }
+
+  // Duplikuj zamówienie przez API
+  const handleDuplicate = async (order) => {
+    try {
+      const newOrder = {
+        id: null,
+        documentNumber: `COPY-${order.documentNumber}`,
+        client: { id: order.client.id },
+        status: { id: order.status.id },
+        address: { id: order.address.id },
+
+        orderItem: {
+          ...order.orderItem,
+          id: null,
+          data: {
+            ...order.orderItem.data,
+            id: null,
+          },
+          product: Array.isArray(order.orderItem.product)
+            ? order.orderItem.product.map(p => ({ id: p.id }))
+            : { id: order.orderItem.product.id }
+        },
+
+        data: {
+          ...order.data,
+          id: null,
+          createdAt: new Date().toISOString(),
+        },
+      };
+
+      const { data: createdOrder } = await axios.post(
+        "http://localhost:8080/api/orders",
+        newOrder
+      );
+
+      setOrders((prev) => [...prev, createdOrder]);
+    } catch (err) {
+      console.error("Failed to duplicate order", err);
+      alert("Nie udało się zdublować zamówienia");
     }
   };
+
+
+
+  // Usuń zamówienie przez API
+  const handleDelete = async (id) => {
+    if (window.confirm("Czy na pewno chcesz usunąć to zamówienie?")) {
+      try {
+        await axios.delete(`http://localhost:8080/api/orders/delete/${id}`);
+        setOrders((prev) => prev.filter((order) => order.id !== id));
+
+        // Zamknij modal jeśli usuwane jest wybrane zamówienie
+        if (selectedOrder && selectedOrder.id === id) {
+          closeModal();
+        }
+      } catch (err) {
+        console.error("Failed to delete order", err);
+        alert("Nie udało się usunąć zamówienia");
+      }
+    }
+  };
+
+
+  const handleReload = async () => {
+  try {
+    const { data } = await axios.get("http://localhost:8080/api/orders/all");
+    setOrders(data);
+    setVisibleCount(ITEMS_PER_LOAD); // Resetuj widoczność
+  } catch (err) {
+    console.error("Failed to reload orders", err);
+    alert("Błąd podczas odświeżania zamówień");
+  }
+};
+
 
   return (
     <div className="space-y-6 relative">
@@ -141,7 +227,9 @@ export default function ZamowieniaPage() {
             Przeglądaj i zarządzaj zamówieniami klientów
           </p>
         </div>
-        <button className="px-4 py-2 bg-black text-white rounded-md">
+        <button className="px-4 py-2 bg-black text-white rounded-md"
+          onClick={openAddPanel}
+        >
           + Nowe zamówienie
         </button>
       </div>
@@ -177,6 +265,14 @@ export default function ZamowieniaPage() {
           <option value="price-desc">Zakres cen - malejąco</option>
           <option value="price-asc">Zakres cen - rosnąco</option>
         </select>
+
+        <button
+          onClick={handleReload}
+          title="Odśwież zamówienia"
+          className="p-2 transition-all hover:-rotate-180 hover:text-primaryhover"
+        >
+          <RefreshCcw className="w-5 h-5" />
+        </button>
       </div>
 
       <div className="overflow-x-auto border rounded-md">
@@ -200,15 +296,15 @@ export default function ZamowieniaPage() {
                   className="px-4 py-2 font-medium text-primary cursor-pointer"
                   onClick={() => handleEditClick(order)}
                 >
-                  {order.id}
+                  {order.documentNumber}
                 </td>
                 <td className="px-4 py-2">{order.client.name}</td>
                 <td className="px-4 py-2">{order.status.name}</td>
-                <td className="px-4 py-2">{order.data.createdAt}</td>
-                <td className="px-4 py-2">{order.deliveryDate}</td>
+                <td className="px-4 py-2">{new Date(order.data.createdAt).toLocaleDateString()}</td>
+                <td className="px-4 py-2">{new Date(order.deliveryDate).toLocaleDateString()}</td>
                 <td className="px-4 py-2">{order.paymentStatus}</td>
                 <td className="px-4 py-2">
-                  {parseInt(order.totalPrice).toLocaleString()} PLN
+                  {parseInt(order.price).toLocaleString()} PLN
                 </td>
                 <td className="px-4 py-2 space-x-2">
                   <button
@@ -224,11 +320,8 @@ export default function ZamowieniaPage() {
                     Usuń
                   </button>
                 </td>
-
               </tr>
-
             ))}
-
           </tbody>
         </table>
         <div ref={loaderRef} className="h-6" />
@@ -236,9 +329,12 @@ export default function ZamowieniaPage() {
 
       {selectedOrder && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div ref={modalRef} className="bg-white w-full max-w-4xl rounded-lg shadow-xl p-8 relative space-y-8 max-h-[90vh] overflow-auto">
+          <div
+            ref={modalRef}
+            className="bg-white w-full max-w-4xl rounded-lg shadow-xl p-8 relative space-y-8 max-h-[90vh] overflow-auto"
+          >
             <h2 className="text-2xl font-bold">Dane zamówienia: {selectedOrder.id}</h2>
-            {/* Sekcja: Dane zamówienia */}
+            {/* Dane zamówienia */}
             <table className="min-w-full text-sm border">
               <thead className="bg-gray-200 text-gray-700">
                 <tr>
@@ -254,17 +350,17 @@ export default function ZamowieniaPage() {
                 <tr className="border-t">
                   <td className="px-4 py-2">{selectedOrder.client.name}</td>
                   <td className="px-4 py-2">{selectedOrder.status.name}</td>
-                  <td className="px-4 py-2">{selectedOrder.data.createdAt}</td>
-                  <td className="px-4 py-2">{selectedOrder.deliveryDate}</td>
+                  <td className="px-4 py-2">{new Date(selectedOrder.data.createdAt).toLocaleDateString()}</td>
+                  <td className="px-4 py-2">{new Date(selectedOrder.deliveryDate).toLocaleDateString()}</td>
                   <td className="px-4 py-2">{selectedOrder.paymentStatus}</td>
                   <td className="px-4 py-2">
-                    {parseInt(selectedOrder.totalPrice).toLocaleString()} PLN
+                    {parseInt(selectedOrder.price).toLocaleString()} PLN
                   </td>
                 </tr>
               </tbody>
             </table>
 
-            {/* Sekcja: Adres dostawy (tutaj pokazujemy dane klienta ponownie, bo nie mamy adresu) */}
+            {/* Adres dostawy */}
             <h3 className="text-xl font-bold text-center">Adres dostawy</h3>
             <table className="min-w-full text-sm border">
               <thead className="bg-gray-200 text-gray-700">
@@ -289,13 +385,20 @@ export default function ZamowieniaPage() {
               </tbody>
             </table>
 
-            {/* Sekcja: Produkty (brak danych produktów w strukturze, więc tylko placeholder) */}
+            {/* Produkty */}
             <h3 className="text-xl font-bold text-center">Produkty</h3>
             <div className="grid grid-cols-2 gap-6">
-              {selectedOrder.products.map((product) => (
-                <div key={product.id} className="border rounded-lg shadow-sm hover:shadow-md transition">
+            {selectedOrder.orderItem.product && selectedOrder.orderItem.product.map(product => (
+                <div
+                  key={product.id}
+                  className="border rounded-lg shadow-sm hover:shadow-md transition"
+                >
                   <div className="h-40 bg-gray-200 overflow-hidden">
-                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div className="p-4 space-y-1">
                     <h3 className="font-semibold text-lg">{product.name}</h3>
@@ -308,28 +411,19 @@ export default function ZamowieniaPage() {
                           : "bg-red-100 text-red-800"
                       }`}
                     >
-                      {product.status}
+                      {product.status.name}
                     </span>
                   </div>
                 </div>
               ))}
-            </div>  
+            </div>
 
-            {/*<h3 className="text-xl font-bold text-center">Ruchy magazynowe</h3>*/}
-
-            {/* Przycisk Edycji i Eksportu */}
-            <div className="flex justify-end gap-4">
+            <div className="flex justify-end space-x-3">
               <button
                 onClick={() => openEditor(selectedOrder)}
-                className="px-6 py-2 bg-gray-200 rounded-md text-black font-bold"
+                className="px-4 py-2 bg-primary hover:bg-primaryhover transition-all text-white rounded-md"
               >
                 Edytuj
-              </button>
-              <button
-                onClick={() => alert("Eksport...")}
-                className="px-6 py-2 bg-primary text-white rounded-md font-bold hover:bg-primaryhover transition-all"
-              >
-                Wyeksportuj
               </button>
             </div>
           </div>

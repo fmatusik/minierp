@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import dummyOrders from "../DummyOrders";
+import axios from "axios";
 import {
   User,
   BadgeCheck,
@@ -21,17 +21,39 @@ export default function Page() {
 
   const [order, setOrder] = useState(null);
   const [editedOrder, setEditedOrder] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const found = dummyOrders.find((o) => o.id === orderId);
-    if (found) {
-      setOrder(found);
-      setEditedOrder({ ...found });
-    }
+    if (!orderId) return;
+
+    setLoading(true);
+    axios
+      .get(`http://localhost:8080/api/orders/one/${orderId}`)
+      .then((response) => {
+        setOrder(response.data);
+        setEditedOrder({ ...response.data });
+        setError(null);
+      })
+      .catch((err) => {
+        setError("Nie udało się pobrać zamówienia.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [orderId]);
 
-  if (!order || !editedOrder) {
+  if (loading) {
     return <div className="p-6 text-gray-600">Ładowanie danych zamówienia...</div>;
+  }
+
+  if (error) {
+    return <div className="p-6 text-red-600">{error}</div>;
+  }
+
+  if (!order || !editedOrder) {
+    return null;
   }
 
   const handleChange = (field, value) => {
@@ -46,8 +68,23 @@ export default function Page() {
   };
 
   const handleSave = () => {
-    console.log("Zapisano:", editedOrder);
-    alert("Zamówienie zostało zapisane (symulacja)");
+    setSaving(true);
+    axios
+      .put(`http://localhost:8080/api/orders/${orderId}`, editedOrder)
+      .then(() => {
+        alert("Zamówienie zostało zapisane.");
+        router.push("/orders"); // lub inna ścieżka do listy zamówień
+      })
+      .catch(() => {
+        alert("Błąd podczas zapisywania zamówienia.");
+      })
+      .finally(() => {
+        setSaving(false);
+      });
+  };
+
+  const handleCancel = () => {
+    router.back();
   };
 
   return (
@@ -58,7 +95,6 @@ export default function Page() {
       </div>
 
       <div className="bg-white border shadow-sm rounded-xl p-6 space-y-6 text-black">
-        <div className="grid sm:grid-cols-2 gap-6">
           <div>
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
               <User className="w-4 h-4" />
@@ -244,18 +280,19 @@ export default function Page() {
         <div className="flex justify-end gap-4 pt-6">
           <button
             className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-black rounded-md font-medium transition"
-            onClick={() => close()}
+            onClick={handleCancel}
+            disabled={saving}
           >
             Anuluj
           </button>
           <button
             className="px-6 py-2 bg-black text-white rounded-md font-medium hover:bg-gray-800 transition"
             onClick={handleSave}
+            disabled={saving}
           >
-            Zapisz zmiany
+            {saving ? "Zapisywanie..." : "Zapisz zmiany"}
           </button>
         </div>
       </div>
-    </div>
   );
 }

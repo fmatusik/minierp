@@ -2,10 +2,12 @@ package com.example.backend.mapper;
 
 import com.example.backend.dto.ClientDto;
 import com.example.backend.entity.Client;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class ClientMapper {
 
     public static ClientDto toDto(Client client) {
@@ -14,7 +16,7 @@ public class ClientMapper {
                 .name(client.getName())
                 .data(client.getData())
                 .notes(client.getNotes())
-                .clientContact(client.getClientContacts() != null
+                .clientContactsDto(client.getClientContacts() != null
                         ? ClientContactMapper.toDtoList(client.getClientContacts()) : null)
                 .build();
     }
@@ -25,8 +27,8 @@ public class ClientMapper {
                 .name(clientDto.getName())
                 .data(clientDto.getData())
                 .notes(clientDto.getNotes())
-                .clientContacts(clientDto.getClientContact() != null
-                        ? ClientContactMapper.toEntityList(clientDto.getClientContact())
+                .clientContacts(clientDto.getClientContactsDto() != null
+                        ? ClientContactMapper.toEntityList(clientDto.getClientContactsDto())
                         : null)
                 .build();
     }

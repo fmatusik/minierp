@@ -13,34 +13,36 @@ public class OrderMapper {
     public static OrderDto toDto(Order order) {
         return OrderDto.builder()
                 .id(order.getId())
-                .client(order.getClient() != null ? ClientMapper.toDto(order.getClient()) : null)
-                .orderStatus(order.getOrderStatus())
+                .clientDto(order.getClient() != null ? ClientMapper.toDto(order.getClient()) : null)
+                .status(order.getStatus())
                 .data(order.getData())
                 .price(order.getPrice())
                 .paymentStatus(order.getPaymentStatus())
-                .address(order.getAddress() != null ? AddressMapper.toDto(order.getAddress()) : null)
+                .addressDto(order.getAddress() != null ? AddressMapper.toDto(order.getAddress()) : null)
                 .deliveryDate(order.getDeliveryDate())
                 .documentNumber(order.getDocumentNumber())
                 .salePlace(order.getSalePlace())
-                .stockMovements(order.getStockMovements() != null
+                .stockMovementsDto(order.getStockMovements() != null
                         ? StockMovementMapper.toDtoList(order.getStockMovements()) : null)
+                .orderItemDto(order.getOrderItem() != null ? OrderItemMapper.toDto(order.getOrderItem()) : null)
                 .build();
     }
 
     public static Order toEntity(OrderDto orderDto) {
         return Order.builder()
                 .id(orderDto.getId())
-                .client(orderDto.getClient() != null ? ClientMapper.toEntity(orderDto.getClient()) : null)
-                .orderStatus(orderDto.getOrderStatus())
+                .client(orderDto.getClientDto() != null ? ClientMapper.toEntity(orderDto.getClientDto()) : null)
+                .status(orderDto.getStatus())
                 .data(orderDto.getData())
                 .price(orderDto.getPrice())
                 .paymentStatus(orderDto.getPaymentStatus())
-                .address(orderDto.getAddress() != null ? AddressMapper.toEntity(orderDto.getAddress()) : null)
+                .address(orderDto.getAddressDto() != null ? AddressMapper.toEntity(orderDto.getAddressDto()) : null)
                 .deliveryDate(orderDto.getDeliveryDate())
                 .documentNumber(orderDto.getDocumentNumber())
                 .salePlace(orderDto.getSalePlace())
-                .stockMovements(orderDto.getStockMovements() != null
-                        ? StockMovementMapper.toEntityList(orderDto.getStockMovements()) : null)
+                .stockMovements(orderDto.getStockMovementsDto() != null
+                        ? StockMovementMapper.toEntityList(orderDto.getStockMovementsDto()) : null)
+                .orderItem(orderDto.getOrderItemDto() != null ? OrderItemMapper.toEntity(orderDto.getOrderItemDto()) : null)
                 .build();
     }
 

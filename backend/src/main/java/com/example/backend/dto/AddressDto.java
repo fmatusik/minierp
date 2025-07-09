@@ -19,6 +19,8 @@ public class AddressDto {
     private String postalCode;
     private String city;
     private String province;
+    private String street;
     private Data data;
-    private ClientContactDto clientContact;
+    private ClientDto clientDto;
+
 }

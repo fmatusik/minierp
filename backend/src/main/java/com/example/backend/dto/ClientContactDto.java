@@ -19,8 +19,7 @@ public class ClientContactDto {
     private String email;
     private String phoneNumber;
     private String position;
-    private List<AddressDto> addresses;
-    private ClientDto client;
     private Data data;
+    private ClientDto clientDto;
 
 }

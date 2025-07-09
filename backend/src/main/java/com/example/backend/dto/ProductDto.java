@@ -20,8 +20,8 @@ public class ProductDto {
     private String sku;
     private Float weight;
     private Float dimensions;
-    private StatusDto status;
-    private List<CategoryDto> categories;
-    private List<ImageDto> images;
-    private List<StockLevelDto> stockLevels;
+    private StatusDto statusDto;
+    private List<CategoryDto> categoriesDto;
+    private List<ImageDto> imagesDto;
+    private List<StockLevelDto> stockLevelsDto;
 }

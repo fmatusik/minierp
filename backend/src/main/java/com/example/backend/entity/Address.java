@@ -35,10 +35,12 @@ public class Address {
     @Column(nullable = false, name = "province")
     private String province;
 
+    @Column(nullable = false, name="streen")
+    private String street;
 
     @ManyToOne
-    @JoinColumn(name = "\"clientContact\"", nullable = true)
-    private ClientContact clientContact;
+    @JoinColumn(name = "\"client\"", nullable = true)
+    private Client client;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "data")

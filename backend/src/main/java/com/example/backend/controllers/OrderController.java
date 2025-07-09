@@ -26,6 +26,21 @@ public class OrderController {
         return orderMapper.toDtoList(orderRepository.findAll());
     }
 
+    @GetMapping("/one/{id}")
+    public OrderDto getOrderById(@PathVariable Long id) {
+        return orderMapper.toDto(orderRepository.findById(id).get());
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public void deleteOrder(@PathVariable Long id) {
+        orderRepository.deleteById(id);
+    }
+
+    @PutMapping("/update/{id}")
+    public OrderDto updateOrder(@PathVariable Long id, @RequestBody OrderDto orderDto) {
+        return orderMapper.toDto(orderRepository.save(orderMapper.toEntity(orderDto)));
+    }
+
     @PostMapping
     public OrderDto addOrder(@RequestBody OrderDto orderDto) {
         return orderMapper.toDto(orderRepository.save(orderMapper.toEntity(orderDto)));

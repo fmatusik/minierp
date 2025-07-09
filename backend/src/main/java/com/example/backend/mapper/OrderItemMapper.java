@@ -11,8 +11,7 @@ public class OrderItemMapper {
     public static OrderItemDto toDto(OrderItem orderItem) {
         return OrderItemDto.builder()
                 .id(orderItem.getId())
-                .order(orderItem.getOrder()) // Zakładam, że to DTO albo odpowiednia encja
-                .product(orderItem.getProduct() != null ? ProductMapper.toDto(orderItem.getProduct()) : null)
+                .productDto(orderItem.getProduct() != null ? ProductMapper.toDto(orderItem.getProduct()) : null)
                 .quantity(orderItem.getQuantity())
                 .price(orderItem.getPrice())
                 .data(orderItem.getData())
@@ -22,8 +21,7 @@ public class OrderItemMapper {
     public static OrderItem toEntity(OrderItemDto orderItemDto) {
         return OrderItem.builder()
                 .id(orderItemDto.getId())
-                .order(orderItemDto.getOrder()) // Zakładam, że to encja, jeśli nie – potrzebny osobny mapper
-                .product(orderItemDto.getProduct() != null ? ProductMapper.toEntity(orderItemDto.getProduct()) : null)
+                .product(orderItemDto.getProductDto() != null ? ProductMapper.toEntity(orderItemDto.getProductDto()) : null)
                 .quantity(orderItemDto.getQuantity())
                 .price(orderItemDto.getPrice())
                 .data(orderItemDto.getData())

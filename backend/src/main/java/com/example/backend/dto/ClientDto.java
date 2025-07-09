@@ -23,6 +23,9 @@ public class ClientDto {
 
     private String notes;
 
-    private List<ClientContactDto> clientContact;
+    private List<ClientContactDto> clientContactsDto;
+
+    private List<AddressDto> addressesDto;
+
 
 }

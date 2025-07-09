@@ -7,14 +7,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 
 @AllArgsConstructor
 @Getter
 @Builder
 public class OrderItemDto {
     private Long id;
-    private Order order;
-    private ProductDto product;
+    private ProductDto productDto;
     private Long quantity;
     private Long price;
     private Data data;

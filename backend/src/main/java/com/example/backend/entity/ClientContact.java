@@ -33,10 +33,6 @@ public class ClientContact {
     @Column(nullable = false)
     private String position;
 
-
-    @OneToMany(mappedBy = "clientContact", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Address> addresses;
-
     @ManyToOne
     @JoinColumn(name = "client", nullable = false)
     private Client client;

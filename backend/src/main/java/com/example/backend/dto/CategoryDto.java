@@ -20,6 +20,6 @@ public class CategoryDto {
 
     private Data data;
 
-    private ProductDto product;
+    private ProductDto productDto;
 
 }

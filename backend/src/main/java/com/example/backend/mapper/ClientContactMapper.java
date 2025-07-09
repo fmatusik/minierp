@@ -1,6 +1,7 @@
 package com.example.backend.mapper;
 
 import com.example.backend.dto.ClientContactDto;
+import com.example.backend.entity.Client;
 import com.example.backend.entity.ClientContact;
 
 import java.util.List;
@@ -16,10 +17,7 @@ public class ClientContactMapper {
                 .email(clientContact.getEmail())
                 .phoneNumber(clientContact.getPhoneNumber())
                 .position(clientContact.getPosition())
-                .addresses(clientContact.getAddresses() != null
-                        ? AddressMapper.toDtoList(clientContact.getAddresses()) : null)
-                .client(clientContact.getClient() != null
-                        ? ClientMapper.toDto(clientContact.getClient()) : null)
+                .clientDto(clientContact.getClient() != null ? ClientMapper.toDto(clientContact.getClient()) : null)
                 .data(clientContact.getData())
                 .build();
     }
@@ -32,10 +30,7 @@ public class ClientContactMapper {
                 .email(clientContactDto.getEmail())
                 .phoneNumber(clientContactDto.getPhoneNumber())
                 .position(clientContactDto.getPosition())
-                .addresses(clientContactDto.getAddresses() != null
-                        ? AddressMapper.toEntityList(clientContactDto.getAddresses()) : null)
-                .client(clientContactDto.getClient() != null
-                        ? ClientMapper.toEntity(clientContactDto.getClient()) : null)
+                .client(clientContactDto.getClientDto() != null ? ClientMapper.toEntity(clientContactDto.getClientDto()) : null)
                 .data(clientContactDto.getData())
                 .build();
     }

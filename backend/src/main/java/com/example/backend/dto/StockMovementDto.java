@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 @Getter
 public class StockMovementDto {
     private Long id;
-    private WarehouseDto sourceWarehouse;
-    private WarehouseDto targetWarehouse;
-    private OrderDto relatedOrder;
+    private WarehouseDto sourceWarehouseDto;
+    private WarehouseDto targetWarehouseDto;
+    private OrderDto relatedOrderDto;
     private String note;
     private Data data;
 }

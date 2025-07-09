@@ -11,10 +11,10 @@ public class StockMovementItemMapper {
     public static StockMovementItemDto toDto(StockMovementItem stockMovementItem) {
         return StockMovementItemDto.builder()
                 .id(stockMovementItem.getId())
-                .stockMovement(stockMovementItem.getStockMovement() != null
+                .stockMovementDto(stockMovementItem.getStockMovement() != null
                         ? StockMovementMapper.toDto(stockMovementItem.getStockMovement())
                         : null)
-                .product(stockMovementItem.getProduct() != null
+                .productDto(stockMovementItem.getProduct() != null
                         ? ProductMapper.toDto(stockMovementItem.getProduct())
                         : null)
                 .quantity(stockMovementItem.getQuantity())
@@ -25,11 +25,11 @@ public class StockMovementItemMapper {
     public static StockMovementItem toEntity(StockMovementItemDto stockMovementItemDto) {
         return StockMovementItem.builder()
                 .id(stockMovementItemDto.getId())
-                .stockMovement(stockMovementItemDto.getStockMovement() != null
-                        ? StockMovementMapper.toEntity(stockMovementItemDto.getStockMovement())
+                .stockMovement(stockMovementItemDto.getStockMovementDto() != null
+                        ? StockMovementMapper.toEntity(stockMovementItemDto.getStockMovementDto())
                         : null)
-                .product(stockMovementItemDto.getProduct() != null
-                        ? ProductMapper.toEntity(stockMovementItemDto.getProduct())
+                .product(stockMovementItemDto.getProductDto() != null
+                        ? ProductMapper.toEntity(stockMovementItemDto.getProductDto())
                         : null)
                 .quantity(stockMovementItemDto.getQuantity())
                 .data(stockMovementItemDto.getData())

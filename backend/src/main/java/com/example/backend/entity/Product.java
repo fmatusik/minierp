@@ -59,4 +59,10 @@ public class Product {
     @OneToMany(mappedBy = "id")
     private List<StockLevel> stockLevels;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "\"orderItems\"")
+    private List<OrderItem> orderItems;
+
+
+
 }

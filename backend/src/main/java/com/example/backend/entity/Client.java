@@ -30,11 +30,16 @@ public class Client {
 
     private String notes;
 
-
-
     //client contact
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClientContact> clientContacts;
+
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Address> addresses;
+
+    @ManyToOne
+    @JoinColumn( name = "client" )
+    private Client client;
 
 
 }

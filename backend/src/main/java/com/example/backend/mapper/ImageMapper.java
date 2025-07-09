@@ -15,7 +15,7 @@ public class ImageMapper {
                 .alt(image.getAlt())
                 .size(image.getSize())
                 .isThumbnail(image.getIsThumbnail())
-                .product(image.getProduct() != null ? ProductMapper.toDto(image.getProduct()) : null)
+                .productDto(image.getProduct() != null ? ProductMapper.toDto(image.getProduct()) : null)
                 .data(image.getData())
                 .build();
     }
@@ -27,7 +27,7 @@ public class ImageMapper {
                 .alt(imageDto.getAlt())
                 .size(imageDto.getSize())
                 .isThumbnail(imageDto.getIsThumbnail())
-                .product(imageDto.getProduct() != null ? ProductMapper.toEntity(imageDto.getProduct()) : null)
+                .product(imageDto.getProductDto() != null ? ProductMapper.toEntity(imageDto.getProductDto()) : null)
                 .data(imageDto.getData())
                 .build();
     }
