@@ -21,7 +21,7 @@ const initialMoves = [
   },
   {
     id: 3,
-    product: "Monitor Dell 27\"",
+    product: 'Monitor Dell 27"',
     type: "przesunięcie",
     quantity: -3,
     sourceWarehouse: "Magazyn Warszawa",
@@ -36,7 +36,10 @@ export default function StockMovesPage() {
   const [selectedType, setSelectedType] = useState("");
   const [selectedWarehouse, setSelectedWarehouse] = useState("");
   const [editingMove, setEditingMove] = useState(null);
+  const [selectedMove, setSelectedMove] = useState(null);
+
   const modalRef = useRef(null);
+  const detailsModalRef = useRef(null);
 
   const uniqueWarehouses = [
     ...new Set(
@@ -81,7 +84,7 @@ export default function StockMovesPage() {
     setEditingMove({ ...move, isDuplicate: true });
   };
 
-  // Close modal when clicking outside
+  // Zamknij modal edycji po kliknięciu poza nim
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (modalRef.current && !modalRef.current.contains(e.target)) {
@@ -95,6 +98,25 @@ export default function StockMovesPage() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [editingMove]);
+
+  // Zamknij modal szczegółów po kliknięciu poza nim
+  useEffect(() => {
+    const handleClickOutsideDetails = (e) => {
+      if (
+        selectedMove &&
+        detailsModalRef.current &&
+        !detailsModalRef.current.contains(e.target)
+      ) {
+        setSelectedMove(null);
+      }
+    };
+    if (selectedMove) {
+      document.addEventListener("mousedown", handleClickOutsideDetails);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutsideDetails);
+    };
+  }, [selectedMove]);
 
   return (
     <div className="space-y-6">
@@ -160,7 +182,12 @@ export default function StockMovesPage() {
           <tbody>
             {filtered.map((move, idx) => (
               <tr key={move.id} className="border-t">
-                <td className="px-4 py-3 text-primary font-semibold">MOV-{String(idx).padStart(3, "0")}</td>
+                <td
+                  className="px-4 py-3 text-primary font-semibold cursor-pointer hover:underline"
+                  onClick={() => setSelectedMove(move)}
+                >
+                  MOV-{String(idx).padStart(3, "0")}
+                </td>
                 <td className="px-4 py-3">{move.product}</td>
                 <td className="px-4 py-3">
                   <span
@@ -279,10 +306,36 @@ export default function StockMovesPage() {
                 Anuluj
               </button>
               <button
-                className="px-4 py-2 bg-primary hover:bg-primaryhover transition-all text-white rounded"
+                className="px-4 py-2 bg-black text-white rounded"
                 onClick={saveEdit}
               >
                 Zapisz
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Details Modal */}
+      {selectedMove && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div
+            ref={detailsModalRef}
+            className="bg-white p-6 rounded-md w-full max-w-md space-y-4"
+          >
+            <h2 className="text-xl font-semibold">Szczegóły ruchu magazynowego</h2>
+            <div><strong>Produkt:</strong> {selectedMove.product}</div>
+            <div><strong>Typ:</strong> {selectedMove.type}</div>
+            <div><strong>Ilość:</strong> {selectedMove.quantity}</div>
+            <div><strong>Magazyn źródłowy:</strong> {selectedMove.sourceWarehouse || "-"}</div>
+            <div><strong>Magazyn docelowy:</strong> {selectedMove.targetWarehouse || "-"}</div>
+            <div><strong>Data:</strong> {selectedMove.date}</div>
+            <div className="flex justify-end pt-4">
+              <button
+                className="px-4 py-2 bg-gray-200 rounded"
+                onClick={() => setSelectedMove(null)}
+              >
+                Zamknij
               </button>
             </div>
           </div>

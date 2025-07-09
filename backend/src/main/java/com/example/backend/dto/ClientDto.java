@@ -23,8 +23,6 @@ public class ClientDto {
 
     private String notes;
 
-    private Status status;
-
     private List<ClientContactDto> clientContact;
 
 }

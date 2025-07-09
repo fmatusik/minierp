@@ -14,7 +14,6 @@ public class ClientMapper {
                 .name(client.getName())
                 .data(client.getData())
                 .notes(client.getNotes())
-                .status(client.getStatus())
                 .clientContact(client.getClientContacts() != null
                         ? ClientContactMapper.toDtoList(client.getClientContacts()) : null)
                 .build();
@@ -26,7 +25,6 @@ public class ClientMapper {
                 .name(clientDto.getName())
                 .data(clientDto.getData())
                 .notes(clientDto.getNotes())
-                .status(clientDto.getStatus())
                 .clientContacts(clientDto.getClientContact() != null
                         ? ClientContactMapper.toEntityList(clientDto.getClientContact())
                         : null)

@@ -30,10 +30,7 @@ public class Client {
 
     private String notes;
 
-    //status
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "status")
-    private Status status;
+
 
     //client contact
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
