@@ -1,7 +1,12 @@
 package com.example.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 
 @Builder
@@ -24,8 +29,9 @@ public class Category {
     @JoinColumn(name = "data")
     private Data data;
 
-    @ManyToOne
-    @JoinColumn(name="product")
-    private Product product;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Product> products;
 
 }

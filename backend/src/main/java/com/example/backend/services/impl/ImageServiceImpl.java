@@ -2,25 +2,30 @@ package com.example.backend.services.impl;
 
 import com.example.backend.dto.ImageDto;
 import com.example.backend.entity.Image;
+import com.example.backend.entity.Product;
 import com.example.backend.mapper.ImageMapper;
 import com.example.backend.repository.ImageRepository;
+import com.example.backend.repository.ProductRepository;
 import com.example.backend.services.ImageService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
+
 @Service
+@AllArgsConstructor
 public class ImageServiceImpl implements ImageService {
 
     private final ImageRepository imageRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    public ImageServiceImpl(ImageRepository imageRepository) {
-        this.imageRepository = imageRepository;
-    }
+
 
     @Override
     public ImageDto addImage(ImageDto imageDto) {
-        Image imageEntity = ImageMapper.toEntity(imageDto);
+        Product product = productRepository.findById( (long) imageDto.getProductId());
+        Image imageEntity = ImageMapper.toEntity(imageDto, product);
         Image savedImage = imageRepository.save(imageEntity);
         return ImageMapper.toDto(savedImage);
     }

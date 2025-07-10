@@ -13,7 +13,7 @@ public class CategoryMapper {
                 .id(dto.getId())
                 .name(dto.getName())
                 .data(dto.getData())
-                .product(dto.getProductDto() != null ? ProductMapper.toEntity(dto.getProductDto()) : null)
+                .products(dto.getProductsDto() != null ? ProductMapper.toEntityListWithoutCategory(dto.getProductsDto()) : null)
                 .build();
     }
 
@@ -22,7 +22,7 @@ public class CategoryMapper {
                 .id(category.getId())
                 .name(category.getName())
                 .data(category.getData())
-                .productDto(category.getProduct() != null ? ProductMapper.toDto(category.getProduct()) : null)
+                .productsDto(category.getProducts() != null ? ProductMapper.toDtoList(category.getProducts()) : null)
                 .build();
     }
 

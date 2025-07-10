@@ -2,6 +2,7 @@ package com.example.backend.mapper;
 
 import com.example.backend.dto.OrderItemDto;
 import com.example.backend.entity.OrderItem;
+import com.example.backend.entity.Product;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,10 +19,10 @@ public class OrderItemMapper {
                 .build();
     }
 
-    public static OrderItem toEntity(OrderItemDto orderItemDto) {
+    public static OrderItem toEntity(OrderItemDto orderItemDto, Product product) {
         return OrderItem.builder()
                 .id(orderItemDto.getId())
-                .product(orderItemDto.getProductDto() != null ? ProductMapper.toEntity(orderItemDto.getProductDto()) : null)
+                .product(product)
                 .quantity(orderItemDto.getQuantity())
                 .price(orderItemDto.getPrice())
                 .data(orderItemDto.getData())
@@ -34,9 +35,20 @@ public class OrderItemMapper {
                 .collect(Collectors.toList());
     }
 
+
+
+    public static OrderItem toEntityWithoutProduct(OrderItemDto orderItemDto) {
+        return OrderItem.builder()
+                .id(orderItemDto.getId())
+                .quantity(orderItemDto.getQuantity())
+                .price(orderItemDto.getPrice())
+                .data(orderItemDto.getData())
+                .build();
+    }
+
     public static List<OrderItem> toEntityList(List<OrderItemDto> dtoList) {
         return dtoList.stream()
-                .map(OrderItemMapper::toEntity)
+                .map(OrderItemMapper::toEntityWithoutProduct)
                 .collect(Collectors.toList());
     }
 }

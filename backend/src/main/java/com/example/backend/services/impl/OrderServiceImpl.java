@@ -19,10 +19,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    @Override
+    /*@Override
     public OrderDto addOrder(OrderDto orderDto) {
         Order orderEnity = OrderMapper.toEntity(orderDto);
         orderEnity = orderRepository.save(orderEnity);
         return OrderMapper.toDto(orderEnity);
-    }
+    }*/
 }

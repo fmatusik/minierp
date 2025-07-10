@@ -9,7 +9,7 @@ public interface AddressService {
     //tutaj takie rzeczy z logiką a takie proste zapytania w stylu findById wrzucać do Repository
     //bardziej chodzi ze nie tu logika ale w impl (ale no wiadomo)
     //jak nie ma gotowca to w repo tworze własne rzeczy
-    AddressDto addAddress(AddressDto  addressDto);
+    //AddressDto addAddress(AddressDto  addressDto);
 
 
 

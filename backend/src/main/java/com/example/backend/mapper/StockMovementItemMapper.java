@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class StockMovementItemMapper {
-
+/*
     public static StockMovementItemDto toDto(StockMovementItem stockMovementItem) {
         return StockMovementItemDto.builder()
                 .id(stockMovementItem.getId())
@@ -46,5 +46,5 @@ public class StockMovementItemMapper {
         return dtoList.stream()
                 .map(StockMovementItemMapper::toEntity)
                 .collect(Collectors.toList());
-    }
+    }*/
 }

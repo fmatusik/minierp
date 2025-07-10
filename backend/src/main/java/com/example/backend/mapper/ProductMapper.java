@@ -1,6 +1,8 @@
 package com.example.backend.mapper;
 
+import com.example.backend.dto.CategoryDto;
 import com.example.backend.dto.ProductDto;
+import com.example.backend.entity.Category;
 import com.example.backend.entity.Product;
 import org.springframework.stereotype.Component;
 
@@ -20,11 +22,8 @@ public class ProductMapper {
                 .notes(product.getNotes())
                 .sku(product.getSku())
                 .weight(product.getWeight())
-                .description(product.getDescription())
                 .statusDto(product.getStatus() != null ? StatusMapper.toDto(product.getStatus()) : null)
-                .categoriesDto(product.getCategories() != null
-                        ? CategoryMapper.toDtoList(product.getCategories())
-                        : null)
+                .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
                 .imagesDto(product.getImages() != null
                         ? ImageMapper.toDtoList(product.getImages())
                         : null)
@@ -34,7 +33,7 @@ public class ProductMapper {
                 .build();
     }
 
-    public static Product toEntity(ProductDto productDto) {
+    public static Product toEntity(ProductDto productDto, Category category) {
         return Product.builder()
                 .id(productDto.getId())
                 .name(productDto.getName())
@@ -46,9 +45,7 @@ public class ProductMapper {
                 .weight(productDto.getWeight())
                 .dimensions(productDto.getDimensions())
                 .status(productDto.getStatusDto() != null ? StatusMapper.toEntity(productDto.getStatusDto()) : null)
-                .categories(productDto.getCategoriesDto() != null
-                        ? CategoryMapper.toEntityList(productDto.getCategoriesDto())
-                        : null)
+                .category(category)
                 .images(productDto.getImagesDto() != null
                         ? ImageMapper.toEntityList(productDto.getImagesDto())
                         : null)
@@ -64,9 +61,37 @@ public class ProductMapper {
                 .collect(Collectors.toList());
     }
 
-    public static List<Product> toEntityList(List<ProductDto> dtoList) {
+    public static List<Product> toEntityList(List<ProductDto> dtoList, Category category) {
         return dtoList.stream()
-                .map(ProductMapper::toEntity)
+                .map(dto -> toEntity(dto, category))
+                .collect(Collectors.toList());
+    }
+
+    public static Product toEntityWithoutCategory(ProductDto productDto) {
+        return Product.builder()
+                .id(productDto.getId())
+                .name(productDto.getName())
+                .price(productDto.getPrice())
+                .data(productDto.getData())
+                .description(productDto.getDescription())
+                .notes(productDto.getNotes())
+                .sku(productDto.getSku())
+                .weight(productDto.getWeight())
+                .dimensions(productDto.getDimensions())
+                .status(productDto.getStatusDto() != null ? StatusMapper.toEntity(productDto.getStatusDto()) : null)
+                .images(productDto.getImagesDto() != null
+                        ? ImageMapper.toEntityList(productDto.getImagesDto())
+                        : null)
+                .stockLevels(productDto.getStockLevelsDto() != null
+                        ? StockLevelMapper.toEntityList(productDto.getStockLevelsDto())
+                        : null)
+                .category(null) // Avoids circular reference
+                .build();
+    }
+
+    public static List<Product> toEntityListWithoutCategory(List<ProductDto> dtoList) {
+        return dtoList.stream()
+                .map(ProductMapper::toEntityWithoutCategory)
                 .collect(Collectors.toList());
     }
 }

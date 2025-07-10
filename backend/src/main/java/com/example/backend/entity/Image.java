@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,8 +29,9 @@ public class Image {
     @Column(nullable = false)
     private Boolean isThumbnail;
 
-    @ManyToOne
-    @JoinColumn(name = "product")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    @JsonBackReference
     private Product product;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

@@ -17,12 +17,13 @@ public class ClientContactMapper {
                 .email(clientContact.getEmail())
                 .phoneNumber(clientContact.getPhoneNumber())
                 .position(clientContact.getPosition())
-                .clientDto(clientContact.getClient() != null ? ClientMapper.toDto(clientContact.getClient()) : null)
+                .clientId(clientContact.getClient() != null ? clientContact.getClient().getId() : null)
                 .data(clientContact.getData())
                 .build();
     }
 
-    public static ClientContact toEntity(ClientContactDto clientContactDto) {
+    public static ClientContact toEntity(ClientContactDto clientContactDto, Client client) {
+
         return ClientContact.builder()
                 .id(clientContactDto.getId())
                 .firstName(clientContactDto.getFirstName())
@@ -30,7 +31,7 @@ public class ClientContactMapper {
                 .email(clientContactDto.getEmail())
                 .phoneNumber(clientContactDto.getPhoneNumber())
                 .position(clientContactDto.getPosition())
-                .client(clientContactDto.getClientDto() != null ? ClientMapper.toEntity(clientContactDto.getClientDto()) : null)
+                .client(client)
                 .data(clientContactDto.getData())
                 .build();
     }
@@ -41,9 +42,4 @@ public class ClientContactMapper {
                 .collect(Collectors.toList());
     }
 
-    public static List<ClientContact> toEntityList(List<ClientContactDto> dtoList) {
-        return dtoList.stream()
-                .map(ClientContactMapper::toEntity)
-                .collect(Collectors.toList());
-    }
 }

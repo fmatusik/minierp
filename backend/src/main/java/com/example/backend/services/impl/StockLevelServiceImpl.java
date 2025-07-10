@@ -20,10 +20,10 @@ public class StockLevelServiceImpl implements StockLevelService {
 
 
 
-    @Override
+    /*@Override
     public StockLevelDto addStockLevel(StockLevelDto stockLevelDto) {
         StockLevel stockLevelEntity = StockLevelMapper.toEntity(stockLevelDto);
         StockLevel stockLevelSaved = stockLevelRepository.save(stockLevelEntity);
         return StockLevelMapper.toDto(stockLevelSaved);
-    }
+    }*/
 }

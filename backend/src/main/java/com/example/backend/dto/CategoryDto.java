@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
 @Getter
@@ -20,6 +21,6 @@ public class CategoryDto {
 
     private Data data;
 
-    private ProductDto productDto;
+    private List<ProductDto> productsDto;
 
 }

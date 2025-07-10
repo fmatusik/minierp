@@ -21,6 +21,6 @@ public class AddressDto {
     private String province;
     private String street;
     private Data data;
-    private ClientDto clientDto;
+    private Long clientId;
 
 }

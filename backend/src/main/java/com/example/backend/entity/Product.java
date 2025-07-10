@@ -1,5 +1,7 @@
 package com.example.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -50,17 +52,21 @@ public class Product {
     @JoinColumn(name = "status")
     private Status status;
 
-    @OneToMany(mappedBy = "id")
-    private List<Category> categories;
+    @ManyToOne
+    @JoinColumn(name="\"categoryId\"")
+    @JsonBackReference
+    private Category category;
 
-    @OneToMany(mappedBy = "id")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Image> images;
 
-    @OneToMany(mappedBy = "id")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<StockLevel> stockLevels;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "\"orderItems\"")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<OrderItem> orderItems;
 
 

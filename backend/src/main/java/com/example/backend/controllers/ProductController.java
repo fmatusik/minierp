@@ -20,7 +20,7 @@ public class ProductController {
         this.productMapper = productMapper;
     }
 
-    @GetMapping("/basic")
+    /*@GetMapping("/basic")
     public List<ProductDto> getBasicProductInfo() {
         return productMapper.toDtoList(productRepository.findAll());
     }
@@ -30,5 +30,5 @@ public class ProductController {
         Product product = productMapper.toEntity(productDto);
         Product saved = productRepository.save(product);
         return productMapper.toDto(saved);
-    }
+    }*/
 }

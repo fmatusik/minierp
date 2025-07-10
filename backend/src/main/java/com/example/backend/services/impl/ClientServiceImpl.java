@@ -19,10 +19,10 @@ public class ClientServiceImpl implements ClientService {
         this.clientRepository = clientRepository;
     }
 
-    @Override
+    /*@Override
     public ClientDto addClient(ClientDto clientDto) {
         Client clientEnity = ClientMapper.toEntity(clientDto);
         Client savedClient = clientRepository.save(clientEnity);
         return ClientMapper.toDto(savedClient);
-    }
+    }*/
 }

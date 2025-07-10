@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -32,14 +33,13 @@ public class Client {
 
     //client contact
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<ClientContact> clientContacts;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Address> addresses;
 
-    @ManyToOne
-    @JoinColumn( name = "client" )
-    private Client client;
 
 
 }

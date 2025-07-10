@@ -17,10 +17,10 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
 
-    @Override
+    /*@Override
     public WarehouseDto addWarehouse(WarehouseDto warehouseDto) {
         Warehouse warehouseEntity = WarehouseMapper.toEntity(warehouseDto);
         Warehouse warehouseSaved = warehouseRepository.save(warehouseEntity);
         return WarehouseMapper.toDto(warehouseSaved);
-    }
+    }*/
 }

@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,8 +20,9 @@ public class OrderItem {
     private Long id;
 
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "\"orderItems\"")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    @JsonBackReference
     private Product product;
 
     @Column(nullable = false)

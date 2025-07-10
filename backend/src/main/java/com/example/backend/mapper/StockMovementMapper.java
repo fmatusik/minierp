@@ -1,6 +1,7 @@
 package com.example.backend.mapper;
 
 import com.example.backend.dto.StockMovementDto;
+import com.example.backend.entity.Order;
 import com.example.backend.entity.StockMovement;
 
 import java.util.List;
@@ -22,15 +23,14 @@ public class StockMovementMapper {
                 .build();
     }
 
-    public static StockMovement toEntity(StockMovementDto stockMovementDto) {
+    public static StockMovement toEntity(StockMovementDto stockMovementDto, Order relatedOrder) {
         return StockMovement.builder()
                 .id(stockMovementDto.getId())
                 .sourceWarehouse(stockMovementDto.getSourceWarehouseDto() != null
                         ? WarehouseMapper.toEntity(stockMovementDto.getSourceWarehouseDto()) : null)
                 .targetWarehouse(stockMovementDto.getTargetWarehouseDto() != null
                         ? WarehouseMapper.toEntity(stockMovementDto.getTargetWarehouseDto()) : null)
-                .relatedOrder(stockMovementDto.getRelatedOrderDto() != null
-                        ? OrderMapper.toEntity(stockMovementDto.getRelatedOrderDto()) : null)
+                .relatedOrder(relatedOrder)
                 .note(stockMovementDto.getNote())
                 .data(stockMovementDto.getData())
                 .build();
@@ -44,7 +44,19 @@ public class StockMovementMapper {
 
     public static List<StockMovement> toEntityList(List<StockMovementDto> dtoList) {
         return dtoList.stream()
-                .map(StockMovementMapper::toEntity)
+                .map(StockMovementMapper::toEntityWithoutOrder)
                 .collect(Collectors.toList());
+    }
+
+    public static StockMovement toEntityWithoutOrder(StockMovementDto stockMovementDto) {
+        return StockMovement.builder()
+                .id(stockMovementDto.getId())
+                .sourceWarehouse(stockMovementDto.getSourceWarehouseDto() != null
+                        ? WarehouseMapper.toEntity(stockMovementDto.getSourceWarehouseDto()) : null)
+                .targetWarehouse(stockMovementDto.getTargetWarehouseDto() != null
+                        ? WarehouseMapper.toEntity(stockMovementDto.getTargetWarehouseDto()) : null)
+                .note(stockMovementDto.getNote())
+                .data(stockMovementDto.getData())
+                .build();
     }
 }

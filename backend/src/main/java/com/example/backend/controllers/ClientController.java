@@ -4,6 +4,7 @@ import com.example.backend.dto.ClientDto;
 import com.example.backend.mapper.ClientMapper;
 import com.example.backend.repository.ClientRepository;
 import com.example.backend.services.ClientService;
+import lombok.NoArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

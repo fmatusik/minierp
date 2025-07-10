@@ -19,10 +19,10 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
 
-    @Override
+    /*@Override
     public OrderItemDto addOrderItem(OrderItemDto orderItemDto) {
         OrderItem orderItemEntity = OrderItemMapper.toEntity(orderItemDto);
         OrderItem orderItemSaved = orderItemRepository.save(orderItemEntity);
         return OrderItemMapper.toDto(orderItemSaved);
-    }
+    }*/
 }

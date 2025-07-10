@@ -5,5 +5,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface ClientContactService {
-    ClientContactDto addClientContact(ClientContactDto clientContactDto);
+    //ClientContactDto addClientContact(ClientContactDto clientContactDto);
 }

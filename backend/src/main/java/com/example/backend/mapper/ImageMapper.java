@@ -2,6 +2,7 @@ package com.example.backend.mapper;
 
 import com.example.backend.dto.ImageDto;
 import com.example.backend.entity.Image;
+import com.example.backend.entity.Product;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,19 +16,19 @@ public class ImageMapper {
                 .alt(image.getAlt())
                 .size(image.getSize())
                 .isThumbnail(image.getIsThumbnail())
-                .productDto(image.getProduct() != null ? ProductMapper.toDto(image.getProduct()) : null)
+                .productId(image.getProduct() != null ? ProductMapper.toDto(image.getProduct()).getId() : null)
                 .data(image.getData())
                 .build();
     }
 
-    public static Image toEntity(ImageDto imageDto) {
+    public static Image toEntity(ImageDto imageDto, Product product) {
         return Image.builder()
                 .id(imageDto.getId())
                 .path(imageDto.getPath())
                 .alt(imageDto.getAlt())
                 .size(imageDto.getSize())
                 .isThumbnail(imageDto.getIsThumbnail())
-                .product(imageDto.getProductDto() != null ? ProductMapper.toEntity(imageDto.getProductDto()) : null)
+                .product(product)
                 .data(imageDto.getData())
                 .build();
     }
@@ -38,9 +39,21 @@ public class ImageMapper {
                 .collect(Collectors.toList());
     }
 
+
+    public static Image toEntityWithoutProduct(ImageDto imageDto) {
+        return Image.builder()
+                .id(imageDto.getId())
+                .path(imageDto.getPath())
+                .alt(imageDto.getAlt())
+                .size(imageDto.getSize())
+                .isThumbnail(imageDto.getIsThumbnail())
+                .data(imageDto.getData())
+                .build();
+    }
+
     public static List<Image> toEntityList(List<ImageDto> dtoList) {
         return dtoList.stream()
-                .map(ImageMapper::toEntity)
+                .map(ImageMapper::toEntityWithoutProduct)
                 .collect(Collectors.toList());
     }
 }

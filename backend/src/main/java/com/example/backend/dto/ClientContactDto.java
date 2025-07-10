@@ -20,6 +20,6 @@ public class ClientContactDto {
     private String phoneNumber;
     private String position;
     private Data data;
-    private ClientDto clientDto;
+    private Long clientId;
 
 }

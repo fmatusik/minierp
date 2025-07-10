@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -38,8 +39,9 @@ public class Address {
     @Column(nullable = false, name="streen")
     private String street;
 
-    @ManyToOne
-    @JoinColumn(name = "\"client\"", nullable = true)
+    @ManyToOne(fetch =  FetchType.LAZY)
+    @JoinColumn(name = "client", nullable = true)
+    @JsonBackReference
     private Client client;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

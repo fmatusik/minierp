@@ -12,9 +12,9 @@ public class OrderServiceTest {
     @Autowired
     OrderService orderService;
 
-    @Test
+/*    @Test
     void testAdd() {
         OrderDto orderDto = OrderDto.builder().build();
         orderService.addOrder(orderDto);
-    }
+    }*/
 }

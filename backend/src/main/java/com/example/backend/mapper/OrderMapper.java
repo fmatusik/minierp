@@ -2,6 +2,7 @@ package com.example.backend.mapper;
 
 import com.example.backend.dto.OrderDto;
 import com.example.backend.entity.Order;
+import com.example.backend.entity.OrderItem;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class OrderMapper {
                 .build();
     }
 
-    public static Order toEntity(OrderDto orderDto) {
+    public static Order toEntity(OrderDto orderDto, OrderItem orderItem) {
         return Order.builder()
                 .id(orderDto.getId())
                 .client(orderDto.getClientDto() != null ? ClientMapper.toEntity(orderDto.getClientDto()) : null)
@@ -36,13 +37,12 @@ public class OrderMapper {
                 .data(orderDto.getData())
                 .price(orderDto.getPrice())
                 .paymentStatus(orderDto.getPaymentStatus())
-                .address(orderDto.getAddressDto() != null ? AddressMapper.toEntity(orderDto.getAddressDto()) : null)
                 .deliveryDate(orderDto.getDeliveryDate())
                 .documentNumber(orderDto.getDocumentNumber())
                 .salePlace(orderDto.getSalePlace())
                 .stockMovements(orderDto.getStockMovementsDto() != null
                         ? StockMovementMapper.toEntityList(orderDto.getStockMovementsDto()) : null)
-                .orderItem(orderDto.getOrderItemDto() != null ? OrderItemMapper.toEntity(orderDto.getOrderItemDto()) : null)
+                .orderItem(orderItem)
                 .build();
     }
 
@@ -52,9 +52,25 @@ public class OrderMapper {
                 .collect(Collectors.toList());
     }
 
+    public static Order toEntityWithoutOrderItem(OrderDto orderDto){
+        return Order.builder()
+                .id(orderDto.getId())
+                .client(orderDto.getClientDto() != null ? ClientMapper.toEntity(orderDto.getClientDto()) : null)
+                .status(orderDto.getStatus())
+                .data(orderDto.getData())
+                .price(orderDto.getPrice())
+                .paymentStatus(orderDto.getPaymentStatus())
+                .deliveryDate(orderDto.getDeliveryDate())
+                .documentNumber(orderDto.getDocumentNumber())
+                .salePlace(orderDto.getSalePlace())
+                .stockMovements(orderDto.getStockMovementsDto() != null
+                        ? StockMovementMapper.toEntityList(orderDto.getStockMovementsDto()) : null)
+                .build();
+    }
+
     public static List<Order> toEntityList(List<OrderDto> dtoList) {
         return dtoList.stream()
-                .map(OrderMapper::toEntity)
+                .map(OrderMapper::toEntityWithoutOrderItem)
                 .collect(Collectors.toList());
     }
 }

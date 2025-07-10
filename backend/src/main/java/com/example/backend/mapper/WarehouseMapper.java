@@ -29,9 +29,6 @@ public class WarehouseMapper {
     public static Warehouse toEntity(WarehouseDto warehouseDto) {
         return Warehouse.builder()
                 .id(warehouseDto.getId())
-                .address(warehouseDto.getAddressDto() != null
-                        ? AddressMapper.toEntity(warehouseDto.getAddressDto())
-                        : null)
                 .type(warehouseDto.getType())
                 .capacity(warehouseDto.getCapacity())
                 .sourceMovements(warehouseDto.getSourceMovementsDto() != null

@@ -21,7 +21,7 @@ public class OrderController {
         this.orderMapper = orderMapper;
     }
 
-    @GetMapping("/all")
+    /*@GetMapping("/all")
     public List<OrderDto> getAllOrders() {
         return orderMapper.toDtoList(orderRepository.findAll());
     }
@@ -45,5 +45,5 @@ public class OrderController {
     public OrderDto addOrder(@RequestBody OrderDto orderDto) {
         return orderMapper.toDto(orderRepository.save(orderMapper.toEntity(orderDto)));
 
-    }
+    }*/
 }

@@ -2,13 +2,14 @@ package com.example.backend.mapper;
 
 import com.example.backend.dto.AddressDto;
 import com.example.backend.entity.Address;
+import com.example.backend.entity.Client;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class AddressMapper {
 
-    public static Address toEntity(AddressDto dto) {
+    public static Address toEntity(AddressDto dto, Client client) {
         return Address.builder()
                 .id(dto.getId())
                 .buildingNumber(dto.getBuildingNumber())
@@ -17,7 +18,7 @@ public class AddressMapper {
                 .city(dto.getCity())
                 .province(dto.getProvince())
                 .street(dto.getStreet())
-                .client(dto.getClientDto() != null ? ClientMapper.toEntity(dto.getClientDto()) : null)
+                .client(client)
                 .data(dto.getData())
                 .build();
     }
@@ -31,16 +32,11 @@ public class AddressMapper {
                 .city(entity.getCity())
                 .province(entity.getProvince())
                 .street(entity.getStreet())
-                .clientDto(entity.getClient() != null ? ClientMapper.toDto(entity.getClient()) : null)
+                .clientId(entity.getClient() != null ? ClientMapper.toDto(entity.getClient()).getId() : null)
                 .data(entity.getData())
                 .build();
     }
 
-    public static List<Address> toEntityList(List<AddressDto> dtoList) {
-        return dtoList.stream()
-                .map(AddressMapper::toEntity)
-                .collect(Collectors.toList());
-    }
 
     public static List<AddressDto> toDtoList(List<Address> entityList) {
         return entityList.stream()

@@ -10,4 +10,6 @@ import java.util.Date;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     //podaje swoje argumenty zamiast tworzyc samych zapytan
     //Category findByNameAndProvinceOrCreatedAt(String name, String Province, Date createdAt);
+
+    Category findById(long id);
 }

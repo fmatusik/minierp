@@ -1,6 +1,7 @@
 package com.example.backend.mapper;
 
 import com.example.backend.dto.StockLevelDto;
+import com.example.backend.entity.Product;
 import com.example.backend.entity.StockLevel;
 
 import java.util.List;
@@ -8,10 +9,10 @@ import java.util.stream.Collectors;
 
 public class StockLevelMapper {
 
-    public static StockLevel toEntity(StockLevelDto stockLevelDto) {
+    public static StockLevel toEntity(StockLevelDto stockLevelDto, Product product) {
         return StockLevel.builder()
                 .id(stockLevelDto.getId())
-                .product(stockLevelDto.getProductDto() != null ? ProductMapper.toEntity(stockLevelDto.getProductDto()) : null)
+                .product(product)
                 .warehouse(stockLevelDto.getWarehouseDto() != null ? WarehouseMapper.toEntity(stockLevelDto.getWarehouseDto()) : null)
                 .quantity(stockLevelDto.getQuantity())
                 .data(stockLevelDto.getData())
@@ -34,9 +35,19 @@ public class StockLevelMapper {
                 .collect(Collectors.toList());
     }
 
+    public static StockLevel toEntityWithoutProduct(StockLevelDto stockLevelDto) {
+        return StockLevel.builder()
+                .id(stockLevelDto.getId())
+                .warehouse(stockLevelDto.getWarehouseDto() != null ? WarehouseMapper.toEntity(stockLevelDto.getWarehouseDto()) : null)
+                .quantity(stockLevelDto.getQuantity())
+                .data(stockLevelDto.getData())
+                .build();
+    }
+
+
     public static List<StockLevel> toEntityList(List<StockLevelDto> dtoList) {
         return dtoList.stream()
-                .map(StockLevelMapper::toEntity)
+                .map(StockLevelMapper::toEntityWithoutProduct)
                 .collect(Collectors.toList());
     }
 }

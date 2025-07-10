@@ -19,10 +19,10 @@ public class ClientContactServiceImpl implements ClientContactService {
         this.clientContactRepository = clientContactRepository;
     }
 
-    @Override
+    /*@Override
     public ClientContactDto addClientContact(ClientContactDto clientContactDto) {
         ClientContact clientContactEntity = ClientContactMapper.toEntity(clientContactDto);
         ClientContact savedClientContact = clientContactRepository.save(clientContactEntity);
         return ClientContactMapper.toDto(savedClientContact);
-    }
+    }*/
 }

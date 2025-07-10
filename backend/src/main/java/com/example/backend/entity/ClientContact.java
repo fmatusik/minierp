@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,8 +34,9 @@ public class ClientContact {
     @Column(nullable = false)
     private String position;
 
-    @ManyToOne
-    @JoinColumn(name = "client", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id")
+    @JsonBackReference
     private Client client;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

@@ -19,11 +19,11 @@ public class StockMovementItemServiceImpl implements StockMovementItemService {
         this.stockMovementItemRepository = stockMovementItemRepository;
     }
 
-    @Override
+    /*@Override
     public StockMovementItemDto addStockMovementItem(StockMovementItemDto stockMovementItemDto) {
         StockMovementItem entity = StockMovementItemMapper.toEntity(stockMovementItemDto); // Convert DTO to entity
         StockMovementItem savedEntity = stockMovementItemRepository.save(entity); // Save entity
         return StockMovementItemMapper.toDto(savedEntity);
-    }
+    }*/
 }
 
