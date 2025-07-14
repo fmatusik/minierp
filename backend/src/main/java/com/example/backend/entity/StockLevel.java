@@ -24,8 +24,8 @@ public class StockLevel {
 
 
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "warehouse")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "warehouse_id")
     private Warehouse warehouse;
 
     @Column(nullable = false)

@@ -6,4 +6,5 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource
 public interface WarehouseRepository extends JpaRepository<Warehouse, Long> {
+    Warehouse findById(long id);
 }

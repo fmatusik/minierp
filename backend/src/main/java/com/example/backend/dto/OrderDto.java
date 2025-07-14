@@ -23,7 +23,7 @@ public class OrderDto {
     private String documentNumber;
     private String salePlace;
     private List<StockMovementDto> stockMovementsDto;
-    private OrderItemDto orderItemDto;
+    private List<OrderItemDto> orderItems;
 
 }
 

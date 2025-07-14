@@ -12,7 +12,7 @@ public class WarehouseMapper {
         return WarehouseDto.builder()
                 .id(warehouse.getId())
                 .addressDto(warehouse.getAddress() != null
-                        ? AddressMapper.toDto(warehouse.getAddress())
+                        ? AddressMapper.toDtoWithoutClient(warehouse.getAddress())
                         : null)
                 .type(warehouse.getType())
                 .capacity(warehouse.getCapacity())
@@ -23,6 +23,7 @@ public class WarehouseMapper {
                         ? StockMovementMapper.toDtoList(warehouse.getTargetMovements())
                         : null)
                 .data(warehouse.getData())
+                .stockLevelsDto(warehouse.getStockLevels() != null ? StockLevelMapper.toDtoList(warehouse.getStockLevels()) : null)
                 .build();
     }
 
@@ -37,7 +38,9 @@ public class WarehouseMapper {
                 .targetMovements(warehouseDto.getTargetMovementsDto() != null
                         ? StockMovementMapper.toEntityList(warehouseDto.getTargetMovementsDto())
                         : null)
+                .address(warehouseDto.getAddressDto() != null ? AddressMapper.toEntityWithoutClient(warehouseDto.getAddressDto()) : null)
                 .data(warehouseDto.getData())
+                .stockLevels(warehouseDto.getStockLevelsDto() != null ? StockLevelMapper.toEntityList(warehouseDto.getStockLevelsDto()) : null)
                 .build();
     }
 

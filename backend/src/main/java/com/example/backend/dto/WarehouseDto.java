@@ -20,5 +20,6 @@ public class WarehouseDto {
     private List<StockMovementDto> sourceMovementsDto;
     private List<StockMovementDto> targetMovementsDto;
     private Data data;
+    private List<StockLevelDto> stockLevelsDto;
 
 }

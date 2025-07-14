@@ -15,8 +15,9 @@ import java.util.List;
 @Builder
 public class OrderItemDto {
     private Long id;
-    private ProductDto productDto;
+    private Long productId;
     private Long quantity;
     private Long price;
     private Data data;
+    private Long orderId;
 }

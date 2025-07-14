@@ -1,6 +1,6 @@
 package com.example.backend;
 
-import org.apache.catalina.filters.CorsFilter; // Not needed here, better use Spring's
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +27,6 @@ public class BackendApplication {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", corsConfiguration);
 
-		return new CorsFilter();
+		return new CorsFilter(source);
 	}
 }

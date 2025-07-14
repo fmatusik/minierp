@@ -5,5 +5,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface ProductService {
-   // ProductDto addProduct(ProductDto productDto);
+   ProductDto addProduct(ProductDto productDto);
 }

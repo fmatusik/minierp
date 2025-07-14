@@ -41,6 +41,9 @@ public class Warehouse {
     @JoinColumn(name = "data")
     private Data data;
 
+    @OneToMany(mappedBy = "warehouse")
+    private List<StockLevel> stockLevels;
+
 
 
 }

@@ -22,7 +22,7 @@ public class StockLevelMapper {
     public static StockLevelDto toDto(StockLevel stockLevel) {
         return StockLevelDto.builder()
                 .id(stockLevel.getId())
-                .productDto(stockLevel.getProduct() != null ? ProductMapper.toDto(stockLevel.getProduct()) : null)
+                .productId(stockLevel.getProduct() != null ? ProductMapper.toDto(stockLevel.getProduct()).getId() : null)
                 .warehouseDto(stockLevel.getWarehouse() != null ? WarehouseMapper.toDto(stockLevel.getWarehouse()) : null)
                 .quantity(stockLevel.getQuantity())
                 .data(stockLevel.getData())

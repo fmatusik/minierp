@@ -35,5 +35,10 @@ public class OrderItem {
     @JoinColumn(name = "data")
     private Data data;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    @JsonBackReference
+    private Order relatedOrder;
+
 
 }

@@ -3,13 +3,18 @@ package com.example.backend.mapper;
 import com.example.backend.dto.OrderDto;
 import com.example.backend.entity.Order;
 import com.example.backend.entity.OrderItem;
+import lombok.AllArgsConstructor; // Add this import
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@AllArgsConstructor // Add this to allow constructor injection
 public class OrderMapper {
+
+    // Inject OrderItemMapper
+    private final OrderItemMapper orderItemMapper;
 
     public static OrderDto toDto(Order order) {
         return OrderDto.builder()
@@ -25,11 +30,11 @@ public class OrderMapper {
                 .salePlace(order.getSalePlace())
                 .stockMovementsDto(order.getStockMovements() != null
                         ? StockMovementMapper.toDtoList(order.getStockMovements()) : null)
-                .orderItemDto(order.getOrderItem() != null ? OrderItemMapper.toDto(order.getOrderItem()) : null)
+                .orderItems(order.getOrderItems() != null ? OrderItemMapper.toDtoList(order.getOrderItems()) : null)
                 .build();
     }
 
-    public static Order toEntity(OrderDto orderDto, OrderItem orderItem) {
+    public Order toEntity(OrderDto orderDto) { // Make this method non-static
         return Order.builder()
                 .id(orderDto.getId())
                 .client(orderDto.getClientDto() != null ? ClientMapper.toEntity(orderDto.getClientDto()) : null)
@@ -40,9 +45,10 @@ public class OrderMapper {
                 .deliveryDate(orderDto.getDeliveryDate())
                 .documentNumber(orderDto.getDocumentNumber())
                 .salePlace(orderDto.getSalePlace())
+                .address(orderDto.getAddressDto() != null ? AddressMapper.toEntity(orderDto.getAddressDto(), ClientMapper.toEntity(orderDto.getClientDto())) : null)
                 .stockMovements(orderDto.getStockMovementsDto() != null
                         ? StockMovementMapper.toEntityList(orderDto.getStockMovementsDto()) : null)
-                .orderItem(orderItem)
+                .orderItems(orderDto.getOrderItems() != null ? orderItemMapper.toEntityList(orderDto.getOrderItems()) : null) // Use the injected instance
                 .build();
     }
 
@@ -52,25 +58,9 @@ public class OrderMapper {
                 .collect(Collectors.toList());
     }
 
-    public static Order toEntityWithoutOrderItem(OrderDto orderDto){
-        return Order.builder()
-                .id(orderDto.getId())
-                .client(orderDto.getClientDto() != null ? ClientMapper.toEntity(orderDto.getClientDto()) : null)
-                .status(orderDto.getStatus())
-                .data(orderDto.getData())
-                .price(orderDto.getPrice())
-                .paymentStatus(orderDto.getPaymentStatus())
-                .deliveryDate(orderDto.getDeliveryDate())
-                .documentNumber(orderDto.getDocumentNumber())
-                .salePlace(orderDto.getSalePlace())
-                .stockMovements(orderDto.getStockMovementsDto() != null
-                        ? StockMovementMapper.toEntityList(orderDto.getStockMovementsDto()) : null)
-                .build();
-    }
-
-    public static List<Order> toEntityList(List<OrderDto> dtoList) {
+    public List<Order> toEntityList(List<OrderDto> dtoList) { // Make this method non-static
         return dtoList.stream()
-                .map(OrderMapper::toEntityWithoutOrderItem)
+                .map(this::toEntity) // Use 'this::toEntity' to call the non-static method
                 .collect(Collectors.toList());
     }
 }

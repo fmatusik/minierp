@@ -18,6 +18,16 @@ public class ClientMapper {
                 .notes(client.getNotes())
                 .clientContactsDto(client.getClientContacts() != null
                         ? ClientContactMapper.toDtoList(client.getClientContacts()) : null)
+                .addressesDto(client.getAddresses() != null ? AddressMapper.toDtoList(client.getAddresses()) : null)
+                .build();
+    }
+
+    public static ClientDto toDtoWithoutContactsAndAddresses(Client client) {
+        return ClientDto.builder()
+                .id(client.getId())
+                .name(client.getName())
+                .data(client.getData())
+                .notes(client.getNotes())
                 .build();
     }
 

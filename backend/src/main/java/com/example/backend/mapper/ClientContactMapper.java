@@ -3,10 +3,12 @@ package com.example.backend.mapper;
 import com.example.backend.dto.ClientContactDto;
 import com.example.backend.entity.Client;
 import com.example.backend.entity.ClientContact;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class ClientContactMapper {
 
     public static ClientContactDto toDto(ClientContact clientContact) {

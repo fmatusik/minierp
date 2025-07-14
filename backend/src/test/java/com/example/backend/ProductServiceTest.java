@@ -1,5 +1,6 @@
 package com.example.backend;
 
+import com.example.backend.dto.ImageDto;
 import com.example.backend.dto.ProductDto;
 import com.example.backend.dto.StatusDto;
 import com.example.backend.entity.Category;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @SpringBootTest
 public class ProductServiceTest {
@@ -53,7 +55,26 @@ public class ProductServiceTest {
                                 .createdAt(LocalDateTime.now())
                                 .updatedAt(LocalDateTime.now())
                                 .build()).build())
-
+                .imagesDto(List.of(
+                        ImageDto.builder()
+                                .path("path")
+                                .alt("alt")
+                                .size(100L)
+                                .isThumbnail(true)
+                                .data(Data.builder()
+                                        .createdAt(LocalDateTime.now())
+                                        .updatedAt(LocalDateTime.now()).build())
+                                .build(),
+                        ImageDto.builder()
+                                .path("path2")
+                                .alt("alt2")
+                                .size(100L)
+                                .isThumbnail(true)
+                                .data(Data.builder()
+                                        .createdAt(LocalDateTime.now())
+                                        .updatedAt(LocalDateTime.now()).build())
+                                .build()
+                ))
                 .build();
 
 

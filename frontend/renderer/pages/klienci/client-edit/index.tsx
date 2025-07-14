@@ -1,54 +1,78 @@
 import React, { useEffect, useState } from "react";
-
-const dummyClients = [
-  {
-    id: 1,
-    firstName: "XYZ",
-    lastName: "S.A",
-    email: "jan.kowalski@example.com",
-    phone: "+48 123 456 789",
-    status: "Aktywny",
-    companyContacts: [
-      { name: "Kontakt 1", email: "kontakt1@firma.com", phone: "+48 111 222 333" },
-      { name: "Kontakt 2", email: "kontakt2@firma.com", phone: "+48 444 555 666" },
-    ],
-  },
-  {
-    id: 2,
-    firstName: "Anna",
-    lastName: "Nowak",
-    email: "anna.nowak@example.com",
-    phone: "+48 987 654 321",
-    status: "Nieaktywny",
-    companyContacts: [],
-  },
-  {
-    id: 3,
-    firstName: "Marek",
-    lastName: "Wiśniewski",
-    email: "marek.w@example.com",
-    phone: "+48 555 123 456",
-    status: "Aktywny",
-    companyContacts: [
-      { name: "Dział IT", email: "it@firma.com", phone: "+48 999 000 111" },
-    ],
-  },
-];
-
+import axios from "axios";
 export default function ClientEditPage() {
+  const [clientId, setClientId] = useState(null);
   const [client, setClient] = useState(null);
   const [contacts, setContacts] = useState([]);
-  const [newContact, setNewContact] = useState({ name: "", email: "", phone: "" });
+  const [newContact, setNewContact] = useState({ firstName: "", lastName: "", email: "", phoneNumber: "", position: "", clientId: clientId });
+  
+  const [addresses, setAddresses] = useState([]);
+  const [newAddress, setNewAddress] = useState({
+    buildingNumber: "",
+    apartmentNumber: "",
+    postalCode: "",
+    city: "",
+    province: "",
+    street: "",
+    clientId: clientId,
+  });
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const clientId = parseInt(urlParams.get("id"));
-    const foundClient = dummyClients.find((c) => c.id === clientId);
-    if (foundClient) {
-      setClient({ ...foundClient });
-      setContacts(foundClient.companyContacts || []);
+useEffect(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const id = parseInt(urlParams.get("id"));
+  if (!isNaN(id)) {
+    setClientId(id);
+  }
+}, []);
+
+useEffect(() => {
+  if (!clientId) return;
+
+  setNewContact((prev) => ({ ...prev, clientId }));
+  setNewAddress((prev) => ({ ...prev, clientId }));
+
+  axios
+    .get(`http://localhost:8080/api/client/one/${clientId}`)
+    .then((res) => {
+      if (res.data) {
+        setClient(res.data);
+        setContacts(res.data.clientContactsDto || []);
+        setAddresses(res.data.addressesDto || []);
+        console.log(res.data)
+        console.log(addresses)
+      }
+    })
+    .catch((err) => {
+      alert("Błąd podczas pobierania danych klienta: " + err);
+    });
+}, [clientId]);
+
+  const handleContactAdd = () => {
+    if(newContact != null){
+      axios.post("http://localhost:8080/api/clientContact/add", newContact)
+      .then((res) => {
+        alert("Pomyślnie dodano kontakt");
+        addContact();
+      }
+      ).catch((err) => {
+        alert(err);
+      })
     }
-  }, []);
+  }
+
+  const handlerAddressAdd = () => {
+    console.log(newAddress.clientId);
+    if(newAddress != null){
+      axios.post("http://localhost:8080/api/address/add", newAddress)
+      .then((res) => {
+        alert("Pomyślnie dodano adres")
+        addAddress();
+      })
+      .catch((err) => {
+        alert(err);
+      })
+    }
+  }
 
   const handleContactChange = (index, field, value) => {
     const updated = [...contacts];
@@ -57,13 +81,42 @@ export default function ClientEditPage() {
   };
 
   const addContact = () => {
-    if (!newContact.name) return;
+    if (!newContact.firstName) return;
     setContacts([...contacts, newContact]);
-    setNewContact({ name: "", email: "", phone: "" });
+    setNewContact({ firstName: "", lastName: "", email: "", phoneNumber: "", position: "", clientId: clientId });
   };
 
   const removeContact = (index) => {
     setContacts(contacts.filter((_, i) => i !== index));
+  };
+
+  const handleAddressChange = (index, field, value) => {
+    const updated = [...addresses];
+    updated[index][field] = value;
+    setAddresses(updated);
+  };
+
+  const addAddress = () => {
+    if (!newAddress.city || !newAddress.street) return;
+    setAddresses([...addresses, newAddress]);
+    setNewAddress({
+      buildingNumber: "",
+      apartmentNumber: "",
+      postalCode: "",
+      city: "",
+      province: "",
+      street: "",
+      clientId: clientId
+    });
+  };
+
+  const removeAddress = (index) => {
+    axios.delete(`http://localhost:8080/api/address/delete/${index}`)
+    .then((res) => {
+        console.log(res);
+        alert(res.data);
+      }
+    ).catch((err) => alert(err));
   };
 
   if (!client) {
@@ -77,127 +130,64 @@ export default function ClientEditPage() {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8 bg-white shadow-md rounded-2xl mt-10">
       <h1 className="text-3xl font-bold text-gray-800">
-        Edytuj klienta:{" "}
-        <span className="text-primary">{client.firstName} {client.lastName}</span>
+        Edytuj klienta: {client.name}
+        <span className="text-primary"> {client.firstName} {client.lastName}</span>
       </h1>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">Imię</label>
-          <input
-            type="text"
-            className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-primary"
-            value={client.firstName}
-            onChange={(e) => setClient({ ...client, firstName: e.target.value })}
-          />
-        </div>
-        <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">Nazwisko</label>
-          <input
-            type="text"
-            className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-primary"
-            value={client.lastName}
-            onChange={(e) => setClient({ ...client, lastName: e.target.value })}
-          />
-        </div>
-        <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">Email</label>
-          <input
-            type="email"
-            className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-primary"
-            value={client.email}
-            onChange={(e) => setClient({ ...client, email: e.target.value })}
-          />
-        </div>
-        <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">Telefon</label>
-          <input
-            type="text"
-            className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-primary"
-            value={client.phone}
-            onChange={(e) => setClient({ ...client, phone: e.target.value })}
-          />
-        </div>
-        <div className="md:col-span-2">
-          <label className="block mb-1 text-sm font-medium text-gray-700">Status</label>
-          <select
-            className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-primary"
-            value={client.status}
-            onChange={(e) => setClient({ ...client, status: e.target.value })}
-          >
-            <option value="Aktywny">Aktywny</option>
-            <option value="Nieaktywny">Nieaktywny</option>
-          </select>
-        </div>
-      </div>
-
+      {/* Kontakty firmowe */}
       <div>
         <h2 className="text-xl font-semibold text-gray-800 mb-4">Kontakty firmowe</h2>
         <div className="space-y-4">
           {contacts.map((contact, index) => (
             <div key={index} className="flex flex-col md:flex-row gap-3 items-center">
-              <input
-                type="text"
-                className="border border-gray-300 rounded-xl p-2 w-full md:w-1/4 focus:outline-none focus:ring-2 focus:ring-primary "
-                placeholder="Nazwa"
-                value={contact.name}
-                onChange={(e) => handleContactChange(index, "name", e.target.value)}
-              />
-              <input
-                type="email"
-                className="border border-gray-300 rounded-xl p-2 w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Email"
-                value={contact.email}
-                onChange={(e) => handleContactChange(index, "email", e.target.value)}
-              />
-              <input
-                type="text"
-                className="border border-gray-300 rounded-xl p-2 w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Telefon"
-                value={contact.phone}
-                onChange={(e) => handleContactChange(index, "phone", e.target.value)}
-              />
-              <button
-                onClick={() => removeContact(index)}
-                className="text-red-600 hover:text-red-700 transition text-sm underline"
-              >
-                Usuń
-              </button>
+              <input type="text" className="input" placeholder="Imię" value={contact.firstName} onChange={(e) => handleContactChange(index, "firstName", e.target.value)} />
+              <input type="text" className="input" placeholder="Nazwisko" value={contact.lastName} onChange={(e) => handleContactChange(index, "lastName", e.target.value)} />
+              <input type="email" className="input" placeholder="Email" value={contact.email} onChange={(e) => handleContactChange(index, "email", e.target.value)} />
+              <input type="text" className="input" placeholder="Telefon" value={contact.phoneNumber} onChange={(e) => handleContactChange(index, "phoneNumber", e.target.value)} />
+            <input type="text" className="input" placeholder="Stanowisko" value={contact.position} onChange={(e) => setNewContact({ ...newContact, "position": e.target.value })} />
+              <button onClick={() => removeContact(index)} className="text-red-600 hover:text-red-700 transition text-sm underline">Usuń</button>
             </div>
           ))}
-
           <div className="flex flex-col md:flex-row gap-3 items-center mt-4">
-            <input
-              type="text"
-              className="border border-gray-300 rounded-xl p-2 w-full md:w-1/4 focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Nazwa"
-              value={newContact.name}
-              onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
-            />
-            <input
-              type="email"
-              className="border border-gray-300 rounded-xl p-2 w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Email"
-              value={newContact.email}
-              onChange={(e) => setNewContact({ ...newContact, email: e.target.value })}
-            />
-            <input
-              type="text"
-              className="border border-gray-300 rounded-xl p-2 w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Telefon"
-              value={newContact.phone}
-              onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
-            />
-            <button
-              onClick={addContact}
-              className="bg-primary hover:bg-primaryhover text-white px-4 py-2 rounded-lg text-sm transition"
-            >
-              Dodaj
-            </button>
+            <input type="text" className="input" placeholder="Imię" value={newContact.firstName} onChange={(e) => setNewContact({ ...newContact, firstName: e.target.value })} />
+            <input type="text" className="input" placeholder="Nazwisko" value={newContact.lastName} onChange={(e) => setNewContact({ ...newContact, lastName: e.target.value })} />
+            <input type="email" className="input" placeholder="Email" value={newContact.email} onChange={(e) => setNewContact({ ...newContact, email: e.target.value })} />
+            <input type="text" className="input" placeholder="Telefon" value={newContact.phoneNumber} onChange={(e) => setNewContact({ ...newContact, phoneNumber: e.target.value })} />
+            <input type="text" className="input" placeholder="Stanowisko" value={newContact.position} onChange={(e) => setNewContact({ ...newContact, position: e.target.value })} />
+            <button onClick={handleContactAdd} className="bg-primary hover:bg-primaryhover text-white px-4 py-2 rounded-lg text-sm transition">Dodaj</button>
           </div>
         </div>
       </div>
 
+      {/* Adresy */}
+      <div>
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Adresy</h2>
+        <div className="space-y-4">
+          {addresses.map((address, index) => (
+            <div key={address.id} className="grid grid-cols-2 md:grid-cols-3 gap-3 items-center">
+              <input type="text" className="input" placeholder="Ulica" value={address.street} onChange={(e) => handleAddressChange(index, "street", e.target.value)} />
+              <input type="text" className="input" placeholder="Miasto" value={address.city} onChange={(e) => handleAddressChange(index, "city", e.target.value)} />
+              <input type="text" className="input" placeholder="Kod pocztowy" value={address.postalCode} onChange={(e) => handleAddressChange(index, "postalCode", e.target.value)} />
+              <input type="text" className="input" placeholder="Numer budynku" value={address.buildingNumber} onChange={(e) => handleAddressChange(index, "buildingNumber", e.target.value)} />
+              <input type="text" className="input" placeholder="Numer mieszkania" value={address.apartmentNumber} onChange={(e) => handleAddressChange(index, "apartmentNumber", e.target.value)} />
+              <input type="text" className="input" placeholder="Województwo" value={address.province} onChange={(e) => handleAddressChange(index, "province", e.target.value)} />
+              <button onClick={() => removeAddress(index)} className="text-red-600 hover:text-red-700 transition text-sm underline col-span-2 md:col-span-1">Usuń</button>
+            </div>
+          ))}
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+            <input type="text" className="input" placeholder="Ulica" value={newAddress.street} onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })} />
+            <input type="text" className="input" placeholder="Miasto" value={newAddress.city} onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })} />
+            <input type="text" className="input" placeholder="Kod pocztowy" value={newAddress.postalCode} onChange={(e) => setNewAddress({ ...newAddress, postalCode: e.target.value })} />
+            <input type="text" className="input" placeholder="Numer budynku" value={newAddress.buildingNumber} onChange={(e) => setNewAddress({ ...newAddress, buildingNumber: e.target.value })} />
+            <input type="text" className="input" placeholder="Numer mieszkania" value={newAddress.apartmentNumber} onChange={(e) => setNewAddress({ ...newAddress, apartmentNumber: e.target.value })} />
+            <input type="text" className="input" placeholder="Województwo" value={newAddress.province} onChange={(e) => setNewAddress({ ...newAddress, province: e.target.value })} />
+            <button onClick={handlerAddressAdd} className="bg-primary hover:bg-primaryhover text-white px-4 py-2 rounded-lg text-sm transition col-span-2 md:col-span-1">Dodaj</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Zapisz */}
       <div className="text-right">
         <button className="mt-6 bg-gray-900 hover:bg-black text-white font-semibold px-6 py-3 rounded-xl transition">
           Zapisz zmiany

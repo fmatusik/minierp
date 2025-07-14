@@ -1,5 +1,8 @@
 package com.example.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import com.example.backend.entity.Status;
@@ -19,8 +22,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "client")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id")
+    @JsonBackReference
     private Client client;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -53,8 +57,8 @@ public class Order {
     @OneToMany(mappedBy = "relatedOrder", cascade = CascadeType.ALL)
     private List<StockMovement> stockMovements;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "\"orderItem\"")
-    private OrderItem orderItem;
+    @OneToMany(mappedBy = "relatedOrder", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<OrderItem> orderItems;
 
 }

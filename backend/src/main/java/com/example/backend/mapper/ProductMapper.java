@@ -94,4 +94,6 @@ public class ProductMapper {
                 .map(ProductMapper::toEntityWithoutCategory)
                 .collect(Collectors.toList());
     }
+
+
 }
