@@ -21,7 +21,7 @@ public class ProductDto {
     private Float weight;
     private Float dimensions;
     private StatusDto statusDto;
-    private Long categoryId;
+    private CategoryDto categoryDto;
     private List<ImageDto> imagesDto;
     private List<StockLevelDto> stockLevelsDto;
 }

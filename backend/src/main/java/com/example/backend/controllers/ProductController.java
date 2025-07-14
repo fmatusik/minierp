@@ -4,31 +4,25 @@ import com.example.backend.dto.ProductDto;
 import com.example.backend.entity.Product;
 import com.example.backend.mapper.ProductMapper;
 import com.example.backend.repository.ProductRepository;
+import com.example.backend.services.ProductService;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.sound.sampled.Port;
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final ProductService productService;
 
-    public ProductController(ProductRepository productRepository, ProductMapper productMapper) {
-        this.productRepository = productRepository;
-        this.productMapper = productMapper;
+
+    @PostMapping("/add")
+    public ProductDto addProduct(@RequestBody ProductDto productDto){
+        return productService.addProduct(productDto);
     }
-
-    /*@GetMapping("/basic")
-    public List<ProductDto> getBasicProductInfo() {
-        return productMapper.toDtoList(productRepository.findAll());
-    }
-
-    @PostMapping
-    public ProductDto createProduct(@RequestBody ProductDto productDto) {
-        Product product = productMapper.toEntity(productDto);
-        Product saved = productRepository.save(product);
-        return productMapper.toDto(saved);
-    }*/
 }

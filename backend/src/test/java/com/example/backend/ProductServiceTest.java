@@ -48,7 +48,7 @@ public class ProductServiceTest {
                 .sku("2523f")
                 .weight(355F)
                 .dimensions(34F)
-                .categoryId(CategoryMapper.toDto(category).getId())
+                .categoryDto(CategoryMapper.toDto(category))
                 .statusDto(StatusDto.builder()
                         .name("Dostępny")
                         .data(Data.builder()

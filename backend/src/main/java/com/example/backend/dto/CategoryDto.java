@@ -19,8 +19,13 @@ public class CategoryDto {
 
     private String name;
 
+    private String color;
+
     private Data data;
 
+    private int productCount;
+
     private List<ProductDto> productsDto;
+
 
 }

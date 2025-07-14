@@ -23,7 +23,7 @@ public class ProductMapper {
                 .sku(product.getSku())
                 .weight(product.getWeight())
                 .statusDto(product.getStatus() != null ? StatusMapper.toDto(product.getStatus()) : null)
-                .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
+                .categoryDto(product.getCategory() != null ? CategoryMapper.toDtoWithoutProduct(product.getCategory()) : null)
                 .imagesDto(product.getImages() != null
                         ? ImageMapper.toDtoList(product.getImages())
                         : null)

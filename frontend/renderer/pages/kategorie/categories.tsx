@@ -1,32 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Boxes } from "lucide-react";
 import CategoryPage from "./page";
-
-const dummyCategories = [
-  { id: 1, name: "Laptopy", productsCount: 12, createdAt: "2024-12-01" },
-  { id: 2, name: "Smartfony", productsCount: 18, createdAt: "2025-01-15" },
-  { id: 3, name: "Monitory", productsCount: 7, createdAt: "2025-02-10" },
-  { id: 4, name: "Tablety", productsCount: 5, createdAt: "2025-03-20" },
-  { id: 5, name: "Smartwatche", productsCount: 9, createdAt: "2025-04-05" },
-  { id: 6, name: "Słuchawki", productsCount: 14, createdAt: "2025-05-30" },
-];
-
+import axios from "axios";
+import { RefreshCcw } from "lucide-react";
 export default function KategoriePage() {
+  const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState("desc"); // 'asc' or 'desc'
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const filteredCategories = dummyCategories
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("http://localhost:8080/api/category/all");
+      setCategories(response.data);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+      setError("Nie udało się załadować kategorii.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const filteredCategories = categories
     .filter((cat) =>
       cat.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .sort((a, b) => {
-      if (sortOrder === "asc") {
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-      } else {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      }
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
     });
+
+  const openAddPanel = () => {
+    const width = 1200;
+    const height = 900;
+    const left = window.screenX + (window.innerWidth - width) / 2;
+    const top = window.screenY + (window.innerHeight - height) / 2;
+    const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
+    window.open("/kategorie/add", "_blank", features);
+  };
+
+  const handleReload = () => {
+    fetchCategories();
+  }
 
   if (category) {
     return (
@@ -37,7 +60,7 @@ export default function KategoriePage() {
         >
           ← Powrót do listy kategorii
         </button>
-        <CategoryPage category={category} />
+        <CategoryPage categoryId={category.id} />
       </div>
     );
   }
@@ -48,11 +71,9 @@ export default function KategoriePage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Kategorie</h1>
-          <p className="text-gray-600 text-sm">
-            Grupy produktów w Twoim katalogu
-          </p>
+          <p className="text-gray-600 text-sm">Grupy produktów w Twoim katalogu</p>
         </div>
-        <button className="px-4 py-2 bg-black text-white rounded-md">
+        <button className="px-4 py-2 bg-black text-white rounded-md" onClick={openAddPanel}>
           + Nowa kategoria
         </button>
       </div>
@@ -73,30 +94,42 @@ export default function KategoriePage() {
         >
           <option value="desc">Najnowsze</option>
           <option value="asc">Najstarsze</option>
-        </select>
+        </select><button
+          onClick={() => handleReload()}
+          title="Odśwież zamówienia"
+          className="p-2 transition-all hover:-rotate-180 hover:text-primaryhover"
+        >
+          <RefreshCcw className="w-5 h-5" />
+        </button>
       </div>
 
+      {/* Loading/Error */}
+      {loading && <p>Ładowanie kategorii...</p>}
+      {error && <p className="text-red-500">{error}</p>}
+
       {/* Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {filteredCategories.map((cat) => (
-          <div
-            key={cat.id}
-            onClick={() => setCategory(cat)}
-            className="rounded-lg border shadow-sm p-4 hover:shadow-md transition flex flex-col items-center text-center cursor-pointer"
-          >
-            <div className="bg-gray-200 rounded-full p-3 mb-3">
-              <Boxes size={28} className="text-gray-600" />
+      {!loading && !error && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {filteredCategories.map((cat) => (
+            <div
+              key={cat.id}
+              onClick={() => setCategory(cat)}
+              className="rounded-lg border shadow-sm p-4 hover:shadow-md transition flex flex-col items-center text-center cursor-pointer"
+            >
+            <div className={`rounded-full p-3 mb-3 ${cat.color}`}>
+                <Boxes size={28} className="text-white" />
+              </div>
+              <h3 className="font-semibold text-sm">{cat.name}</h3>
+              <p className="text-xs text-gray-500">
+                {cat.productCount ?? 0} produktów
+              </p>
+              <p className="text-[10px] text-gray-400 mt-1">
+                Dodano: {new Date(cat.data.createdAt).toLocaleDateString()}
+              </p>
             </div>
-            <h3 className="font-semibold text-sm">{cat.name}</h3>
-            <p className="text-xs text-gray-500">
-              {cat.productsCount} produktów
-            </p>
-            <p className="text-[10px] text-gray-400 mt-1">
-              Dodano: {new Date(cat.createdAt).toLocaleDateString()}
-            </p>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

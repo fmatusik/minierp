@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @Service
@@ -19,6 +20,8 @@ public class ClientServiceImpl implements ClientService {
 
     @Autowired
     private final ClientRepository clientRepository;
+    @Autowired
+    private ClientMapper clientMapper;
 
     @Override
     public ClientDto addClient(ClientDto clientDto) {
@@ -29,5 +32,22 @@ public class ClientServiceImpl implements ClientService {
                 .build());
         Client savedClient = clientRepository.save(clientEnity);
         return ClientMapper.toDto(savedClient);
+    }
+
+    @Override
+    public List<ClientDto> findAllDto(){
+        return  clientMapper.toDtoList(clientRepository.findAll());
+    }
+
+    public Boolean deleteClient(Long id){
+        try {
+            if (!clientRepository.existsById(id)) {
+                return false;
+            }
+            clientRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

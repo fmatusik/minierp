@@ -1,36 +1,56 @@
 import React, { useEffect, useRef, useState } from "react";
 import ColorPicker from "../../components/ColorPicker";
-
-const initialStatuses = [
-  { id: 1, name: "Nowe", type: "Zamówienie", color: "bg-blue-500" },
-  { id: 2, name: "W realizacji", type: "Zamówienie", color: "bg-yellow-500" },
-  { id: 3, name: "Zrealizowane", type: "Zamówienie", color: "bg-green-500" },
-  { id: 4, name: "Niedostępny", type: "Produkt", color: "bg-red-500" },
-  { id: 5, name: "Oczekuje na dostawę", type: "Produkt", color: "bg-purple-500" },
-];
+import axios from "axios";
+import { RefreshCcw } from "lucide-react";
 
 export default function StatusesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("");
-  const [allStatuses, setAllStatuses] = useState(initialStatuses);
+  const [allStatuses, setAllStatuses] = useState([]);
   const [editedStatus, setEditedStatus] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  const editModalRef = useRef<HTMLDivElement | null>(null);
+  const editModalRef = useRef(null);
 
-
-  useEffect(() => {
-  const handleClickOutside = (e) => {
-    if (showEditModal && editModalRef.current && !editModalRef.current.contains(e.target)) {
-      setShowEditModal(false);
-      setEditedStatus(null);
+  // Fetch statuses from API
+  const fetchStatuses = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/status/all");
+      setAllStatuses(res.data);
+    } catch (error) {
+      console.error("Failed to fetch statuses", error);
+      // Optionally show some error UI here
     }
   };
+
+  const handleReload = () => {
+    fetchStatuses();
+  }
+
+  const types = [
+    { label: "Zamówienie", value: "ORDER" },
+    { label: "Produkt", value: "PRODUCT" },
+  ];
+
+  useEffect(() => {
+    fetchStatuses();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        showEditModal &&
+        editModalRef.current &&
+        !editModalRef.current.contains(e.target)
+      ) {
+        setShowEditModal(false);
+        setEditedStatus(null);
+      }
+    };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showEditModal]);
-
 
   const handleEditClick = (status) => {
     setEditedStatus(status);
@@ -41,25 +61,50 @@ export default function StatusesPage() {
     setEditedStatus((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSaveEdit = () => {
-    setAllStatuses((prev) =>
-      prev.map((s) => (s.id === editedStatus.id ? editedStatus : s))
-    );
+const handleSaveEdit = async () => {
+  try {
+    const res = await axios.put(`http://localhost:8080/api/status/edit/${editedStatus.id}`, editedStatus);
+    fetchStatuses(); // reload whole list, which will include the updated status
     setShowEditModal(false);
     setEditedStatus(null);
-  };
+  } catch (err) {
+    console.log(err);
+  }
+};
 
-  const handleDelete = (id) => {
+
+  const handleDelete = async (id) => {
     if (confirm("Czy na pewno chcesz usunąć ten status?")) {
-      setAllStatuses((prev) => prev.filter((s) => s.id !== id));
+      axios.delete(`http://localhost:8080/api/status/delete/${id}`)
+      .then((res) => {
+        fetchStatuses();
+      }
+      )
+      .catch((err) => {
+        console.error(err);
+      })
     }
   };
 
   const filteredStatuses = allStatuses.filter((status) => {
-    const matchesSearch = status.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = status.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
     const matchesType = filterType === "" || status.type === filterType;
     return matchesSearch && matchesType;
   });
+
+  const openAdd = () => {
+    const width = 1200;
+    const height = 900;
+
+    const left = window.screenX + (window.innerWidth - width) / 2;
+    const top = window.screenY + (window.innerHeight - height) / 2;
+
+    const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
+
+    window.open(`/statusy/add`, "_blank", features);
+  };
 
   return (
     <div className="space-y-6 relative">
@@ -69,7 +114,10 @@ export default function StatusesPage() {
           <h1 className="text-3xl font-bold">Statusy</h1>
           <p className="text-gray-600 text-sm">Zarządzaj statusami w systemie</p>
         </div>
-        <button className="px-4 py-2 bg-black text-white rounded-md">
+        <button
+          className="px-4 py-2 bg-black text-white rounded-md"
+          onClick={openAdd}
+        >
           + Dodaj status
         </button>
       </div>
@@ -89,9 +137,18 @@ export default function StatusesPage() {
           className="px-3 py-2 border rounded-md outline-none"
         >
           <option value="">Wszystkie typy</option>
-          <option value="Zamówienie">Zamówienie</option>
-          <option value="Produkt">Produkt</option>
+            {types.map((type, index) => (
+              <option key={index} value={type.value}>{type.label}</option>
+            ))}
         </select>
+
+                <button
+          onClick={handleReload}
+          title="Odśwież zamówienia"
+          className="p-2 transition-all hover:-rotate-180 hover:text-primaryhover"
+        >
+          <RefreshCcw className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Table */}
@@ -148,7 +205,8 @@ export default function StatusesPage() {
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div
             ref={editModalRef}
-            className="bg-white p-6 rounded-xl w-full max-w-md shadow-lg">
+            className="bg-white p-6 rounded-xl w-full max-w-md shadow-lg"
+          >
             <h2 className="text-lg font-semibold mb-4">Edytuj status</h2>
 
             <div className="space-y-4">
@@ -168,8 +226,9 @@ export default function StatusesPage() {
                   onChange={(e) => handleEditChange("type", e.target.value)}
                   className="w-full px-3 py-2 border rounded-md outline-none"
                 >
-                  <option value="Zamówienie">Zamówienie</option>
-                  <option value="Produkt">Produkt</option>
+                  {types.map((type, index) => (
+                    <option key={index} value={type.value}>{type.label}</option>
+                  ))}
                 </select>
               </div>
               <div>

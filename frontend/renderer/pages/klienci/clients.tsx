@@ -1,49 +1,28 @@
 import React, { useState, useRef, useEffect } from "react";
-import { User } from "lucide-react";
-
-const dummyClients = [
-  {
-    id: 1,
-    firstName: "XYZ",
-    lastName: "S.A",
-    email: "jan.kowalski@example.com",
-    phone: "+48 123 456 789",
-    status: "Aktywny",
-    createdAt: "2024-12-01",
-    companyContacts: [
-      { name: "Kontakt 1", email: "kontakt1@firma.com", phone: "+48 111 222 333" },
-      { name: "Kontakt 2", email: "kontakt2@firma.com", phone: "+48 444 555 666" },
-    ],
-  },
-  {
-    id: 2,
-    firstName: "Anna",
-    lastName: "Nowak",
-    email: "anna.nowak@example.com",
-    phone: "+48 987 654 321",
-    status: "Nieaktywny",
-    createdAt: "2024-11-10",
-    companyContacts: [],
-  },
-  {
-    id: 3,
-    firstName: "Marek",
-    lastName: "Wiśniewski",
-    email: "marek.w@example.com",
-    phone: "+48 555 123 456",
-    status: "Aktywny",
-    createdAt: "2025-01-15",
-    companyContacts: [
-      { name: "Dział IT", email: "it@firma.com", phone: "+48 999 000 111" },
-    ],
-  },
-];
+import { User, RefreshCcw } from "lucide-react";
+import axios from "axios";
 
 export default function KlienciPage() {
   const [selectedClient, setSelectedClient] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("date-desc");
-  const modalRef =  useRef<HTMLDivElement | null>(null);
+  const [clients, setClients] = useState([]);
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
+  const loadClients = () => {
+    axios
+      .get("http://localhost:8080/api/client/all")
+      .then((response) => {
+        setClients(response.data);
+      })
+      .catch((error) => {
+        console.error("Failed to load clients:", error);
+      });
+  };
+
+  useEffect(() => {
+    loadClients();
+  }, []);
 
   useEffect(() => {
     function handleOutsideClick(e) {
@@ -63,26 +42,42 @@ export default function KlienciPage() {
     };
   }, [selectedClient]);
 
-  const filteredAndSortedClients = dummyClients
+  const filteredAndSortedClients = clients
     .filter((client) => {
-      const fullName = `${client.firstName} ${client.lastName}`.toLowerCase();
+      const fullName = `${client.name}`.toLowerCase();
       return fullName.includes(searchTerm.toLowerCase());
     })
     .sort((a, b) => {
       if (sortOption === "name-asc") {
-        return `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`);
+        return `${a.name}`.localeCompare(`${b.name}`);
       } else if (sortOption === "name-desc") {
-        return `${b.firstName} ${b.lastName}`.localeCompare(`${a.firstName} ${a.lastName}`);
+        return `${b.name}`.localeCompare(`${a.name}`);
       } else if (sortOption === "date-asc") {
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        return new Date(a.data.createdAt).getTime() - new Date(b.data.createdAt).getTime();
       } else {
         // default to date-desc
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return new Date(b.data.createdAt).getTime() - new Date(a.data.createdAt).getTime();
       }
     });
 
-      const openAddPanel = () => {
+    const handleUserDelete = (clientId) => {
+      if (!clientId) return alert("Client ID is missing")
+      axios.delete(`http://localhost:8080/api/client/delete/${clientId}`)
+      .then((res) =>{
+        loadClients();
+      }
+      ).catch((err) => {
+        alert(err);
+      })
+    }
 
+    const handleReload = () => {
+      loadClients();
+      setSortOption("date-desc")
+      setSearchTerm("")
+    }
+
+  const openAddPanel = () => {
     const width = 1200;
     const height = 900;
 
@@ -91,9 +86,8 @@ export default function KlienciPage() {
 
     const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbar=yes`;
 
-    window.open('/klienci/add', "_blank", features);
-
-  }
+    window.open("/klienci/add", "_blank", features);
+  };
 
   return (
     <div className="space-y-6">
@@ -128,6 +122,13 @@ export default function KlienciPage() {
           <option value="name-asc">Nazwa A-Z</option>
           <option value="name-desc">Nazwa Z-A</option>
         </select>
+                          <button
+          onClick={() => handleReload()}
+          title="Odśwież zamówienia"
+          className="p-2 transition-all hover:-rotate-180 hover:text-primaryhover"
+        >
+          <RefreshCcw className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Grid */}
@@ -144,14 +145,19 @@ export default function KlienciPage() {
               </div>
               <div>
                 <h3 className="font-semibold">
-                  {client.firstName} {client.lastName}
+                  {client.name}
                 </h3>
               </div>
             </div>
             <div className="text-sm mt-2">
-              <p className="text-gray-800">{client.email}</p>
-              <p className="text-gray-600">{client.phone}</p>
+              {client.clientContactsDto?.length > 0 && (
+                <>
+                  <p className="text-gray-800">{client.clientContactsDto[0].email}</p>
+                  <p className="text-gray-600">{client.clientContactsDto[0].phoneNumber}</p>
+                </>
+              )}
             </div>
+
           </div>
         ))}
       </div>
@@ -164,66 +170,70 @@ export default function KlienciPage() {
             className="bg-white w-full max-w-2xl rounded-xl shadow-xl p-8 relative space-y-8 max-h-[90vh] overflow-y-auto"
           >
             <h2 className="text-2xl font-bold border-b pb-2">
-              Informacje o kliencie: {selectedClient.firstName} {selectedClient.lastName}
+              Informacje o kliencie: {selectedClient.name}
             </h2>
 
-            {/* Sekcja: Dane kontaktowe */}
-            <div className="space-y-2 text-sm">
-              <h3 className="text-lg font-semibold text-gray-800">Dane kontaktowe</h3>
-              <table className="min-w-full text-sm border rounded-md overflow-hidden">
-                <tbody>
-                  <tr className="border-b">
-                    <td className="px-4 py-2 font-medium bg-gray-50 w-1/3">Email</td>
-                    <td className="px-4 py-2">{selectedClient.email}</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="px-4 py-2 font-medium bg-gray-50">Telefon</td>
-                    <td className="px-4 py-2">{selectedClient.phone}</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-2 font-medium bg-gray-50">Status</td>
-                    <td className="px-4 py-2">
-                      <span
-                        className={`inline-block px-2 py-1 text-xs rounded font-medium ${
-                          selectedClient.status === "Aktywny"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {selectedClient.status}
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
 
-            {/* Sekcja: Kontakty firmowe */}
-            {selectedClient.companyContacts?.length > 0 && (
+
+
               <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-gray-800">Dodatkowe kontakty (firma)</h3>
+                <h3 className="text-lg font-semibold text-gray-800">Dane kontaktowe</h3>
                 <table className="min-w-full text-sm border rounded-md overflow-hidden">
                   <thead className="bg-gray-100 text-gray-700">
                     <tr>
-                      <th className="px-4 py-2 text-left">Imię/Nazwa</th>
+                      <th className="px-4 py-2 text-left">Osoba</th>
                       <th className="px-4 py-2 text-left">Email</th>
                       <th className="px-4 py-2 text-left">Telefon</th>
+                      <th className="px-4 py-2 text-left">Stanowisko</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {selectedClient.companyContacts.map((contact, index) => (
+                    {selectedClient.clientContactsDto.map((contact, index) => (
                       <tr key={index} className="border-t">
-                        <td className="px-4 py-2">{contact.name}</td>
+                        <td className="px-4 py-2">{contact.firstName} {contact.lastName}</td>
                         <td className="px-4 py-2">{contact.email}</td>
-                        <td className="px-4 py-2">{contact.phone}</td>
+                        <td className="px-4 py-2">{contact.phoneNumber}</td>
+                        <td className="px-4 py-2">{contact.position}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            )}
+
+                            <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-gray-800">Adresy</h3>
+                <table className="min-w-full text-sm border rounded-md overflow-hidden">
+                  <thead className="bg-gray-100 text-gray-700">
+                    <tr>
+                      <th className="px-4 py-2 text-left">Ulica</th>
+                      <th className="px-4 py-2 text-left">Numer budynku</th>
+                      <th className="px-4 py-2 text-left">Numer pokoju</th>
+                      <th className="px-4 py-2 text-left">Miasto</th>
+                      <th className="px-4 py-2 text-left">Kod pocztowy</th>
+                      <th className="px-4 py-2 text-left">Województwo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedClient.addressesDto.map((address, index) => (
+                      <tr key={index} className="border-t">
+                        <td className="px-4 py-2">{address.street || "-"}</td>
+                        <td className="px-4 py-2">{address.buildingNumber || "-"}</td>
+                        <td className="px-4 py-2">{address.apartmentNumber || "-"}</td>
+                        <td className="px-4 py-2">{address.city || "-"}</td>
+                        <td className="px-4 py-2">{address.postalCode || "-"}</td>
+                        <td className="px-4 py-2">{address.province || "-"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
             <div className="flex justify-end gap-2">
+              <button
+                onClick={() => handleUserDelete(selectedClient.id)}
+                className="px-6 px-2 bg-gray-200 text-black rounded-md hover:bg-gray-300 transition-all font-medium">
+                  Usuń
+                </button>
               <button
                 onClick={() =>
                   window.open(`/klienci/client-edit?id=${selectedClient.id}`, "_blank", "width=800,height=700")

@@ -1,30 +1,27 @@
 import React, { useState } from "react";
 import axios from "axios";
-import Router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
+
 export default function ClientAddPage() {
   const [client, setClient] = useState({
     name: "",
     notes: "",
   });
 
-  const router = useRouter();
+  const router = useRouter(); // Correct Next.js hook
 
-const handleSave = () => {
-  axios
-    .post("http://localhost:8080/api/client/add", client)
-    .then((res) => {
-      const newClientId = res.data.id; // Ensure your backend returns the new client ID here
-      alert("Klient został dodany");
+  const handleSave = () => {
+    axios
+      .post("http://localhost:8080/api/client/add", client)
+      .then((res) => {
+        const newClientId = res.data.id; // Ensure backend returns ID
 
-      // Open client-edit in new tab
-      window.open(`/klienci/client-edit?id=${newClientId}`, "_self", "width=800,height=700");
-
-
-    })
-    .catch((err) => {
-      alert(`Błąd podczas dodawania klienta. ${err}`);
-    });
-};
+      window.location.href = `/klienci/client-edit?id=${newClientId}`;
+      })
+      .catch((err) => {
+        alert(`Błąd podczas dodawania klienta. ${err}`);
+      });
+  };
 
 
 

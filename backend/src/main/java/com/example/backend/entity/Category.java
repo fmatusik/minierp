@@ -25,6 +25,9 @@ public class Category {
     @Column(nullable = false, name = "name")
     private String name;
 
+    @Column(nullable = false, name = "color")
+    private String color;
+
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "data")
     private Data data;

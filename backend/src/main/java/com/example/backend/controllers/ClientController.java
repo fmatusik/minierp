@@ -1,9 +1,11 @@
 package com.example.backend.controllers;
 
 import com.example.backend.dto.ClientDto;
+import com.example.backend.entity.Client;
 import com.example.backend.mapper.ClientMapper;
 import com.example.backend.repository.ClientRepository;
 import com.example.backend.services.ClientService;
+import com.example.backend.services.impl.ClientServiceImpl;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +24,7 @@ public class ClientController {
 
     @GetMapping("/all")
     public List<ClientDto> getAllClients() {
-        return clientMapper.toDtoList(clientRepository.findAll());
+        return clientService.findAllDto();
     }
 
     @GetMapping("/one/{id}")
@@ -33,6 +35,15 @@ public class ClientController {
     @PostMapping("/add")
     public ClientDto addClient(@RequestBody ClientDto clientDto) {
         return clientService.addClient(clientDto);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public String deleteClient(@PathVariable Long id){
+        if(clientService.deleteClient(id)){
+            return "Pomyślnie usunięto klienta";
+        }else{
+            return "Wystąpił nieoczekiwany błąd";
+        }
     }
 
 

@@ -1,29 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import clsx from "clsx";
-import ColorPicker from "../../../components/ColorPicker"; // <-- dodaj
-import { products, categories, images } from "../../dummyData";
+import ColorPicker from "../../../components/ColorPicker";
 
-export default function CategoryPage({ category }) {
+export default function CategoryPage({ categoryId }) {
   const [headerColor, setHeaderColor] = useState("bg-purple-600");
+  const [category, setCategory] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const categoryMap = categories.reduce((acc, category) => ({
-    ...acc,
-    [category.product.id]: category.name,
-  }), {});
+  useEffect(() => {
+    const fetchCategoryData = async () => {
+      try {
+        const res = await fetch(`http://localhost:8080/api/category/one/${categoryId}`);
+        if (!res.ok) throw new Error("Failed to fetch category");
+        const data = await res.json();
 
-  const imageMap = images.reduce((acc, image) => ({
-    ...acc,
-    [image.product.id]: image.path,
-  }), {});
+        setCategory(data);
+        setProducts(data.products || []);
+        setHeaderColor(data.color);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const formattedProducts = products.map(product => ({
+    fetchCategoryData();
+  }, [categoryId]);
+
+  const formattedProducts = products.map((product) => ({
     id: product.id,
     name: product.name,
-    category: categoryMap[product.id] || 'Brak kategorii',
-    price: `${product.price.toFixed(2)} PLN`,
-    status: product.status.name,
-    image: imageMap[product.id] || 'https://via.placeholder.com/300x200'
+    category: category?.name || "Brak kategorii",
+    price: `${product.price?.toFixed(2)} PLN`,
+    status: product.status?.name || "Nieznany",
+    image: product.image?.path || "https://via.placeholder.com/300x200",
   }));
+
+  if (loading) return <div className="text-center py-10">Ładowanie...</div>;
+  if (error) return <div className="text-center text-red-500 py-10">{error}</div>;
 
   return (
     <div className="mx-auto bg-white rounded-2xl overflow-hidden shadow-sm">
@@ -52,11 +68,11 @@ export default function CategoryPage({ category }) {
       {/* Content */}
       <div className="pt-12 px-6 pb-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold">{category.name}</h2>
+          <h2 className="text-lg font-bold">{category?.name || "Kategoria"}</h2>
           <div className="flex items-center gap-2">
             <ColorPicker selectedColor={headerColor} onSelect={setHeaderColor} />
             <button className="border border-black rounded-full px-4 py-1 text-sm font-bold">
-              Edytuj
+              Usuń
             </button>
           </div>
         </div>

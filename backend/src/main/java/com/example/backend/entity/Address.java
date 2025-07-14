@@ -37,7 +37,7 @@ public class Address {
     @Column(nullable = false, name = "province")
     private String province;
 
-    @Column(nullable = false, name="streen")
+    @Column(nullable = false, name="street")
     private String street;
 
     @Nullable

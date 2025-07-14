@@ -23,6 +23,18 @@ export default function ProduktyPage() {
     [image.product.id]: image.path
   }), {});
 
+  const openAddPanel = () => {
+        const width = 1200;
+    const height = 900;
+
+    const left = window.screenX + (window.innerWidth - width) / 2;
+    const top = window.screenY + (window.innerHeight - height) / 2;
+
+    const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
+
+    window.open(`/produkty/add`, "_blank", features);
+  }
+ 
   // Prepare product data for display
   const formattedProducts = products.map(product => ({
     id: product.id,
@@ -77,7 +89,7 @@ export default function ProduktyPage() {
           <h1 className="text-3xl font-bold">Produkty</h1>
           <p className="text-gray-600 text-sm">Zarządzaj asortymentem i cenami produktów</p>
         </div>
-        <button className="px-4 py-2 bg-black text-white rounded-md">+ Nowy produkt</button>
+        <button className="px-4 py-2 bg-black text-white rounded-md" onClick={openAddPanel}>+ Nowy produkt</button>
       </div>
 
       {/* Filters */}

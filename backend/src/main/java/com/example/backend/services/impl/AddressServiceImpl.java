@@ -10,12 +10,14 @@ import com.example.backend.repository.ClientRepository;
 import com.example.backend.services.AddressService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Service
+@Component
 public class AddressServiceImpl implements AddressService {
     @Autowired
     private final AddressRepository addressRepository;
@@ -46,7 +48,6 @@ public class AddressServiceImpl implements AddressService {
             addressRepository.deleteById(id);
             return true;
         } catch (Exception e) {
-
             return false;
         }
     }

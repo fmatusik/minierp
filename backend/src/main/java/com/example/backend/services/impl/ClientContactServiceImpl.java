@@ -23,6 +23,8 @@ public class ClientContactServiceImpl implements ClientContactService {
     private final ClientContactRepository clientContactRepository;
     @Autowired
     private ClientRepository clientRepository;
+    @Autowired
+    private final ClientContactMapper clientContactMapper;
 
     @Override
     public ClientContactDto addClientContact(ClientContactDto clientContactDto) {
@@ -35,4 +37,33 @@ public class ClientContactServiceImpl implements ClientContactService {
         ClientContact savedClientContact = clientContactRepository.save(clientContactEntity);
         return ClientContactMapper.toDto(savedClientContact);
     }
+
+    @Override
+    public Boolean deleteClientContact(Long id) {
+        try {
+            if (!clientContactRepository.existsById(id)) {
+                return false;
+            }
+            clientContactRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public ClientContactDto updateClientContact(ClientContactDto updatedContactDto) {
+        var existing = clientContactRepository.findById(updatedContactDto.getId())
+                .orElseThrow(() -> new RuntimeException("Kontakt nie istnieje"));
+
+        existing.setFirstName(updatedContactDto.getFirstName());
+        existing.setLastName(updatedContactDto.getLastName());
+        existing.setEmail(updatedContactDto.getEmail());
+        existing.setPhoneNumber(updatedContactDto.getPhoneNumber());
+        existing.setPosition(updatedContactDto.getPosition());
+
+        clientContactRepository.save(existing);
+        return clientContactMapper.toDto(existing);
+    }
+
 }

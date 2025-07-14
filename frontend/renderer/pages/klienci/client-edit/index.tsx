@@ -4,10 +4,11 @@ export default function ClientEditPage() {
   const [clientId, setClientId] = useState(null);
   const [client, setClient] = useState(null);
   const [contacts, setContacts] = useState([]);
-  const [newContact, setNewContact] = useState({ firstName: "", lastName: "", email: "", phoneNumber: "", position: "", clientId: clientId });
+  const [newContact, setNewContact] = useState({ id: null, firstName: "", lastName: "", email: "", phoneNumber: "", position: "", clientId: clientId });
   
   const [addresses, setAddresses] = useState([]);
   const [newAddress, setNewAddress] = useState({
+    id: null,
     buildingNumber: "",
     apartmentNumber: "",
     postalCode: "",
@@ -16,6 +17,7 @@ export default function ClientEditPage() {
     street: "",
     clientId: clientId,
   });
+
 
 useEffect(() => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -51,7 +53,7 @@ useEffect(() => {
     if(newContact != null){
       axios.post("http://localhost:8080/api/clientContact/add", newContact)
       .then((res) => {
-        alert("Pomyślnie dodano kontakt");
+        setNewContact((prev) => ({...prev, id:res.data.id}));
         addContact();
       }
       ).catch((err) => {
@@ -60,41 +62,45 @@ useEffect(() => {
     }
   }
 
-  const handlerAddressAdd = () => {
-    console.log(newAddress.clientId);
-    if(newAddress != null){
-      axios.post("http://localhost:8080/api/address/add", newAddress)
-      .then((res) => {
-        alert("Pomyślnie dodano adres")
-        addAddress();
-      })
-      .catch((err) => {
-        alert(err);
-      })
-    }
-  }
+const handleAddressAdd = async () => {
+  if (!newAddress) return;
 
-  const handleContactChange = (index, field, value) => {
-    const updated = [...contacts];
-    updated[index][field] = value;
-    setContacts(updated);
-  };
+  try {
+    const res = await axios.post("http://localhost:8080/api/address/add", newAddress);
+    console.log("Response data:", res.data);
+    setNewAddress((prev) => ({ ...prev, id: res.data.id }));
+    addAddress(); // Consider passing res.data.id if needed
+  } catch (err) {
+    alert(err);
+  }
+};
+
+const handleContactChange = (index, field, value) => {
+  const updated = [...contacts];
+  updated[index][field] = value;
+  setContacts(updated);
+  updateContact(updated[index]); // aktualizuj kontakt na serwerze
+};
+
+
+
 
   const addContact = () => {
     if (!newContact.firstName) return;
     setContacts([...contacts, newContact]);
-    setNewContact({ firstName: "", lastName: "", email: "", phoneNumber: "", position: "", clientId: clientId });
+    setNewContact({ firstName: "", lastName: "", email: "", phoneNumber: "", position: "", clientId: clientId, id:null });
+    window.location.reload();
   };
 
-  const removeContact = (index) => {
-    setContacts(contacts.filter((_, i) => i !== index));
+  const removeContact = (contactId) => {
+    if (!contactId) return alert("Contact ID is missing");
+    axios.delete(`http://localhost:8080/api/clientContact/delete/${contactId}`)
+    .then((res) => {
+      window.location.reload()
+    })
+    .catch((err)=> alert(err));
   };
 
-  const handleAddressChange = (index, field, value) => {
-    const updated = [...addresses];
-    updated[index][field] = value;
-    setAddresses(updated);
-  };
 
   const addAddress = () => {
     if (!newAddress.city || !newAddress.street) return;
@@ -106,18 +112,59 @@ useEffect(() => {
       city: "",
       province: "",
       street: "",
-      clientId: clientId
+      clientId: clientId,
+      id: null,
     });
+
+    window.location.reload();
   };
 
-  const removeAddress = (index) => {
-    axios.delete(`http://localhost:8080/api/address/delete/${index}`)
+  const handleAddressChange = (index, field, value) => {
+    const updated = [...addresses];
+    updated[index][field] = value;
+    setAddresses(updated);
+    updateAddress(updated[index]); // aktualizuj adres na serwerze
+  };
+  
+  const removeAddress = (addressId) => {
+    if (!addressId) return alert("Address ID is missing");
+    axios.delete(`http://localhost:8080/api/address/delete/${addressId}`)
     .then((res) => {
-        console.log(res);
-        alert(res.data);
+        window.location.reload();
       }
     ).catch((err) => alert(err));
   };
+
+const updateContact = async (contact) => {
+  if (!contact.id) return;
+  try {
+    await axios.put(`http://localhost:8080/api/clientContact/update/${contact.id}`, contact);
+  } catch (err) {
+    alert("Błąd podczas aktualizacji kontaktu: " + err);
+  }
+};
+
+const updateAddress = async (address) => {
+  if (!address.id) return;
+  try {
+    await axios.put(`http://localhost:8080/api/address/update/${address.id}`, address);
+  } catch (err) {
+    alert("Błąd podczas aktualizacji adresu: " + err);
+  }
+};
+
+  
+  const handleSaveChanges = async () => {
+  try {
+    await Promise.all([
+      ...contacts.map(contact => updateContact(contact)),
+      ...addresses.map(address => updateAddress(address))
+    ]);
+    alert("Zmiany zapisane pomyślnie");
+  } catch (err) {
+    alert("Błąd przy zapisie zmian: " + err);
+  }
+};
 
   if (!client) {
     return (
@@ -144,8 +191,8 @@ useEffect(() => {
               <input type="text" className="input" placeholder="Nazwisko" value={contact.lastName} onChange={(e) => handleContactChange(index, "lastName", e.target.value)} />
               <input type="email" className="input" placeholder="Email" value={contact.email} onChange={(e) => handleContactChange(index, "email", e.target.value)} />
               <input type="text" className="input" placeholder="Telefon" value={contact.phoneNumber} onChange={(e) => handleContactChange(index, "phoneNumber", e.target.value)} />
-            <input type="text" className="input" placeholder="Stanowisko" value={contact.position} onChange={(e) => setNewContact({ ...newContact, "position": e.target.value })} />
-              <button onClick={() => removeContact(index)} className="text-red-600 hover:text-red-700 transition text-sm underline">Usuń</button>
+            <input type="text" className="input" placeholder="Stanowisko" value={contact.position} onChange={(e) => handleContactChange(index, "position", e.target.value )} />
+              <button onClick={() => removeContact(contact.id)} className="text-red-600 hover:text-red-700 transition text-sm underline">Usuń</button>
             </div>
           ))}
           <div className="flex flex-col md:flex-row gap-3 items-center mt-4">
@@ -164,14 +211,14 @@ useEffect(() => {
         <h2 className="text-xl font-semibold text-gray-800 mb-4">Adresy</h2>
         <div className="space-y-4">
           {addresses.map((address, index) => (
-            <div key={address.id} className="grid grid-cols-2 md:grid-cols-3 gap-3 items-center">
+            <div key={index} className="grid grid-cols-2 md:grid-cols-3 gap-3 items-center">
               <input type="text" className="input" placeholder="Ulica" value={address.street} onChange={(e) => handleAddressChange(index, "street", e.target.value)} />
               <input type="text" className="input" placeholder="Miasto" value={address.city} onChange={(e) => handleAddressChange(index, "city", e.target.value)} />
               <input type="text" className="input" placeholder="Kod pocztowy" value={address.postalCode} onChange={(e) => handleAddressChange(index, "postalCode", e.target.value)} />
               <input type="text" className="input" placeholder="Numer budynku" value={address.buildingNumber} onChange={(e) => handleAddressChange(index, "buildingNumber", e.target.value)} />
               <input type="text" className="input" placeholder="Numer mieszkania" value={address.apartmentNumber} onChange={(e) => handleAddressChange(index, "apartmentNumber", e.target.value)} />
               <input type="text" className="input" placeholder="Województwo" value={address.province} onChange={(e) => handleAddressChange(index, "province", e.target.value)} />
-              <button onClick={() => removeAddress(index)} className="text-red-600 hover:text-red-700 transition text-sm underline col-span-2 md:col-span-1">Usuń</button>
+              <button onClick={() => removeAddress(address.id)} className="text-red-600 hover:text-red-700 transition text-sm underline col-span-2 md:col-span-1">Usuń</button>
             </div>
           ))}
 
@@ -182,14 +229,14 @@ useEffect(() => {
             <input type="text" className="input" placeholder="Numer budynku" value={newAddress.buildingNumber} onChange={(e) => setNewAddress({ ...newAddress, buildingNumber: e.target.value })} />
             <input type="text" className="input" placeholder="Numer mieszkania" value={newAddress.apartmentNumber} onChange={(e) => setNewAddress({ ...newAddress, apartmentNumber: e.target.value })} />
             <input type="text" className="input" placeholder="Województwo" value={newAddress.province} onChange={(e) => setNewAddress({ ...newAddress, province: e.target.value })} />
-            <button onClick={handlerAddressAdd} className="bg-primary hover:bg-primaryhover text-white px-4 py-2 rounded-lg text-sm transition col-span-2 md:col-span-1">Dodaj</button>
+            <button onClick={handleAddressAdd} className="bg-primary hover:bg-primaryhover text-white px-4 py-2 rounded-lg text-sm transition col-span-2 md:col-span-1">Dodaj</button>
           </div>
         </div>
       </div>
 
       {/* Zapisz */}
       <div className="text-right">
-        <button className="mt-6 bg-gray-900 hover:bg-black text-white font-semibold px-6 py-3 rounded-xl transition">
+        <button className="mt-6 bg-gray-900 hover:bg-black text-white font-semibold px-6 py-3 rounded-xl transition"   onClick={handleSaveChanges}>
           Zapisz zmiany
         </button>
       </div>

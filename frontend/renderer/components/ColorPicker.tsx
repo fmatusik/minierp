@@ -33,6 +33,7 @@ export default function ColorPicker({ selectedColor, onSelect }) {
       {/* Kropka */}
       <button
         className={clsx("w-5 h-5 rounded-full border-2", selectedColor)}
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
       />
       
@@ -42,6 +43,7 @@ export default function ColorPicker({ selectedColor, onSelect }) {
           <div className="grid grid-cols-5 gap-2">
             {tailwindColors.map((color) => (
               <button
+                type="button"
                 key={color}
                 className={clsx(
                   "w-6 h-6 rounded-full border-2",

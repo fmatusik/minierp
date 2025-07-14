@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.example.backend.enums.StatusType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,6 +19,12 @@ public class Status {
 
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private StatusType type;
+
+    @Column(nullable = false)
+    private String color;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "data")
