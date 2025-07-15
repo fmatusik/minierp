@@ -13,17 +13,16 @@ import java.util.List;
 @RequestMapping("/api/address")
 public class AddressController {
 
-    private final AddressServiceImpl addressServiceImpl;
     private final AddressService addressService;
 
     @PostMapping("/add")
     public AddressDto addAddress(@RequestBody AddressDto addressDto){
-        return addressServiceImpl.addAddress(addressDto);
+        return addressService.addAddress(addressDto);
     }
 
     @DeleteMapping("/delete/{id}")
     public String deleteAddress(@PathVariable Long id){
-        if(addressServiceImpl.deleteAddress(id)){
+        if(addressService.deleteAddress(id)){
             return "Pomyślnie usunięto adres";
         }else{
             return "Nieudana próba usunięcia adresu";
@@ -33,6 +32,11 @@ public class AddressController {
     @GetMapping("/one/{clientId}")
     public List<AddressDto> getAddressByClientId(@PathVariable Long clientId){
         return addressService.findByClientId(clientId);
+    }
+
+    @PutMapping("/update/{id}")
+    public AddressDto updateAddress(@RequestBody AddressDto addressDto){
+        return addressService.updateAddress(addressDto);
     }
 
 }

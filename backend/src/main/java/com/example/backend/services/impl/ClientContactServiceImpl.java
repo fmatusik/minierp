@@ -8,6 +8,7 @@ import com.example.backend.mapper.ClientContactMapper;
 import com.example.backend.repository.AddressRepository;
 import com.example.backend.repository.ClientContactRepository;
 import com.example.backend.repository.ClientRepository;
+import com.example.backend.repository.DataRepository;
 import com.example.backend.services.ClientContactService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ public class ClientContactServiceImpl implements ClientContactService {
     private ClientRepository clientRepository;
     @Autowired
     private final ClientContactMapper clientContactMapper;
+    @Autowired
+    private DataRepository dataRepository;
 
     @Override
     public ClientContactDto addClientContact(ClientContactDto clientContactDto) {
@@ -61,7 +64,9 @@ public class ClientContactServiceImpl implements ClientContactService {
         existing.setEmail(updatedContactDto.getEmail());
         existing.setPhoneNumber(updatedContactDto.getPhoneNumber());
         existing.setPosition(updatedContactDto.getPosition());
-
+        Data data = dataRepository.findById(updatedContactDto.getData().getId());
+        data.setUpdatedAt(LocalDateTime.now());
+        existing.setData(data);
         clientContactRepository.save(existing);
         return clientContactMapper.toDto(existing);
     }

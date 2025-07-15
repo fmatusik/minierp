@@ -7,6 +7,7 @@ const ITEMS_PER_LOAD = 20;
 
 export default function ZamowieniaPage() {
   const [orders, setOrders] = useState([]);
+  const [orderStatuses, setOrderStatuses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [sortOption, setSortOption] = useState("");
@@ -20,32 +21,28 @@ export default function ZamowieniaPage() {
   // Fetch all orders on mount
 
     const fetchOrders = async () => {
-    try {
-      const { data } = await axios.get("http://localhost:8080/api/orders/all");
-
-      // Adapt backend structure to frontend structure
-      const adaptedOrders = data.map(order => ({
-        id: order.id,
-        documentNumber: order.documentNumber,
-        client: order.clientDto,
-        status: order.statusDto,
-        address: order.clientDto.addressesDto?.[0] || {},
-        deliveryDate: order.deliveryDate,
-        paymentStatus: order.paymentStatus,
-        totalPrice: order.totalPrice || order.price,
-        price: order.totalPrice || order.price,
-        orderItem: order.orderItem,
-        data: order.data
-      }));
-
-      setOrders(adaptedOrders);
-    } catch (err) {
-      console.error("Failed to fetch orders", err);
-    }
+      axios.get("http://localhost:8080/api/orders/all")
+      .then((res) => {
+        console.log(res.data)
+        setOrders(res.data);
+      })
+      .catch((err) => {
+        alert("Wystąpił nieoczekiwany błąd")
+        console.error(err);
+      })
   };
   
+    const fetchStatuses = () => {
+      axios.get("http://localhost:8080/api/status/all/order")
+      .then((res) => setOrderStatuses(res.data))
+      .catch((err) => {
+        console.error("Błąd podczas pobierania statusów", err);
+      });
+    }
+
   useEffect(() => {
     fetchOrders();
+    fetchStatuses();
   }, []);
 
 
@@ -67,33 +64,39 @@ export default function ZamowieniaPage() {
   }, [selectedOrder]);
 
   const filteredOrders = useMemo(() => {
-    let filtered = [...orders];
-    if (searchTerm) {
-      const lower = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (order) =>
-          order.id.toLowerCase().includes(lower) ||
-          order.client.name.toLowerCase().includes(lower)
-      );
-    }
-    if (statusFilter) {
-      filtered = filtered.filter((order) => order.status.name === statusFilter);
-    }
-    if (sortOption === "created-desc") {
-      filtered.sort((a, b) => b.data.createdAt.localeCompare(a.data.createdAt));
-    } else if (sortOption === "created-asc") {
-      filtered.sort((a, b) => a.data.createdAt.localeCompare(b.data.createdAt));
-    } else if (sortOption === "client-asc") {
-      filtered.sort((a, b) => a.client.name.localeCompare(b.client.name));
-    } else if (sortOption === "client-desc") {
-      filtered.sort((a, b) => b.client.name.localeCompare(a.client.name));
-    } else if (sortOption === "price-desc") {
-      filtered.sort((a, b) => parseInt(b.totalPrice) - parseInt(a.totalPrice));
-    } else if (sortOption === "price-asc") {
-      filtered.sort((a, b) => parseInt(a.totalPrice) - parseInt(b.totalPrice));
-    }
-    return filtered;
-  }, [orders, searchTerm, statusFilter, sortOption]);
+  let filtered = [...orders];
+
+  // Szukanie tylko po numerze zamówienia
+  if (searchTerm) {
+    const lower = searchTerm.toLowerCase();
+    filtered = filtered.filter(order =>
+      order.documentNumber.toLowerCase().includes(lower)
+    );
+  }
+
+  // Filtrowanie po statusie
+  if (statusFilter) {
+    filtered = filtered.filter(order => order.statusDto.name === statusFilter);
+  }
+
+  // Sortowanie
+  if (sortOption === "created-desc") {
+    filtered.sort((a, b) => b.data.createdAt.localeCompare(a.data.createdAt));
+  } else if (sortOption === "created-asc") {
+    filtered.sort((a, b) => a.data.createdAt.localeCompare(b.data.createdAt));
+  } else if (sortOption === "client-asc") {
+    filtered.sort((a, b) => a.clientDto.name.localeCompare(b.clientDto.name));
+  } else if (sortOption === "client-desc") {
+    filtered.sort((a, b) => b.clientDto.name.localeCompare(a.clientDto.name));
+  } else if (sortOption === "price-desc") {
+    filtered.sort((a, b) => parseInt(b.price) - parseInt(a.price));
+  } else if (sortOption === "price-asc") {
+    filtered.sort((a, b) => parseInt(a.price) - parseInt(b.price));
+  }
+
+  return filtered;
+}, [orders, searchTerm, statusFilter, sortOption]);
+
 
   const visibleOrders = filteredOrders.slice(0, visibleCount);
 
@@ -161,48 +164,6 @@ export default function ZamowieniaPage() {
 
   }
 
-  // Duplikuj zamówienie przez API
-  const handleDuplicate = async (order) => {
-    try {
-      const newOrder = {
-        id: null,
-        documentNumber: `COPY-${order.documentNumber}`,
-        client: { id: order.client.id },
-        status: { id: order.status.id },
-        address: { id: order.address.id },
-
-        orderItem: {
-          ...order.orderItem,
-          id: null,
-          data: {
-            ...order.orderItem.data,
-            id: null,
-          },
-          product: Array.isArray(order.orderItem.product)
-            ? order.orderItem.product.map(p => ({ id: p.id }))
-            : { id: order.orderItem.product.id }
-        },
-
-        data: {
-          ...order.data,
-          id: null,
-          createdAt: new Date().toISOString(),
-        },
-      };
-
-      const { data: createdOrder } = await axios.post(
-        "http://localhost:8080/api/orders",
-        newOrder
-      );
-
-      setOrders((prev) => [...prev, createdOrder]);
-    } catch (err) {
-      console.error("Failed to duplicate order", err);
-      alert("Nie udało się zdublować zamówienia");
-    }
-  };
-
-
 
   // Usuń zamówienie przez API
   const handleDelete = async (id) => {
@@ -224,14 +185,8 @@ export default function ZamowieniaPage() {
 
 
   const handleReload = async () => {
-  try {
-    const { data } = await axios.get("http://localhost:8080/api/orders/all");
-    setOrders(data);
-    setVisibleCount(ITEMS_PER_LOAD); // Resetuj widoczność
-  } catch (err) {
-    console.error("Failed to reload orders", err);
-    alert("Błąd podczas odświeżania zamówień");
-  }
+    fetchOrders();
+    fetchStatuses();
 };
 
 
@@ -265,10 +220,13 @@ export default function ZamowieniaPage() {
           onChange={(e) => setStatusFilter(e.target.value)}
         >
           <option value="">Status zamówienia</option>
-          <option value="W realizacji">W realizacji</option>
-          <option value="Zrealizowane">Zrealizowane</option>
-          <option value="Anulowane">Anulowane</option>
+          {orderStatuses.map((status) => (
+            <option key={status.id} value={status.name}>
+              {status.name}
+            </option>
+          ))}
         </select>
+
         <select
           className="px-3 py-2 border rounded-md outline-none"
           value={sortOption}
@@ -315,21 +273,15 @@ export default function ZamowieniaPage() {
                 >
                   {order.documentNumber}
                 </td>
-                <td className="px-4 py-2">{order.client.name}</td>
-                <td className="px-4 py-2">{order.status.name}</td>
+                <td className="px-4 py-2">{order.clientDto.name}</td>
+                <td className="px-4 py-2"><span className={`${order.statusDto.color} px-1 rounded-md`}>{order.statusDto.name} </span> </td>
                 <td className="px-4 py-2">{new Date(order.data.createdAt).toLocaleDateString()}</td>
                 <td className="px-4 py-2">{new Date(order.deliveryDate).toLocaleDateString()}</td>
                 <td className="px-4 py-2">{order.paymentStatus}</td>
                 <td className="px-4 py-2">
-                  {parseInt(order.price).toLocaleString()} PLN
+                  {order.price.toLocaleString()} PLN
                 </td>
                 <td className="px-4 py-2 space-x-2">
-                  <button
-                    onClick={() => handleDuplicate(order)}
-                    className="text-blue-600 underline"
-                  >
-                    Duplikuj
-                  </button>
                   <button
                     onClick={() => handleDelete(order.id)}
                     className="text-red-600 underline"

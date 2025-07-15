@@ -7,6 +7,7 @@ import com.example.backend.entity.Data;
 import com.example.backend.mapper.AddressMapper;
 import com.example.backend.repository.AddressRepository;
 import com.example.backend.repository.ClientRepository;
+import com.example.backend.repository.DataRepository;
 import com.example.backend.services.AddressService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
     @Autowired
     private final ClientRepository clientRepository;
+    @Autowired
+    private DataRepository dataRepository;
 
     //basically convert z dto na entity i potem dodanie do bazy
     //return dto
@@ -59,5 +62,25 @@ public class AddressServiceImpl implements AddressService {
         return AddressMapper.toDtoList(addressRepository.findByClient(client));
 
     }
+
+    @Override
+    public AddressDto updateAddress(AddressDto addressDto) {
+        var existingAddress = addressRepository.findById((long) addressDto.getId());
+
+        existingAddress.setBuildingNumber(addressDto.getBuildingNumber());
+        existingAddress.setApartmentNumber(addressDto.getApartmentNumber());
+        existingAddress.setPostalCode(addressDto.getPostalCode());
+        existingAddress.setCity(addressDto.getCity());
+        existingAddress.setProvince(addressDto.getProvince());
+        existingAddress.setStreet(addressDto.getStreet());
+
+        Data data = dataRepository.findById((long) addressDto.getData().getId());
+        data.setUpdatedAt(LocalDateTime.now());
+        existingAddress.setData(data);
+        addressRepository.save(existingAddress);
+        return AddressMapper.toDto(existingAddress);
+    }
+
+
 
 }

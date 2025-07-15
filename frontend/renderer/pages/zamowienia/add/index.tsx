@@ -170,22 +170,21 @@ export default function AddOrderForm() {
       console.log("Order created with ID:", newOrderId);
 
       // 2. Add Order Items using the newOrderId
-if (orderItemsToAdd.length > 0) {
-  const orderItemsPayload = orderItemsToAdd.map((item) => ({
-    productId: item.productId,
-    quantity: item.quantity,
-    price: item.price, // Ensure this is the per-item price
-    orderId: newOrderId, // Explicitly set the orderId here
-  }));
+    if (orderItemsToAdd.length > 0) {
+      const orderItemsPayload = orderItemsToAdd.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        price: item.price, // Ensure this is the per-item price
+        orderId: newOrderId, // Explicitly set the orderId here
+      }));
 
   try {
     // Create an array of promises from all the axios.post calls
-    const postPromises = orderItemsPayload.map((item) =>
-      axios.post(`http://localhost:8080/api/orderItems/add`, item)
+    await axios.post(
+      `http://localhost:8080/api/orderItems/add/list`,
+      orderItemsPayload
     );
 
-    // Wait for all promises to resolve
-    await Promise.all(postPromises);
     console.log("All order items added successfully!");
   } catch (error) {
     console.error("Error adding order items:", error);
@@ -194,7 +193,7 @@ if (orderItemsToAdd.length > 0) {
 }
 
       alert("Zamówienie utworzone pomyślnie!");
-      //window.close(); // Close window on successful submission
+      window.close(); // Close window on successful submission
     } catch (err) {
       console.error(
         "Error creating order or adding items:",

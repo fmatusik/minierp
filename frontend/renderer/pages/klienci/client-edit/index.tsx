@@ -161,6 +161,7 @@ const updateAddress = async (address) => {
       ...addresses.map(address => updateAddress(address))
     ]);
     alert("Zmiany zapisane pomyślnie");
+    window.close();
   } catch (err) {
     alert("Błąd przy zapisie zmian: " + err);
   }

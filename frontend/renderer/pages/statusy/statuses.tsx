@@ -77,6 +77,7 @@ const handleSaveEdit = async () => {
     if (confirm("Czy na pewno chcesz usunąć ten status?")) {
       axios.delete(`http://localhost:8080/api/status/delete/${id}`)
       .then((res) => {
+        alert(res.data);
         fetchStatuses();
       }
       )
