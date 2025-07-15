@@ -11,26 +11,29 @@ import {
   DollarSign,
   CheckCircle,
   Layers,
-  Package
+  Package,
 } from "lucide-react";
 import axios from "axios";
 
 export default function AddOrderForm() {
   const [clients, setClients] = useState([]);
   const [products, setProducts] = useState([]);
-  const [statuses, setStatuses] = useState([]); // For order status
+  const [statuses, setStatuses] = useState([]);
   const [clientAddresses, setClientAddresses] = useState([]);
+  const [isLoading, setIsLoading] = useState(false); // To disable button during submission
 
   const [formData, setFormData] = useState({
     clientId: null,
-    addressId: null, // This will be the ID of the selected address
+    addressId: null,
     paymentStatus: "",
-    deliveryDate: "", // YYYY-MM-DDTHH:MM format
-    documentNumber: "",
+    deliveryDate: "",
+    documentNumber: "", // Frontend will still send an empty string, backend will generate
     salePlace: "",
     statusId: null,
-    orderItems: [], 
+    // orderItems will now be managed separately for submission
   });
+
+  const [orderItemsToAdd, setOrderItemsToAdd] = useState([]); // Separate state for items to add to the order
 
   const [selectedProductForOrderItem, setSelectedProductForOrderItem] =
     useState(null);
@@ -72,7 +75,6 @@ export default function AddOrderForm() {
 
   const fetchOrderStatuses = async () => {
     try {
-      // Assuming you have an endpoint for order statuses, similar to product statuses
       const res = await axios.get("http://localhost:8080/api/status/all/order");
       setStatuses(res.data);
     } catch (err) {
@@ -82,7 +84,6 @@ export default function AddOrderForm() {
 
   const fetchClientAddresses = async (clientId) => {
     try {
-      // Assuming an endpoint like /api/client/{clientId}/addresses
       const res = await axios.get(
         `http://localhost:8080/api/address/one/${clientId}`
       );
@@ -100,7 +101,7 @@ export default function AddOrderForm() {
 
   const handleClientChange = (e) => {
     const clientId = e.target.value ? parseInt(e.target.value) : null;
-    setFormData((prev) => ({ ...prev, clientId: clientId, addressId: null })); // Reset address when client changes
+    setFormData((prev) => ({ ...prev, clientId: clientId, addressId: null }));
   };
 
   const handleProductSelectionChange = (e) => {
@@ -113,19 +114,15 @@ export default function AddOrderForm() {
     setQuantityForOrderItem(parseInt(e.target.value));
   };
 
-  const handleAddOrderItem = () => {
+  const handleAddOrderItemToList = () => {
     if (selectedProductForOrderItem && quantityForOrderItem > 0) {
       const newItem = {
         productId: selectedProductForOrderItem.id,
         quantity: quantityForOrderItem,
-        // Ensure price is a number and handle potential issues with float
-        price: parseFloat(selectedProductForOrderItem.price),
+        price: parseFloat(selectedProductForOrderItem.price), // Use price from selected product
       };
 
-      setFormData((prev) => ({
-        ...prev,
-        orderItems: [...prev.orderItems, newItem],
-      }));
+      setOrderItemsToAdd((prev) => [...prev, newItem]);
 
       // Reset picker
       setSelectedProductForOrderItem(null);
@@ -133,48 +130,79 @@ export default function AddOrderForm() {
     }
   };
 
-  const handleRemoveOrderItem = (indexToRemove) => {
-    setFormData((prev) => ({
-      ...prev,
-      orderItems: prev.orderItems.filter((_, index) => index !== indexToRemove),
-    }));
+  const handleRemoveOrderItemFromList = (indexToRemove) => {
+    setOrderItemsToAdd((prev) =>
+      prev.filter((_, index) => index !== indexToRemove)
+    );
   };
 
   const calculateTotalPrice = () => {
-    return formData.orderItems.reduce(
+    return orderItemsToAdd.reduce(
       (total, item) => total + item.quantity * item.price,
       0
     );
   };
 
+  // --- New Submission Logic ---
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Prepare data for submission
-    const orderData = {
-      clientId: formData.clientId,
-      addressId: formData.addressId,
-      paymentStatus: formData.paymentStatus,
-      deliveryDate: formData.deliveryDate,
-      documentNumber: formData.documentNumber,
-      salePlace: formData.salePlace,
-      statusId: formData.statusId,
-      price: calculateTotalPrice(), // Calculate total price before sending
-      orderItems: formData.orderItems,
-    };
-
-    console.log("Order data to send:", orderData);
+    setIsLoading(true);
 
     try {
-      const res = await axios.post(
+      // 1. Create the Order (without items initially)
+      const orderCreationPayload = {
+        clientId: formData.clientId,
+        addressId: formData.addressId,
+        paymentStatus: formData.paymentStatus,
+        deliveryDate: formData.deliveryDate,
+        documentNumber: formData.documentNumber, // Still sent empty, backend generates
+        salePlace: formData.salePlace,
+        statusId: formData.statusId,
+        price: calculateTotalPrice(), // Send total price of all items
+      };
+
+      console.log("Creating Order:", orderCreationPayload);
+      const orderRes = await axios.post(
         "http://localhost:8080/api/orders/add",
-        orderData
+        orderCreationPayload
       );
-      console.log("Order created:", res.data);
+      const newOrderId = orderRes.data.id; // Get the ID of the newly created order
+      console.log("Order created with ID:", newOrderId);
+
+      // 2. Add Order Items using the newOrderId
+      if (orderItemsToAdd.length > 0) {
+        const orderItemsPayload = orderItemsToAdd.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.price, // Ensure this is the per-item price
+          orderId: newOrderId, // Explicitly set the orderId here
+        }));
+
+        console.log("Adding Order Items:", orderItemsPayload);
+        // You might need a new endpoint for adding items to an existing order
+        // e.g., POST /api/orders/{orderId}/items or a batch add endpoint
+        await axios.post(
+          `http://localhost:8080/api/orderItems/add`, // Example new endpoint
+          orderItemsPayload
+        );
+        console.log("Order items added successfully.");
+      } else {
+        console.log("No order items to add.");
+      }
+
+      alert("Zamówienie utworzone pomyślnie!");
       window.close(); // Close window on successful submission
     } catch (err) {
-      console.error("Error creating order:", err.response ? err.response.data : err.message);
-      alert("Error creating order: " + (err.response ? err.response.data.message : err.message));
+      console.error(
+        "Error creating order or adding items:",
+        err.response ? err.response.data : err.message
+      );
+      alert(
+        "Błąd podczas tworzenia zamówienia: " +
+          (err.response ? err.response.data.message : err.message)
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -262,7 +290,6 @@ export default function AddOrderForm() {
           required
         />
 
-
         {/* Sale Place */}
         <LabeledInput
           icon={<ShoppingBag className="w-4 h-4 text-gray-400" />}
@@ -300,11 +327,15 @@ export default function AddOrderForm() {
 
       {/* --- Order Items Section --- */}
       <hr className="my-6 border-gray-200" />
-      <h3 className="text-xl font-bold text-gray-800 mb-4">Produkty w zamówieniu</h3>
+      <h3 className="text-xl font-bold text-gray-800 mb-4">
+        Produkty w zamówieniu
+      </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
         <div className="space-y-1 md:col-span-2">
-          <label className="text-sm font-medium text-gray-700">Wybierz Produkt</label>
+          <label className="text-sm font-medium text-gray-700">
+            Wybierz Produkt
+          </label>
           <div className="flex items-center border rounded-md px-3 py-2">
             <Package className="w-4 h-4 text-gray-400" />
             <select
@@ -333,7 +364,7 @@ export default function AddOrderForm() {
         />
         <button
           type="button"
-          onClick={handleAddOrderItem}
+          onClick={handleAddOrderItemToList}
           disabled={!selectedProductForOrderItem || quantityForOrderItem <= 0}
           className="md:col-span-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
         >
@@ -343,7 +374,7 @@ export default function AddOrderForm() {
       </div>
 
       {/* Table of added products */}
-      {formData.orderItems.length > 0 && (
+      {orderItemsToAdd.length > 0 && (
         <div className="mt-6 border rounded-lg overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -366,7 +397,7 @@ export default function AddOrderForm() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {formData.orderItems.map((item, index) => {
+              {orderItemsToAdd.map((item, index) => {
                 const product = products.find((p) => p.id === item.productId);
                 return (
                   <tr key={index}>
@@ -385,7 +416,7 @@ export default function AddOrderForm() {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         type="button"
-                        onClick={() => handleRemoveOrderItem(index)}
+                        onClick={() => handleRemoveOrderItemFromList(index)}
                         className="text-red-600 hover:text-red-900"
                       >
                         <XCircle className="w-5 h-5" />
@@ -395,7 +426,10 @@ export default function AddOrderForm() {
                 );
               })}
               <tr>
-                <td colSpan="3" className="px-6 py-4 text-right text-base font-bold text-gray-900">
+                <td
+                  colSpan="3"
+                  className="px-6 py-4 text-right text-base font-bold text-gray-900"
+                >
                   Suma całkowita:
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-base font-bold text-gray-900">
@@ -410,17 +444,51 @@ export default function AddOrderForm() {
 
       <button
         type="submit"
+        disabled={isLoading} // Disable button while loading
         className="mt-6 w-full px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-all flex items-center justify-center gap-2"
       >
-        <CheckCircle className="w-5 h-5" />
-        Zapisz zamówienie
+        {isLoading ? (
+          <svg
+            className="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        ) : (
+          <CheckCircle className="w-5 h-5" />
+        )}
+        {isLoading ? "Zapisywanie..." : "Zapisz zamówienie"}
       </button>
     </form>
   );
 }
 
 // --- Reusable LabeledInput and TextareaInput (from your original code) ---
-function LabeledInput({ icon, label, name, value, onChange, type = "text", required = false, min = null, disabled = false }) {
+function LabeledInput({
+  icon,
+  label,
+  name,
+  value,
+  onChange,
+  type = "text",
+  required = false,
+  min = null,
+  disabled = false,
+}) {
   return (
     <div className="space-y-1">
       <label className="text-sm font-medium text-gray-700">{label}</label>
