@@ -13,4 +13,5 @@ public interface StatusService {
     StatusDto updateStatus(StatusDto statusDto);
     Boolean deleteStatus(Long id);
     List <StatusDto> findAllProductStatusesDto();
+    List <StatusDto> findAllOrderStatusesDto();
 }

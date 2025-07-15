@@ -75,5 +75,9 @@ public class StatusServiceImpl implements StatusService {
     public List<StatusDto> findAllProductStatusesDto() {
         return statusRepository.findAllByType(StatusType.PRODUCT);
     }
+    @Override
+    public List<StatusDto> findAllOrderStatusesDto(){
+        return statusRepository.findAllByType(StatusType.ORDER);
+    }
 
 }

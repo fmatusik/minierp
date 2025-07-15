@@ -18,19 +18,36 @@ export default function ZamowieniaPage() {
   const modalRef = useRef(null);
 
   // Fetch all orders on mount
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const { data } = await axios.get("http://localhost:8080/api/orders/all");
-        setOrders(data);
-        console.log(data);
-      } catch (err) {
-        console.error("Failed to fetch orders", err);
-      }
-    };
 
+    const fetchOrders = async () => {
+    try {
+      const { data } = await axios.get("http://localhost:8080/api/orders/all");
+
+      // Adapt backend structure to frontend structure
+      const adaptedOrders = data.map(order => ({
+        id: order.id,
+        documentNumber: order.documentNumber,
+        client: order.clientDto,
+        status: order.statusDto,
+        address: order.clientDto.addressesDto?.[0] || {},
+        deliveryDate: order.deliveryDate,
+        paymentStatus: order.paymentStatus,
+        totalPrice: order.totalPrice || order.price,
+        price: order.totalPrice || order.price,
+        orderItem: order.orderItem,
+        data: order.data
+      }));
+
+      setOrders(adaptedOrders);
+    } catch (err) {
+      console.error("Failed to fetch orders", err);
+    }
+  };
+  
+  useEffect(() => {
     fetchOrders();
   }, []);
+
 
   // Close modal if clicked outside
   useEffect(() => {

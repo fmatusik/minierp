@@ -1,8 +1,10 @@
 package com.example.backend.mapper;
 
-import com.example.backend.dto.OrderDto;
+import com.example.backend.dto.*;
+import com.example.backend.entity.Address;
+import com.example.backend.entity.Client;
 import com.example.backend.entity.Order;
-import com.example.backend.entity.OrderItem;
+import com.example.backend.entity.Status;
 import lombok.AllArgsConstructor; // Add this import
 import org.springframework.stereotype.Component;
 
@@ -16,51 +18,71 @@ public class OrderMapper {
     // Inject OrderItemMapper
     private final OrderItemMapper orderItemMapper;
 
-    public static OrderDto toDto(Order order) {
-        return OrderDto.builder()
+    public static OrderAddDto toDto(Order order) {
+        return OrderAddDto.builder()
                 .id(order.getId())
-                .clientDto(order.getClient() != null ? ClientMapper.toDto(order.getClient()) : null)
-                .status(order.getStatus())
+                .clientId(order.getClient() != null ? ClientMapper.toDto(order.getClient()).getId() : null)
+                .statusId(order.getStatus().getId())
                 .data(order.getData())
                 .price(order.getPrice())
                 .paymentStatus(order.getPaymentStatus())
-                .addressDto(order.getAddress() != null ? AddressMapper.toDto(order.getAddress()) : null)
+                .addressId(order.getAddress() != null ? AddressMapper.toDto(order.getAddress()).getId() : null)
                 .deliveryDate(order.getDeliveryDate())
                 .documentNumber(order.getDocumentNumber())
                 .salePlace(order.getSalePlace())
-                .stockMovementsDto(order.getStockMovements() != null
-                        ? StockMovementMapper.toDtoList(order.getStockMovements()) : null)
                 .orderItems(order.getOrderItems() != null ? OrderItemMapper.toDtoList(order.getOrderItems()) : null)
                 .build();
     }
 
-    public Order toEntity(OrderDto orderDto) { // Make this method non-static
+    public Order toEntity(OrderAddDto orderAddDto, Client client, Status status, Address address) { // Make this method non-static
         return Order.builder()
-                .id(orderDto.getId())
-                .client(orderDto.getClientDto() != null ? ClientMapper.toEntity(orderDto.getClientDto()) : null)
-                .status(orderDto.getStatus())
-                .data(orderDto.getData())
-                .price(orderDto.getPrice())
-                .paymentStatus(orderDto.getPaymentStatus())
-                .deliveryDate(orderDto.getDeliveryDate())
-                .documentNumber(orderDto.getDocumentNumber())
-                .salePlace(orderDto.getSalePlace())
-                .address(orderDto.getAddressDto() != null ? AddressMapper.toEntity(orderDto.getAddressDto(), ClientMapper.toEntity(orderDto.getClientDto())) : null)
-                .stockMovements(orderDto.getStockMovementsDto() != null
-                        ? StockMovementMapper.toEntityList(orderDto.getStockMovementsDto()) : null)
-                .orderItems(orderDto.getOrderItems() != null ? orderItemMapper.toEntityList(orderDto.getOrderItems()) : null) // Use the injected instance
+                .id(orderAddDto.getId())
+                .client(client)
+                .status(status)
+                .data(orderAddDto.getData())
+                .price(orderAddDto.getPrice())
+                .paymentStatus(orderAddDto.getPaymentStatus())
+                .deliveryDate(orderAddDto.getDeliveryDate())
+                .documentNumber(orderAddDto.getDocumentNumber())
+                .salePlace(orderAddDto.getSalePlace())
+                .address(address)
+                .orderItems(orderAddDto.getOrderItems() != null ? orderItemMapper.toEntityList(orderAddDto.getOrderItems()) : null) // Use the injected instance
                 .build();
     }
 
-    public static List<OrderDto> toDtoList(List<Order> entityList) {
+    public static List<OrderAddDto> toDtoList(List<Order> entityList) {
         return entityList.stream()
                 .map(OrderMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    public List<Order> toEntityList(List<OrderDto> dtoList) { // Make this method non-static
-        return dtoList.stream()
-                .map(this::toEntity) // Use 'this::toEntity' to call the non-static method
+
+    public static OrderFindDto toDtoFind(Order order, ClientDto client, StatusDto status, AddressDto address) {
+        return OrderFindDto.builder()
+                .id(order.getId())
+                .clientDto(client)
+                .statusDto(status)
+                .data(order.getData())
+                .price(order.getPrice())
+                .paymentStatus(order.getPaymentStatus())
+                .addressDto(address)
+                .deliveryDate(order.getDeliveryDate())
+                .documentNumber(order.getDocumentNumber())
+                .salePlace(order.getSalePlace())
+                .orderItems(order.getOrderItems() != null ? OrderItemMapper.toDtoList(order.getOrderItems()) : null)
+                .build();
+    }
+
+    public List<OrderFindDto> toDtoFindList(List<Order> orders){
+        return orders.stream()
+                .map(order -> toDtoFind(
+                        order,
+                        order.getClient() != null ? ClientMapper.toDto(order.getClient()) : null,
+                        order.getStatus() != null ? StatusMapper.toDto(order.getStatus()) : null,
+                        order.getAddress() != null ? AddressMapper.toDto(order.getAddress()) : null
+                ))
                 .collect(Collectors.toList());
     }
+
+
 }

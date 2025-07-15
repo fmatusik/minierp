@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @Service
@@ -50,6 +51,13 @@ public class AddressServiceImpl implements AddressService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @Override
+    public List<AddressDto> findByClientId(Long clientId){
+        Client client = clientRepository.findById( (long) clientId);
+        return AddressMapper.toDtoList(addressRepository.findByClient(client));
+
     }
 
 }

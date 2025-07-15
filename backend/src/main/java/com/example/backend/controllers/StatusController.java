@@ -45,9 +45,14 @@ public class StatusController {
         }
     }
 
-    @GetMapping("all/product")
+    @GetMapping("/all/product")
     public List<StatusDto> getAllProductStatuses() {
         return statusService.findAllProductStatusesDto();
+    }
+
+    @GetMapping("/all/order")
+    public List<StatusDto> getAllOrderStatuses(){
+        return statusService.findAllOrderStatusesDto();
     }
 
 

@@ -32,6 +32,7 @@ public class ClientController {
         return clientMapper.toDto(clientRepository.findById(id).get());
     }
 
+
     @PostMapping("/add")
     public ClientDto addClient(@RequestBody ClientDto clientDto) {
         return clientService.addClient(clientDto);

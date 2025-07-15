@@ -48,9 +48,10 @@ public class Product {
     private Float dimensions;
 
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "status")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status", nullable = false)
     private Status status;
+
 
     @ManyToOne
     @JoinColumn(name="\"categoryId\"")

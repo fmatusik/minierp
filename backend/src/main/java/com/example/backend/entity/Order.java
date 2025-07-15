@@ -27,9 +27,9 @@ public class Order {
     @JsonBackReference
     private Client client;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "status")
-    private Status status; //add object
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status", nullable = false)
+    private Status status;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "data")
@@ -41,9 +41,10 @@ public class Order {
     @Column(name = "\"paymentStatus\"", nullable = false)
     private String paymentStatus;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address", nullable = false)
     private Address address;
+
 
     @Column(name = "\"deliveryDate\"", nullable = false)
     private LocalDateTime deliveryDate;

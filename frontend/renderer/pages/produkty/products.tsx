@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProductDashboard from "./dashboard";
 import EditProduct from "./edit";
 import ProductPage from "./page";
+import { RefreshCcw } from "lucide-react";
 import clsx from 'clsx';
 import axios from 'axios';
 
@@ -28,6 +29,10 @@ export default function ProduktyPage() {
         console.error("Błąd podczas pobierania produktów:", err);
       });
   };
+
+  const handleReload = () =>{
+    fetchProducts();
+  }
 
   const openAddPanel = () => {
     const width = 1200;
@@ -125,6 +130,13 @@ export default function ProduktyPage() {
             <option key={i} value={status}>{status}</option>
           ))}
         </select>
+                <button
+          onClick={handleReload}
+          title="Odśwież zamówienia"
+          className="p-2 transition-all hover:-rotate-180 hover:text-primaryhover"
+        >
+          <RefreshCcw className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Product Grid */}

@@ -16,7 +16,7 @@ public class StockMovementMapper {
                         ? WarehouseMapper.toDto(stockMovement.getSourceWarehouse()) : null)
                 .targetWarehouseDto(stockMovement.getTargetWarehouse() != null
                         ? WarehouseMapper.toDto(stockMovement.getTargetWarehouse()) : null)
-                .relatedOrderDto(stockMovement.getRelatedOrder() != null
+                .relatedOrderAddDto(stockMovement.getRelatedOrder() != null
                         ? OrderMapper.toDto(stockMovement.getRelatedOrder()) : null)
                 .note(stockMovement.getNote())
                 .data(stockMovement.getData())
