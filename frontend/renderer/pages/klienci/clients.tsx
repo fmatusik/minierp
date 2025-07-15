@@ -64,6 +64,7 @@ export default function KlienciPage() {
       if (!clientId) return alert("Client ID is missing")
       axios.delete(`http://localhost:8080/api/client/delete/${clientId}`)
       .then((res) =>{
+        console.log(res.data);
         loadClients();
       }
       ).catch((err) => {

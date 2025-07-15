@@ -83,7 +83,7 @@ export default function ProduktyPage() {
             </button>
           ))}
         </div>
-        {activeTab === "Podsumowanie" && <ProductDashboard />}
+        {activeTab === "Podsumowanie" && <ProductDashboard productId={selectedProduct.id} />}
         {activeTab === "Edycja" && <EditProduct productId={selectedProduct.id} />}
         {activeTab === "Strona produktu" && <ProductPage selectedProduct={selectedProduct.id} />}
       </div>

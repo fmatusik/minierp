@@ -73,19 +73,20 @@ const handleSaveEdit = async () => {
 };
 
 
-  const handleDelete = async (id) => {
-    if (confirm("Czy na pewno chcesz usunąć ten status?")) {
-      axios.delete(`http://localhost:8080/api/status/delete/${id}`)
-      .then((res) => {
-        alert(res.data);
-        fetchStatuses();
-      }
-      )
-      .catch((err) => {
-        console.error(err);
-      })
-    }
-  };
+const handleDelete = async (id) => {
+  try {
+    const confirmed = await window.ipc.invoke("show-confirm", "Czy na pewno chcesz usunąć ten status?");
+    if (!confirmed) return;
+
+    const res = await axios.delete(`http://localhost:8080/api/status/delete/${id}`);
+    window.ipc.invoke("show-alert", res.data);
+    fetchStatuses();
+  } catch (err) {
+    console.error("Błąd przy usuwaniu", err);
+
+  }
+};
+
 
   const filteredStatuses = allStatuses.filter((status) => {
     const matchesSearch = status.name

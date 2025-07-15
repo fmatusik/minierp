@@ -1,5 +1,5 @@
 import path from 'path'
-import { app, ipcMain } from 'electron'
+import { app, ipcMain, dialog, BrowserWindow } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
 
@@ -38,3 +38,28 @@ app.on('window-all-closed', () => {
 ipcMain.on('message', async (event, arg) => {
   event.reply('message', `${arg} World!`)
 })
+
+ipcMain.handle("show-confirm", async (event, message: string) => {
+  const result = await dialog.showMessageBox(BrowserWindow.getFocusedWindow()!, {
+    type: "question",
+    buttons: ["Tak", "Nie"],
+    defaultId: 0,
+    cancelId: 1,
+    title: "Potwierdzenie",
+    message,
+  });
+
+  return result.response === 0;
+});
+
+ipcMain.handle("show-alert", async (event, message: string) => {
+  await dialog.showMessageBox(BrowserWindow.getFocusedWindow()!, {
+    type: "info",
+    buttons: ["OK"],
+    defaultId: 0,
+    title: "Informacja",
+    message,
+  });
+
+  return true;
+});

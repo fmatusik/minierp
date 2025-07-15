@@ -41,7 +41,7 @@ public class StatusController {
         if(statusService.deleteStatus(id)){
             return "Pomyślnie usunięto status";
         }else{
-            return "Wystąpił nieoczekiwany problem w trakcie usuwania statusu";
+            return "Wystąpił nieoczekiwany problem w trakcie usuwania statusu. Pamiętaj aby wszelkie produkty/zamówienia nie miały tego statusu.";
         }
     }
 

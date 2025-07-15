@@ -114,6 +114,7 @@ public class ProductMapper {
                 .stockLevelsDto(product.getStockLevels() != null
                         ? StockLevelMapper.toDtoList(product.getStockLevels())
                         : null)
+                .orderItemDtos(product.getOrderItems() != null ? OrderItemMapper.toDtoList(product.getOrderItems()) : null)
                 .build();
     }
 

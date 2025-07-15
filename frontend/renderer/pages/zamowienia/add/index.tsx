@@ -174,7 +174,7 @@ export default function AddOrderForm() {
       const orderItemsPayload = orderItemsToAdd.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
-        price: item.price, // Ensure this is the per-item price
+        price: item.price * item.quantity, // Ensure this is the per-item price
         orderId: newOrderId, // Explicitly set the orderId here
       }));
 

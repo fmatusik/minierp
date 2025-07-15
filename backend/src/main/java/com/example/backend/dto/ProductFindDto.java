@@ -24,4 +24,5 @@ public class ProductFindDto{
     private CategoryDto categoryDto;
     private List<ImageDto> imagesDto;
     private List<StockLevelDto> stockLevelsDto;
+    private List<OrderItemDto> orderItemDtos;
 }

@@ -5,8 +5,11 @@ import com.example.backend.entity.Client;
 import com.example.backend.entity.Data;
 import com.example.backend.mapper.ClientMapper;
 import com.example.backend.repository.AddressRepository;
+import com.example.backend.repository.ClientContactRepository;
 import com.example.backend.repository.ClientRepository;
+import com.example.backend.repository.OrderRepository;
 import com.example.backend.services.ClientService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,9 @@ public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
     @Autowired
     private ClientMapper clientMapper;
+    private final AddressRepository addressRepository;
+    private final OrderRepository orderRepository;
+    private final ClientContactRepository clientContactRepository;
 
     @Override
     public ClientDto addClient(ClientDto clientDto) {
@@ -39,15 +45,23 @@ public class ClientServiceImpl implements ClientService {
         return  clientMapper.toDtoList(clientRepository.findAll());
     }
 
+    @Transactional
     public Boolean deleteClient(Long id){
         try {
             if (!clientRepository.existsById(id)) {
                 return false;
             }
-            clientRepository.deleteById(id);
+
+            Client client = clientRepository.findById(id).orElseThrow();
+            orderRepository.deleteAll(client.getOrders());
+            addressRepository.deleteAll(client.getAddresses());
+            clientContactRepository.deleteAll(client.getClientContacts());
+
+            clientRepository.delete(client);
             return true;
         } catch (Exception e) {
-            return false;
+            throw new RuntimeException(e);
         }
     }
+
 }
