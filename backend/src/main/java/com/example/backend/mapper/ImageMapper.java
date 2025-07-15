@@ -3,10 +3,12 @@ package com.example.backend.mapper;
 import com.example.backend.dto.ImageDto;
 import com.example.backend.entity.Image;
 import com.example.backend.entity.Product;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class ImageMapper {
 
     public static ImageDto toDto(Image image) {

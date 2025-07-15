@@ -1,14 +1,14 @@
 package com.example.backend.controllers;
 
-import com.example.backend.dto.ProductDto;
-import com.example.backend.entity.Product;
+import com.example.backend.dto.ProductAddDto;
+import com.example.backend.dto.ProductFindDto;
 import com.example.backend.mapper.ProductMapper;
 import com.example.backend.repository.ProductRepository;
 import com.example.backend.services.ProductService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.sound.sampled.Port;
 import java.util.List;
 
 @AllArgsConstructor
@@ -22,7 +22,23 @@ public class ProductController {
 
 
     @PostMapping("/add")
-    public ProductDto addProduct(@RequestBody ProductDto productDto){
-        return productService.addProduct(productDto);
+    public ProductAddDto addProduct(@RequestBody ProductAddDto productAddDto){
+        return productService.addProduct(productAddDto);
     }
+
+    @GetMapping("/all")
+    public List<ProductFindDto> allProducts(){
+        return productService.findAllDto();
+    }
+
+    @GetMapping("/one/{id}")
+    public ProductFindDto findOneProduct(@PathVariable Long id){
+        return productService.findById(id);
+    }
+    
+
 }
+
+
+
+

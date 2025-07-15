@@ -1,28 +1,42 @@
-import { useRef, useState } from "react";
-import { products, images, categories } from '../../dummyData'; // Import from dummyData.js
+import { useRef, useState, useEffect } from "react";
+import axios from "axios";
 
 export default function ProductPage({ selectedProduct }) {
   const carouselRef = useRef(null);
   const [activePage, setActivePage] = useState(0);
+  const [product, setProduct] = useState(null);
 
-  // Find the full product data from products array
-  const product = products.find(p => p.id === selectedProduct.id) || {};
-  // Get category for the product
-  const category = categories.find(c => c.product.id === selectedProduct.id)?.name || 'Brak kategorii';
-  // Get images for the product (use multiple images if available, or repeat the primary image)
-  const productImages = images
-    .filter(img => img.product.id === selectedProduct.id)
-    .map(img => img.path);
-  // If fewer than 9 images, repeat the first image to fill the carousel
-  const carouselImages = productImages.length > 0
-    ? [...productImages, ...Array(Math.max(0, 9 - productImages.length)).fill(productImages[0] || 'https://via.placeholder.com/300x200')]
-    : Array(9).fill('https://via.placeholder.com/300x200');
+  useEffect(() => {
+    fetchProduct();
+  }, [selectedProduct]);
+
+  const fetchProduct = async () => {
+    try {
+      const res = await axios.get(`http://localhost:8080/api/products/one/${selectedProduct}`);
+      setProduct(res.data);
+      console.log(product);
+    } catch (error) {
+      console.error("Błąd podczas pobierania produktu:", error);
+    }
+  };
+
+  if (!product) {
+    return <div className="p-10">Ładowanie produktu...</div>;
+  }
+
+  const category = product.categoryDto?.name || "Brak kategorii";
+
+  const productImages = product.imagesDto?.map((img) => img.path) || [];
+  const carouselImages =
+    productImages.length > 0
+      ? [...productImages, ...Array(Math.max(0, 9 - productImages.length)).fill(productImages[0])]
+      : Array(9).fill("https://via.placeholder.com/300x200");
 
   const handleDotClick = (index) => {
     const container = carouselRef.current;
     if (container) {
       const scrollWidth = container.scrollWidth;
-      const pages = 3; // 3 dots
+      const pages = 3;
       const targetScrollLeft = (scrollWidth / pages) * index;
 
       container.scrollTo({
@@ -48,7 +62,11 @@ export default function ProductPage({ selectedProduct }) {
                 key={idx}
                 className="min-w-[33.3333%] h-64 snap-start transition-transform duration-500 ease-out"
               >
-                <img src={image} alt={`${product.name || 'Product'} ${idx + 1}`} className="w-full h-full object-cover" />
+                <img
+                  src={image}
+                  alt={`${product.name || "Product"} ${idx + 1}`}
+                  className="w-full h-full object-cover"
+                />
               </div>
             ))}
           </div>
@@ -70,14 +88,14 @@ export default function ProductPage({ selectedProduct }) {
         {/* Product Info */}
         <div className="flex justify-between items-center px-6 pb-6">
           <div>
-            <h2 className="text-lg font-medium">{selectedProduct.name}</h2>
+            <h2 className="text-lg font-medium">{product.name}</h2>
             <p className="text-gray-500 text-sm">{category}</p>
           </div>
-          <div className="text-xl font-bold">{selectedProduct.price}</div>
+          <div className="text-xl font-bold">{product.price} zł</div>
         </div>
-        
+
         {/* Product description */}
-        <p className="px-10 py-10">{product.description || 'Brak opisu'}</p>
+        <p className="px-10 py-10">{product.description || "Brak opisu"}</p>
 
         {/* Product info table */}
         <div className="w-full px-5 pb-10 flex justify-center">
@@ -85,31 +103,37 @@ export default function ProductPage({ selectedProduct }) {
             <tbody>
               <tr>
                 <th className="px-4 py-2 text-left bg-gray-100 border">Nazwa</th>
-                <td className="px-4 py-2 text-left border">{product.name || 'Brak nazwy'}</td>
+                <td className="px-4 py-2 text-left border">{product.name || "Brak nazwy"}</td>
               </tr>
               <tr>
                 <th className="px-4 py-2 text-left bg-gray-100 border">SKU</th>
-                <td className="px-4 py-2 text-left border">{product.sku || 'Brak SKU'}</td>
+                <td className="px-4 py-2 text-left border">{product.sku || "Brak SKU"}</td>
               </tr>
               <tr>
                 <th className="px-4 py-2 text-left bg-gray-100 border">Waga</th>
-                <td className="px-4 py-2 text-left border">{product.weight ? `${product.weight} kg` : 'Brak danych'}</td>
+                <td className="px-4 py-2 text-left border">
+                  {product.weight ? `${product.weight} kg` : "Brak danych"}
+                </td>
               </tr>
               <tr>
                 <th className="px-4 py-2 text-left bg-gray-100 border">Wymiary</th>
-                <td className="px-4 py-2 text-left border">{product.dimensions ? `${product.dimensions} cm` : 'Brak danych'}</td>
+                <td className="px-4 py-2 text-left border">
+                  {product.dimensions ? `${product.dimensions} cm` : "Brak danych"}
+                </td>
               </tr>
               <tr>
                 <th className="px-4 py-2 text-left bg-gray-100 border">Dodano</th>
-                <td className="px-4 py-2 text-left border">{product.data?.createdAt || 'Brak danych'}</td>
+                <td className="px-4 py-2 text-left border">
+                  {new Date(product.data?.createdAt).toLocaleDateString("pl-PL") || "Brak danych"}
+                </td>
               </tr>
               <tr>
                 <th className="px-4 py-2 text-left bg-gray-100 border">Status</th>
-                <td className="px-4 py-2 text-left border">{selectedProduct.status || 'Brak statusu'}</td>
+                <td className="px-4 py-2 text-left border">{product.statusDto?.name || "Brak statusu"}</td>
               </tr>
               <tr>
                 <th className="px-4 py-2 text-left bg-gray-100 border">Notatki</th>
-                <td className="px-4 py-2 text-left border">{product.notes || 'Brak notatek'}</td>
+                <td className="px-4 py-2 text-left border">{product.notes || "Brak notatek"}</td>
               </tr>
             </tbody>
           </table>

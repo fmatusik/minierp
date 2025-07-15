@@ -1,13 +1,10 @@
 package com.example.backend.dto;
 
-import com.example.backend.entity.Category;
 import com.example.backend.entity.Data;
-import com.example.backend.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
@@ -25,7 +22,7 @@ public class CategoryDto {
 
     private int productCount;
 
-    private List<ProductDto> productsDto;
+    private List<ProductAddDto> productsDto;
 
 
 }

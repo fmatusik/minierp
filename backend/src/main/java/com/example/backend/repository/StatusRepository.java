@@ -12,4 +12,6 @@ import java.util.List;
 public interface StatusRepository extends JpaRepository<Status, Long> {
 
     List<StatusDto> findAllByType(StatusType type);
+
+    Status findById(long id);
 }
