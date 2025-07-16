@@ -26,7 +26,7 @@ public class CategoryMapper {
                 .name(category.getName())
                 .color(category.getColor())
                 .data(category.getData())
-                .productsDto(category.getProducts() != null ? ProductMapper.toDtoList(category.getProducts()) : null)
+                .productsDto(category.getProducts() != null ? ProductMapper.toDtoFindListWithoutCategory(category.getProducts()) : null)
                 .productCount(category.getProducts() != null ? category.getProducts().size() : 0)
                 .build();
     }

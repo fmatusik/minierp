@@ -36,7 +36,7 @@ public class Order {
     private Data data;
 
     @Column(nullable = false)
-    private Long price;
+    private Double price;
 
     @Column(name = "\"paymentStatus\"", nullable = false)
     private String paymentStatus;

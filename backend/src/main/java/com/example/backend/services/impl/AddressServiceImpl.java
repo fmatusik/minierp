@@ -43,6 +43,8 @@ public class AddressServiceImpl implements AddressService {
         return AddressMapper.toDto(savedAddress);
     }
 
+
+
     @Override
     public Boolean deleteAddress(Long id) {
         try {
@@ -81,6 +83,16 @@ public class AddressServiceImpl implements AddressService {
         return AddressMapper.toDto(existingAddress);
     }
 
+    @Override
+    public AddressDto addWarehouseAddress(AddressDto addressDto) {
+        Address addressEntity = AddressMapper.toEntityWithoutClient(addressDto);
+        addressEntity.setData(Data.builder()
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build());
+        Address savedAddress = addressRepository.save(addressEntity);
+        return AddressMapper.toDto(savedAddress);
+    }
 
 
 }

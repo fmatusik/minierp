@@ -34,4 +34,14 @@ public class CategoryController {
         return categoryService.getDtoById(id);
     }
 
+    @PutMapping("/update/color/{id}")
+    public CategoryDto updateCategoryColor(@PathVariable Long id, @RequestBody String color) {
+        return categoryService.updateCategoryColor(id, color);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public String deleteCategory(@PathVariable Long id){
+        return categoryService.deleteCategory(id);
+    }
+
 }

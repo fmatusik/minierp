@@ -25,6 +25,19 @@ const warehouses = [
 ];
 
 export default function WarehousesPage() {
+
+  const openAddWindow = () => {
+    const width = 1200;
+    const height = 900;
+
+    const left = window.screenX + (window.innerWidth - width) / 2;
+    const top = window.screenY + (window.innerHeight - height) / 2;
+
+    const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
+
+    window.open(`/magazyny/add`, "_blank", features);
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -33,7 +46,9 @@ export default function WarehousesPage() {
           <h1 className="text-3xl font-bold">Magazyny</h1>
           <p className="text-gray-600 text-sm">Lista zarejestrowanych magazynów</p>
         </div>
-        <button className="px-4 py-2 bg-black text-white rounded-md">
+        <button className="px-4 py-2 bg-black text-white rounded-md"
+          onClick={openAddWindow}
+        >
           + Dodaj magazyn
         </button>
       </div>

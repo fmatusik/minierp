@@ -30,7 +30,6 @@ public class ImageServiceTest {
                 .path("path")
                 .alt("alt")
                 .size(100L)
-                .isThumbnail(true)
                 .productId(product.getId())
                 .data(Data.builder()
                         .createdAt(LocalDateTime.now())

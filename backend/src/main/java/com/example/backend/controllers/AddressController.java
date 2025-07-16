@@ -39,4 +39,9 @@ public class AddressController {
         return addressService.updateAddress(addressDto);
     }
 
+    @PostMapping("/add/warehouse")
+    public AddressDto addAddressToWarehouse(@RequestBody AddressDto addressDto){
+        return addressService.addWarehouseAddress(addressDto);
+    }
+
 }

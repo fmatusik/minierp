@@ -14,9 +14,10 @@ import java.util.List;
 @Builder
 public class WarehouseDto {
     private Long id;
+    private String name;
     private AddressDto addressDto;
     private WarehouseType type;
-    private Long capacity;
+    private double capacity;
     private List<StockMovementDto> sourceMovementsDto;
     private List<StockMovementDto> targetMovementsDto;
     private Data data;

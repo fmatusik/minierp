@@ -48,4 +48,24 @@ public class ProductServiceImpl implements ProductService {
         return ProductMapper.toFindDto(productRepository.findById((long)id));
     }
 
+    @Override
+    public ProductFindDto updateProduct(Long id, ProductAddDto updatedProductDto) {
+        var existing = productRepository.findById(id).orElseThrow(()->new RuntimeException("Nie znaleziono produktu o podanym ID"));
+
+        existing.setName(updatedProductDto.getName());
+        existing.setPrice(updatedProductDto.getPrice());
+        Data data = existing.getData();
+        data.setUpdatedAt(LocalDateTime.now());
+        existing.setData(data);
+        existing.setDescription(updatedProductDto.getDescription());
+        existing.setNotes(updatedProductDto.getNotes());
+        existing.setSku(updatedProductDto.getSku());
+        existing.setWeight(updatedProductDto.getWeight());
+        existing.setDimensions(updatedProductDto.getDimensions());
+        existing.setStatus(statusRepository.findById(updatedProductDto.getStatusId()).orElseThrow(()->new RuntimeException("Nie znaleziono statusu o podanym ID")));
+        existing.setCategory(categoryRepository.findById(updatedProductDto.getCategoryId()).orElseThrow(()->new RuntimeException("Nie znaleziono kategorii o podanym ID")));
+        productRepository.save(existing);
+        return ProductMapper.toFindDto(existing);
+    }
+
 }

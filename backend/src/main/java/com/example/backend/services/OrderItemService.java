@@ -9,4 +9,8 @@ import java.util.List;
 public interface OrderItemService {
     OrderItemDto addOrderItem(OrderItemDto orderItemDto);
     List<OrderItemDto> addOrderItems(List<OrderItemDto> orderItemDtos);
+    List<OrderItemDto> findOrderItemsByOrderId(Long id);
+    List<OrderItemDto> updateOrderItems(Long id, List<OrderItemDto> orderItemDtos);
+    OrderItemDto updateOrderItem(Long id, OrderItemDto orderItemDto);
+    String deleteOrder(Long id);
 }

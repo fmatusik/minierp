@@ -18,7 +18,7 @@ public class OrderAddDto {
     private Long clientId;
     private Long statusId;
     private Data data;
-    private Long price;
+    private double price;
     private String paymentStatus;
     private Long addressId;
     private LocalDateTime deliveryDate;

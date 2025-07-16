@@ -199,10 +199,7 @@ export default function AddOrderForm() {
         "Error creating order or adding items:",
         err.response ? err.response.data : err.message
       );
-      alert(
-        "Błąd podczas tworzenia zamówienia: " +
-          (err.response ? err.response.data.message : err.message)
-      );
+      alert("Błąd podczas tworzenia zamówienia: " + (err.response ? err.response.data.message : err.message));
     } finally {
       setIsLoading(false);
     }

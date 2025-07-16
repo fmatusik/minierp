@@ -11,4 +11,6 @@ public interface CategoryService {
     CategoryDto addCategory(CategoryDto  categoryDto);
     List<CategoryDto> findAllDto();
     CategoryDto getDtoById(Long id);
+    CategoryDto updateCategoryColor(Long id, String color);
+    String deleteCategory(Long id);
 }

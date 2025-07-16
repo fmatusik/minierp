@@ -30,4 +30,12 @@ public class OrderController {
         return orderService.findAllOrdersDto();
     }
 
+    @RequestMapping("/one/{id}")
+    public OrderFindDto getOrderById(@PathVariable Long id) { return orderService.findById(id); }
+
+    @PutMapping("/update/{id}")
+    public OrderFindDto updateOrder(@RequestBody OrderAddDto updatedOrderDto, @PathVariable Long id) {
+        return orderService.updateOrder(updatedOrderDto, id);
+    }
+
 }

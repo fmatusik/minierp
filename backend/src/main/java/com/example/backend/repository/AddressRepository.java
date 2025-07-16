@@ -1,5 +1,6 @@
 package com.example.backend.repository;
 
+import com.example.backend.dto.AddressDto;
 import com.example.backend.entity.Address;
 import com.example.backend.entity.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +14,5 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
 
     List<Address> findByClient(Client client);
     Address findById(long id);
+
 }

@@ -10,4 +10,6 @@ import java.util.List;
 public interface OrderService {
     OrderAddDto addOrder(OrderAddDto orderAddDto);
     List<OrderFindDto> findAllOrdersDto();
+    OrderFindDto findById(Long id);
+    OrderFindDto updateOrder(OrderAddDto orderAddDto, Long id);
 }

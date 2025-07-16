@@ -26,7 +26,7 @@ public class Product {
     private String name;
 
     @Column(nullable = false)
-    private Float price;
+    private double price;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "data")
@@ -45,7 +45,7 @@ public class Product {
     private Float weight;
 
     @Column
-    private Float dimensions;
+    private String dimensions;
 
 
     @ManyToOne(fetch = FetchType.LAZY)

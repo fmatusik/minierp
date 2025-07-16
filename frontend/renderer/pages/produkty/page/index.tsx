@@ -14,7 +14,7 @@ export default function ProductPage({ selectedProduct }) {
     try {
       const res = await axios.get(`http://localhost:8080/api/products/one/${selectedProduct}`);
       setProduct(res.data);
-      console.log(product);
+      console.log(res.data);
     } catch (error) {
       console.error("Błąd podczas pobierania produktu:", error);
     }
@@ -24,20 +24,22 @@ export default function ProductPage({ selectedProduct }) {
     return <div className="p-10">Ładowanie produktu...</div>;
   }
 
-  const category = product.categoryDto?.name || "Brak kategorii";
+  const category = product.categoryDto || "Brak kategorii";
 
   const productImages = product.imagesDto?.map((img) => img.path) || [];
-  const carouselImages =
-    productImages.length > 0
-      ? [...productImages, ...Array(Math.max(0, 9 - productImages.length)).fill(productImages[0])]
-      : Array(9).fill("https://via.placeholder.com/300x200");
+  const maxImages = 9;
+  const images = productImages.length > 0
+    ? productImages.slice(0, maxImages)
+    : Array(1).fill("https://via.placeholder.com/300x200");
+
+  const itemsPerPage = 3;
+  const totalPages = Math.ceil(images.length / itemsPerPage);
 
   const handleDotClick = (index) => {
     const container = carouselRef.current;
     if (container) {
       const scrollWidth = container.scrollWidth;
-      const pages = 3;
-      const targetScrollLeft = (scrollWidth / pages) * index;
+      const targetScrollLeft = (scrollWidth / totalPages) * index;
 
       container.scrollTo({
         left: targetScrollLeft,
@@ -48,6 +50,14 @@ export default function ProductPage({ selectedProduct }) {
     }
   };
 
+  const getImageWidthClass = () => {
+    if (images.length === 1) return "w-full";
+    if (images.length === 2) return "w-1/2";
+    return "w-1/3";
+  };
+
+  const imageWidthClass = getImageWidthClass();
+
   return (
     <div className="p-10">
       <div className="bg-white rounded-xl w-full shadow-md">
@@ -57,13 +67,13 @@ export default function ProductPage({ selectedProduct }) {
             ref={carouselRef}
             className="flex overflow-x-hidden gap-3 snap-x snap-mandatory scroll-smooth scrollbar-hide transition-all duration-300"
           >
-            {carouselImages.map((image, idx) => (
+            {images.map((image, idx) => (
               <div
                 key={idx}
-                className="min-w-[33.3333%] h-64 snap-start transition-transform duration-500 ease-out"
+                className={`h-64 snap-start transition-transform duration-500 ease-out ${imageWidthClass} flex-shrink-0`}
               >
                 <img
-                  src={image}
+                  src={`http://localhost:8080${image}`}
                   alt={`${product.name || "Product"} ${idx + 1}`}
                   className="w-full h-full object-cover"
                 />
@@ -74,12 +84,12 @@ export default function ProductPage({ selectedProduct }) {
 
         {/* Dots */}
         <div className="flex justify-center my-4 space-x-2">
-          {[0, 1, 2].map((dotIdx) => (
+          {Array.from({ length: totalPages }).map((_, idx) => (
             <button
-              key={dotIdx}
-              onClick={() => handleDotClick(dotIdx)}
+              key={idx}
+              onClick={() => handleDotClick(idx)}
               className={`w-4 h-4 rounded-full transition-colors duration-300 ${
-                activePage === dotIdx ? "bg-primary" : "bg-gray-300"
+                activePage === idx ? "bg-primary" : "bg-gray-300"
               }`}
             />
           ))}
@@ -89,7 +99,7 @@ export default function ProductPage({ selectedProduct }) {
         <div className="flex justify-between items-center px-6 pb-6">
           <div>
             <h2 className="text-lg font-medium">{product.name}</h2>
-            <p className="text-gray-500 text-sm">{category}</p>
+            <p className={`text-gray-700 text-sm rounded-md`}>{category.name}</p>
           </div>
           <div className="text-xl font-bold">{product.price} zł</div>
         </div>

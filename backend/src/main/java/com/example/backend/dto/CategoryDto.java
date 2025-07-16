@@ -22,7 +22,7 @@ public class CategoryDto {
 
     private int productCount;
 
-    private List<ProductAddDto> productsDto;
+    private List<ProductFindDto> productsDto;
 
 
 }

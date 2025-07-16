@@ -13,13 +13,13 @@ import java.util.List;
 public class ProductFindDto{
     private Long id;
     private String name;
-    private Float price;
+    private double price;
     private Data data;
     private String description;
     private String notes;
     private String sku;
     private Float weight;
-    private Float dimensions;
+    private String dimensions;
     private StatusDto statusDto;
     private CategoryDto categoryDto;
     private List<ImageDto> imagesDto;

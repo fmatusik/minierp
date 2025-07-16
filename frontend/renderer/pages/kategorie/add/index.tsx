@@ -9,7 +9,7 @@ export default function AddCategoryPage() {
 
   const [category, setCategory] = useState({
     name: "",
-    color: "bg-green-700",
+    color: "bg-green-200",
   });
 
   const [saving, setSaving] = useState(false);

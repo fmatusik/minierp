@@ -2,15 +2,18 @@ package com.example.backend.mapper;
 
 import com.example.backend.dto.WarehouseDto;
 import com.example.backend.entity.Warehouse;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class WarehouseMapper {
 
     public static WarehouseDto toDto(Warehouse warehouse) {
         return WarehouseDto.builder()
                 .id(warehouse.getId())
+                .name(warehouse.getName())
                 .addressDto(warehouse.getAddress() != null
                         ? AddressMapper.toDtoWithoutClient(warehouse.getAddress())
                         : null)
@@ -28,8 +31,10 @@ public class WarehouseMapper {
     }
 
     public static Warehouse toEntity(WarehouseDto warehouseDto) {
+        System.out.println("TEST");
         return Warehouse.builder()
                 .id(warehouseDto.getId())
+                .name(warehouseDto.getName())
                 .type(warehouseDto.getType())
                 .capacity(warehouseDto.getCapacity())
                 .sourceMovements(warehouseDto.getSourceMovementsDto() != null

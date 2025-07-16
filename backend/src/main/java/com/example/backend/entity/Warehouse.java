@@ -19,6 +19,8 @@ public class Warehouse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String name;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address")
@@ -28,7 +30,7 @@ public class Warehouse {
     private WarehouseType type;
 
     @Column(nullable = false)
-    private Long capacity;
+    private Double capacity;
 
 
     @OneToMany(mappedBy = "sourceWarehouse")

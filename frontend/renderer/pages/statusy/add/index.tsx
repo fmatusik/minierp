@@ -6,7 +6,7 @@ export default function AddStatusForm() {
   const [formData, setFormData] = useState({
     name: "",
     type: "",
-    color: "bg-green-700",
+    color: "bg-green-200",
   });
 
   const types = [

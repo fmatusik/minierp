@@ -38,7 +38,7 @@ public class WarehouseServiceTest {
                                 .build())
                 .build())
                 .type(WarehouseType.CENTRAL)
-                .capacity(2000L)
+                .capacity(2000.00)
                 .data(Data.builder()
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())

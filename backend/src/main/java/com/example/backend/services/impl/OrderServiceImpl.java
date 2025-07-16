@@ -1,13 +1,12 @@
 package com.example.backend.services.impl;
 
-import com.example.backend.dto.OrderAddDto;
-import com.example.backend.dto.OrderFindDto;
+import com.example.backend.dto.*;
 import com.example.backend.entity.*;
+import com.example.backend.mapper.AddressMapper;
+import com.example.backend.mapper.ClientMapper;
 import com.example.backend.mapper.OrderMapper; // Ensure this is imported
-import com.example.backend.repository.AddressRepository;
-import com.example.backend.repository.ClientRepository;
-import com.example.backend.repository.OrderRepository;
-import com.example.backend.repository.StatusRepository;
+import com.example.backend.mapper.StatusMapper;
+import com.example.backend.repository.*;
 import com.example.backend.services.OrderService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +27,8 @@ public class OrderServiceImpl implements OrderService {
     private final StatusRepository statusRepository;
     @Autowired
     private AddressRepository addressRepository;
+    @Autowired
+    private DataRepository dataRepository;
 
 
     @Override
@@ -37,13 +38,20 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public OrderFindDto findById(Long id){
+        Order order = orderRepository.findById((long)id).orElseThrow();
+        ClientDto clientDto = ClientMapper.toDto(order.getClient());
+        StatusDto statusDto = StatusMapper.toDto(order.getStatus());
+        AddressDto addressDto = AddressMapper.toDto(order.getAddress());
+        OrderFindDto orderFindDto = orderMapper.toDtoFind(order, clientDto , statusDto, addressDto);
+        return orderFindDto;
+    }
+
+    @Override
     public OrderAddDto addOrder(OrderAddDto orderAddDto) {
 
-        // 1. Wygeneruj numer dokumentu
         String nextDocumentNumber = generateNextDocumentNumber(findLastDocumentNumber());
-        // Ustaw wygenerowany numer w DTO przed mapowaniem na encję
         orderAddDto.setDocumentNumber(nextDocumentNumber);
-        // Call toEntity on the injected orderMapper instance
         Client client = clientRepository.findById((long) orderAddDto.getClientId());
         Status status = statusRepository.findById((long) orderAddDto.getStatusId());
         Address address = addressRepository.findById((long) orderAddDto.getAddressId());
@@ -54,16 +62,33 @@ public class OrderServiceImpl implements OrderService {
                 .updatedAt(LocalDateTime.now())
                 .build());
         orderEntity = orderRepository.save(orderEntity);
-        // Call toDto on the injected orderMapper instance
         return orderMapper.toDto(orderEntity);
     }
 
     private Optional<String> findLastDocumentNumber() {
-        // This is a placeholder. You need to define a method in your
-        // OrderRepository to retrieve the highest document number.
-        // For example, if your Order entity has a 'documentNumber' field:
         return orderRepository.findTopByOrderByDocumentNumberDesc()
                 .map(Order::getDocumentNumber);
+    }
+
+    @Override
+    public OrderFindDto updateOrder(OrderAddDto orderAddDto, Long id){
+        Order order = orderRepository.findById((long)id).orElseThrow();
+        Client client = clientRepository.findById((long) orderAddDto.getClientId());
+        Status status = statusRepository.findById((long) orderAddDto.getStatusId());
+        Address address = addressRepository.findById((long) orderAddDto.getAddressId());
+        Data data = dataRepository.findById((long) orderAddDto.getData().getId());
+        data.setUpdatedAt(LocalDateTime.now());
+        order.setClient(client);
+        order.setStatus(status);
+        order.setAddress(address);
+        order.setData(data);
+        order.setPrice(orderAddDto.getPrice());
+        order.setPaymentStatus(orderAddDto.getPaymentStatus());
+        order.setDeliveryDate(orderAddDto.getDeliveryDate());
+        order.setSalePlace(orderAddDto.getSalePlace());
+
+        orderRepository.save(order);
+        return orderMapper.toDtoFind(order, ClientMapper.toDto(client), StatusMapper.toDto(status), AddressMapper.toDto(address));
     }
 
 

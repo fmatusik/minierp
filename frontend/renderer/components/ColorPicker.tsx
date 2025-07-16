@@ -2,16 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 
 const tailwindColors = [
-  "bg-green-700",
-  "bg-yellow-700",
-  "bg-orange-700",
-  "bg-red-600",
-  "bg-purple-600",
-  "bg-blue-600",
-  "bg-cyan-700",
-  "bg-lime-700",
-  "bg-pink-600",
-  "bg-gray-600",
+  "bg-green-200",
+  "bg-yellow-200",
+  "bg-orange-200",
+  "bg-red-100",
+  "bg-purple-100",
+  "bg-blue-100",
+  "bg-cyan-200",
+  "bg-lime-200",
+  "bg-pink-100",
+  "bg-gray-100",
 ];
 
 export default function ColorPicker({ selectedColor, onSelect }) {

@@ -1,23 +1,24 @@
 import { useState, useEffect } from "react";
 import clsx from "clsx";
 import ColorPicker from "../../../components/ColorPicker";
-
+import axios from "axios";
 export default function CategoryPage({ categoryId }) {
   const [headerColor, setHeaderColor] = useState("bg-purple-600");
   const [category, setCategory] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    const fetchCategoryData = async () => {
+  
+  
+  const fetchCategoryData = async () => {
       try {
         const res = await fetch(`http://localhost:8080/api/category/one/${categoryId}`);
         if (!res.ok) throw new Error("Failed to fetch category");
         const data = await res.json();
 
         setCategory(data);
-        setProducts(data.products || []);
+        setProducts(data.productsDto || []);
+        console.log(data.productsDto)
         setHeaderColor(data.color);
       } catch (err) {
         setError(err.message);
@@ -26,6 +27,7 @@ export default function CategoryPage({ categoryId }) {
       }
     };
 
+  useEffect(() => {
     fetchCategoryData();
   }, [categoryId]);
 
@@ -34,9 +36,39 @@ export default function CategoryPage({ categoryId }) {
     name: product.name,
     category: category?.name || "Brak kategorii",
     price: `${product.price?.toFixed(2)} PLN`,
-    status: product.status?.name || "Nieznany",
-    image: product.image?.path || "https://via.placeholder.com/300x200",
+    status: product.statusDto || "Nieznany",
+    image: `http://localhost:8080${product.imagesDto[0]?.path }`|| "https://via.placeholder.com/300x200",
   }));
+
+  const handleSetHeaderColor = (color) => {
+    setHeaderColor(color);
+    axios.put(
+      `http://localhost:8080/api/category/update/color/${category.id}`,
+      color,
+      {
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      }
+    )
+    .then((res) => {
+      fetchCategoryData();
+    })
+    .catch((err) => {
+      console.error(err);
+    })
+    
+  }
+
+  const handleDelete = () => {
+    axios.delete(`http://localhost:8080/api/category/delete/${category.id}`)
+    .then((res) => {
+      console.log(res.data);
+    })
+    .catch((err) => {
+      console.error(err);
+    })
+  }
 
   if (loading) return <div className="text-center py-10">Ładowanie...</div>;
   if (error) return <div className="text-center text-red-500 py-10">{error}</div>;
@@ -70,8 +102,10 @@ export default function CategoryPage({ categoryId }) {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold">{category?.name || "Kategoria"}</h2>
           <div className="flex items-center gap-2">
-            <ColorPicker selectedColor={headerColor} onSelect={setHeaderColor} />
-            <button className="border border-black rounded-full px-4 py-1 text-sm font-bold">
+            <ColorPicker selectedColor={headerColor} onSelect={(color) => handleSetHeaderColor(color)} />
+            <button className="border border-black rounded-full px-4 py-1 text-sm font-bold"
+              onClick={handleDelete}
+            >
               Usuń
             </button>
           </div>
@@ -96,16 +130,11 @@ export default function CategoryPage({ categoryId }) {
                 <p className="text-sm text-gray-500">{product.category}</p>
                 <p className="text-sm text-gray-800">{product.price}</p>
                 <span
-                  className={clsx(
-                    "inline-block text-xs px-2 py-1 rounded",
-                    product.status === "Aktywny"
-                      ? "bg-green-100 text-green-800"
-                      : product.status === "Nieaktywne"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-blue-100 text-blue-800"
-                  )}
+                  className={
+                    `inline-block text-xs px-2 py-1 rounded ${product.status.color}`
+                  }
                 >
-                  {product.status}
+                  {product.status.name}
                 </span>
               </div>
             </div>

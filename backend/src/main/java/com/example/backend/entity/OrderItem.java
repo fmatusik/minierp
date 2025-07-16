@@ -31,7 +31,7 @@ public class OrderItem {
 
     @Nullable
     @Column(nullable = false)
-    private Long price;
+    private double price;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "data")

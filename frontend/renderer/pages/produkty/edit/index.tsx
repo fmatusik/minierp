@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import {
   Tag, FileText, Package, Clipboard, DollarSign,
-  Weight, Layers, CheckCircle, ImagePlus, Trash2
+  Weight, Layers, CheckCircle, Trash2
 } from "lucide-react";
 import axios from "axios";
 
-// Reużycie inputów z formularza dodawania
 function LabeledInput({ icon, label, name, value, onChange, type = "text" }) {
   return (
     <div className="space-y-1">
@@ -45,6 +44,7 @@ function TextareaInput({ icon, label, name, value, onChange }) {
 export default function EditProductForm({ productId }) {
   const [statuses, setStatuses] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [fetchedImages, setFetchedImages] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -63,16 +63,28 @@ export default function EditProductForm({ productId }) {
     fetchProduct();
     fetchCategories();
     fetchStatuses();
+    fetchImages();
   }, []);
 
   const fetchProduct = () => {
     axios.get(`http://localhost:8080/api/products/one/${productId}`)
       .then((res) => {
-        const { name, description, dimensions, notes, price, sku, weight, categoryId, statusId } = res.data;
-        setFormData({ name, description, dimensions, notes, price, sku, weight, categoryId, statusId });
+        const product = res.data;
+        setFormData({
+          name: product.name,
+          description: product.description,
+          dimensions: product.dimensions,
+          notes: product.notes,
+          price: product.price,
+          sku: product.sku,
+          weight: product.weight,
+          categoryId: product.categoryDto?.id || "",
+          statusId: product.statusDto?.id || "",
+        });
       })
       .catch(console.error);
   };
+
 
   const fetchCategories = () => {
     axios.get("http://localhost:8080/api/category/all")
@@ -86,19 +98,26 @@ export default function EditProductForm({ productId }) {
       .catch(console.error);
   };
 
+  const fetchImages = () => {
+    axios.get(`http://localhost:8080/api/images/product/${productId}`)
+      .then((res) => setFetchedImages(res.data))
+      .catch((err) => {
+        window.ipc?.invoke("show-alert", "Wystąpił problem w trakcie wczytywania zdjęć");
+        console.error(err);
+      });
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleImageSubmit = () => {
-    //update image -> http://localhost:8080/api/images/update/
-  }
-
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    if (images.length + files.length > 9) {
-      alert("Maksymalnie 9 zdjęć.");
+    const totalImages = fetchedImages.length + images.length + files.length;
+
+    if (totalImages > 9) {
+      alert("Maksymalnie 9 zdjęć ogółem.");
       return;
     }
 
@@ -114,22 +133,42 @@ export default function EditProductForm({ productId }) {
     setPreviews(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleDeleteFetchedImage = async (imageId) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/images/delete/${imageId}`);
+      setFetchedImages(prev => prev.filter(img => img.id !== imageId));
+    } catch (error) {
+      console.error(error);
+      alert("Błąd przy usuwaniu zdjęcia.");
+    }
+  };
+
+  const handleImageSubmit = async () => {
+    if (images.length === 0) return;
+
+    const formDataImg = new FormData();
+    images.forEach(img => formDataImg.append("images", img));
+    formDataImg.append("productId", productId);
+
+    try {
+      await axios.post(`http://localhost:8080/api/images/upload/files`, formDataImg, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      alert("Zdjęcia zostały dodane.");
+      setImages([]);
+      setPreviews([]);
+      fetchImages(); // Reload existing images
+    } catch (error) {
+      console.error(error);
+      alert("Błąd podczas dodawania zdjęć.");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Update product data
-      await axios.put(`http://localhost:8080/api/products/${productId}`, formData);
-
-      // Upload images
-      if (images.length > 0) {
-        const formDataImg = new FormData();
-        images.forEach((img) => formDataImg.append("images", img));
-
-        await axios.post(`http://localhost:8080/api/products/${productId}/images`, formDataImg, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      }
-
+      await axios.put(`http://localhost:8080/api/products/update/${productId}`, formData);
       alert("Produkt zaktualizowany.");
     } catch (err) {
       console.error(err);
@@ -175,9 +214,25 @@ export default function EditProductForm({ productId }) {
       <div className="space-y-2">
         <label className="text-sm font-medium text-gray-700">Zdjęcia produktu (max 9)</label>
         <input type="file" multiple accept="image/*" onChange={handleImageChange} className="block" />
+
         <div className="grid grid-cols-3 gap-4 mt-2">
+          {/* Istniejące zdjęcia */}
+          {fetchedImages.map((img, index) => (
+            <div key={`fetched-${img.id}`} className="relative">
+              <img src={`http://localhost:8080${img.path}`} alt={`existing-${index}`} className="w-full h-32 object-cover rounded-md" />
+              <button
+                type="button"
+                onClick={() => handleDeleteFetchedImage(img.id)}
+                className="absolute top-1 right-1 bg-white p-1 rounded-full shadow hover:bg-red-100"
+              >
+                <Trash2 className="w-4 h-4 text-red-500" />
+              </button>
+            </div>
+          ))}
+
+          {/* Nowe zdjęcia */}
           {previews.map((src, index) => (
-            <div key={index} className="relative">
+            <div key={`preview-${index}`} className="relative">
               <img src={src} alt={`preview-${index}`} className="w-full h-32 object-cover rounded-md" />
               <button
                 type="button"
@@ -188,14 +243,17 @@ export default function EditProductForm({ productId }) {
               </button>
             </div>
           ))}
-
-          {previews && (
-            //Poprawić styling buttona na full width i font medium text white
-            <button className="w-full text-center bg-primary rounded-md"
-            onClick={handleImageSubmit}
-            >Dodaj zdjęcia</button>
-          )}
         </div>
+
+        {images.length > 0 && (
+          <button
+            type="button"
+            className="w-full font-medium text-white bg-blue-600 rounded-md py-2 hover:bg-blue-700 transition"
+            onClick={handleImageSubmit}
+          >
+            Dodaj zdjęcia
+          </button>
+        )}
       </div>
 
       <button type="submit" className="mt-4 px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-all flex items-center gap-2">

@@ -26,9 +26,6 @@ public class Image {
     @Column(nullable = false)
     private Long size;
 
-    @Column(nullable = false)
-    private Boolean isThumbnail;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     @JsonBackReference

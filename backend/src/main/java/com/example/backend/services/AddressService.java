@@ -15,6 +15,7 @@ public interface AddressService {
     Boolean deleteAddress(Long id);
     List<AddressDto> findByClientId(Long clientId);
     AddressDto updateAddress(AddressDto addressDto);
+    AddressDto addWarehouseAddress(AddressDto addressDto);
 
 
 

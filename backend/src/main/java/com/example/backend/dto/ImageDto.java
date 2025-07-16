@@ -14,7 +14,6 @@ public class ImageDto {
     private String path;
     private String alt;
     private Long size;
-    private Boolean isThumbnail;
     private Long productId;
     private Data data;
 }

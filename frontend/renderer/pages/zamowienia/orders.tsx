@@ -14,6 +14,8 @@ export default function ZamowieniaPage() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [editedOrder, setEditedOrder] = useState(null);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_LOAD);
+  const [orderProducts, setOrderProducts] = useState([]);
+
 
   const loaderRef = useRef(null);
   const modalRef = useRef(null);
@@ -27,7 +29,7 @@ export default function ZamowieniaPage() {
         setOrders(res.data);
       })
       .catch((err) => {
-        alert("Wystąpił nieoczekiwany błąd")
+        window.ipc.invoke("show-alert", "Wystąpił nieoczekiwany błąd")
         console.error(err);
       })
   };
@@ -128,7 +130,15 @@ export default function ZamowieniaPage() {
     setVisibleCount(ITEMS_PER_LOAD);
   }, [searchTerm, statusFilter, sortOption]);
 
+  useEffect(() => {
+  if (selectedOrder && selectedOrder.orderItems) {
+    fetchProductsForOrder(selectedOrder.orderItems);
+  }
+}, [selectedOrder]);
+
+
   const handleEditClick = (order) => {
+    console.log("ORDER:", order);
     setSelectedOrder(order);
     setEditedOrder({ ...order });
   };
@@ -147,7 +157,7 @@ export default function ZamowieniaPage() {
 
     const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
 
-    window.open(`/zamowienia/editor?id=${order.id}`, "_blank", features);
+    window.open(`/zamowienia/editor?id=${order}`, "_blank", features);
   };
 
   const openAddPanel = () => {
@@ -165,6 +175,22 @@ export default function ZamowieniaPage() {
   }
 
 
+  const fetchProductsForOrder = async (orderItems) => {
+    try {
+      const productRequests = orderItems.map(item =>
+        axios.get(`http://localhost:8080/api/products/one/${item.productId}`)
+      );
+
+      const responses = await Promise.all(productRequests);
+      const products = responses.map(res => res.data);
+      setOrderProducts(products);
+      console.log("PRODUCTS:", products);
+    } catch (error) {
+      console.error("Błąd przy pobieraniu produktów zamówienia", error);
+    }
+  };
+
+
   // Usuń zamówienie przez API
   const handleDelete = async (id) => {
     if (window.confirm("Czy na pewno chcesz usunąć to zamówienie?")) {
@@ -178,7 +204,7 @@ export default function ZamowieniaPage() {
         }
       } catch (err) {
         console.error("Failed to delete order", err);
-        alert("Nie udało się usunąć zamówienia");
+        window.ipc.invoke("show-alert", "Nie udało się usunąć zamówienia");
       }
     }
   };
@@ -302,7 +328,7 @@ export default function ZamowieniaPage() {
             ref={modalRef}
             className="bg-white w-full max-w-4xl rounded-lg shadow-xl p-8 relative space-y-8 max-h-[90vh] overflow-auto"
           >
-            <h2 className="text-2xl font-bold">Dane zamówienia: {selectedOrder.id}</h2>
+            <h2 className="text-2xl font-bold">Dane zamówienia: <span className="text-primary">{selectedOrder.documentNumber}</span></h2>
             {/* Dane zamówienia */}
             <table className="min-w-full text-sm border">
               <thead className="bg-gray-200 text-gray-700">
@@ -317,8 +343,8 @@ export default function ZamowieniaPage() {
               </thead>
               <tbody>
                 <tr className="border-t">
-                  <td className="px-4 py-2">{selectedOrder.client.name}</td>
-                  <td className="px-4 py-2">{selectedOrder.status.name}</td>
+                  <td className="px-4 py-2">{selectedOrder.clientDto.name}</td>
+                  <td className="px-4 py-2">{selectedOrder.statusDto.name}</td>
                   <td className="px-4 py-2">{new Date(selectedOrder.data.createdAt).toLocaleDateString()}</td>
                   <td className="px-4 py-2">{new Date(selectedOrder.deliveryDate).toLocaleDateString()}</td>
                   <td className="px-4 py-2">{selectedOrder.paymentStatus}</td>
@@ -344,52 +370,53 @@ export default function ZamowieniaPage() {
               </thead>
               <tbody>
                 <tr className="border-t">
-                  <td className="px-4 py-2">{selectedOrder.address.province}</td>
-                  <td className="px-4 py-2">{selectedOrder.address.city}</td>
-                  <td className="px-4 py-2">{selectedOrder.address.street}</td>
-                  <td className="px-4 py-2">{selectedOrder.address.buildingNumber}</td>
-                  <td className="px-4 py-2">{selectedOrder.address.apartmentNumber}</td>
-                  <td className="px-4 py-2">{selectedOrder.address.postalCode}</td>
+                  <td className="px-4 py-2">{selectedOrder.addressDto.province}</td>
+                  <td className="px-4 py-2">{selectedOrder.addressDto.city}</td>
+                  <td className="px-4 py-2">{selectedOrder.addressDto.street}</td>
+                  <td className="px-4 py-2">{selectedOrder.addressDto.buildingNumber}</td>
+                  <td className="px-4 py-2">{selectedOrder.addressDto.apartmentNumber}</td>
+                  <td className="px-4 py-2">{selectedOrder.addressDto.postalCode}</td>
                 </tr>
               </tbody>
             </table>
 
             {/* Produkty */}
             <h3 className="text-xl font-bold text-center">Produkty</h3>
-            <div className="grid grid-cols-2 gap-6">
-            {selectedOrder.orderItem.product && selectedOrder.orderItem.product.map(product => (
-                <div
-                  key={product.id}
-                  className="border rounded-lg shadow-sm hover:shadow-md transition"
-                >
-                  <div className="h-40 bg-gray-200 overflow-hidden">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="p-4 space-y-1">
-                    <h3 className="font-semibold text-lg">{product.name}</h3>
-                    <p className="text-sm text-gray-500">{product.category}</p>
-                    <p className="text-sm text-gray-800">{product.price}</p>
-                    <span
-                      className={`inline-block text-xs px-2 py-1 rounded ${
-                        product.status === "Aktywny"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {product.status.name}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+              <table className="min-w-full text-sm border">
+                <thead className="bg-gray-200 text-gray-700">
+                  <tr>
+                    <th className="px-4 py-2 text-left">Produkt</th>
+                    <th className="px-4 py-2 text-left">Ilość</th>
+                    <th className="px-4 py-2 text-left">Cena</th>
+                    <th className="px-4 py-2 text-left">Suma</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orderProducts.map((product, idx) => {
+                    const item = selectedOrder.orderItems.find(
+                      (oi) => oi.productId === product.id
+                    );
+
+                    return (
+                      <tr key={idx} className="border-t">
+                        <td className="px-4 py-2">{product.name}</td>
+                        <td className="px-4 py-2">{item?.quantity ?? '-'}</td>
+                        <td className="px-4 py-2">
+                          {parseFloat(product.price).toFixed(2)} PLN
+                        </td>
+                        <td className="px-4 py-2">
+                          {(item ? product.price * item.quantity : 0).toFixed(2)} PLN
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+
 
             <div className="flex justify-end space-x-3">
               <button
-                onClick={() => openEditor(selectedOrder)}
+                onClick={() => openEditor(selectedOrder.id)}
                 className="px-4 py-2 bg-primary hover:bg-primaryhover transition-all text-white rounded-md"
               >
                 Edytuj

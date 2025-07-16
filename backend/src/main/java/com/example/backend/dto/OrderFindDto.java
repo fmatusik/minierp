@@ -18,7 +18,7 @@ public class OrderFindDto{
     private ClientDto clientDto;
     private StatusDto statusDto;
     private Data data;
-    private Long price;
+    private double price;
     private String paymentStatus;
     private AddressDto addressDto;
     private LocalDateTime deliveryDate;
