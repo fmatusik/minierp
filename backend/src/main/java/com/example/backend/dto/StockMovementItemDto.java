@@ -10,8 +10,9 @@ import lombok.Getter;
 @Builder
 public class StockMovementItemDto {
     private Long id;
-    private StockMovementDto stockMovementDto;
-    private ProductAddDto productAddDto;
+    private Long stockMovementId;
+    private Long productId;
     private Long quantity;
     private Data data;
+    private double price;
 }

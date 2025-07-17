@@ -5,5 +5,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface StockMovementItemService {
-   // StockMovementItemDto addStockMovementItem(StockMovementItemDto stockMovementItemDto);
+   StockMovementItemDto addStockMovementItem(StockMovementItemDto stockMovementItemDto);
 }

@@ -31,6 +31,9 @@ public class StockLevel {
     @Column(nullable = false)
     private Long quantity;
 
+    @Column(nullable = false)
+    private Long minimumQuantity;
+
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "data")
     private Data data;

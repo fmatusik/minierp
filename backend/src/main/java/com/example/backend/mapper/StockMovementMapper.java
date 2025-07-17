@@ -1,8 +1,10 @@
 package com.example.backend.mapper;
 
 import com.example.backend.dto.StockMovementDto;
+import com.example.backend.entity.Address;
 import com.example.backend.entity.Order;
 import com.example.backend.entity.StockMovement;
+import com.example.backend.entity.Warehouse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,26 +14,26 @@ public class StockMovementMapper {
     public static StockMovementDto toDto(StockMovement stockMovement) {
         return StockMovementDto.builder()
                 .id(stockMovement.getId())
-                .sourceWarehouseDto(stockMovement.getSourceWarehouse() != null
-                        ? WarehouseMapper.toDto(stockMovement.getSourceWarehouse()) : null)
-                .targetWarehouseDto(stockMovement.getTargetWarehouse() != null
-                        ? WarehouseMapper.toDto(stockMovement.getTargetWarehouse()) : null)
-                .relatedOrderAddDto(stockMovement.getRelatedOrder() != null
-                        ? OrderMapper.toDto(stockMovement.getRelatedOrder()) : null)
+                .sourceWarehouseId(stockMovement.getSourceWarehouse() != null
+                        ? stockMovement.getSourceWarehouse().getId() : null)
+                .targetWarehouseId(stockMovement.getTargetWarehouse() != null
+                        ? stockMovement.getTargetWarehouse().getId() : null)
+                .relatedOrderId(stockMovement.getRelatedOrder() != null
+                        ? stockMovement.getRelatedOrder().getId() : null)
                 .note(stockMovement.getNote())
+                .type(stockMovement.getType())
                 .data(stockMovement.getData())
                 .build();
     }
 
-    public static StockMovement toEntity(StockMovementDto stockMovementDto, Order relatedOrder) {
+    public static StockMovement toEntity(StockMovementDto stockMovementDto, Order relatedOrder, Warehouse sourceWarehouse, Warehouse targetWarehouse) {
         return StockMovement.builder()
                 .id(stockMovementDto.getId())
-                .sourceWarehouse(stockMovementDto.getSourceWarehouseDto() != null
-                        ? WarehouseMapper.toEntity(stockMovementDto.getSourceWarehouseDto()) : null)
-                .targetWarehouse(stockMovementDto.getTargetWarehouseDto() != null
-                        ? WarehouseMapper.toEntity(stockMovementDto.getTargetWarehouseDto()) : null)
+                .sourceWarehouse(sourceWarehouse)
+                .targetWarehouse(targetWarehouse)
                 .relatedOrder(relatedOrder)
                 .note(stockMovementDto.getNote())
+                .type(stockMovementDto.getType())
                 .data(stockMovementDto.getData())
                 .build();
     }
@@ -44,18 +46,15 @@ public class StockMovementMapper {
 
     public static List<StockMovement> toEntityList(List<StockMovementDto> dtoList) {
         return dtoList.stream()
-                .map(StockMovementMapper::toEntityWithoutOrder)
+                .map(StockMovementMapper::toEntityWithoutOrderAndSourceWarehouseAndTargetWarehouse)
                 .collect(Collectors.toList());
     }
 
-    public static StockMovement toEntityWithoutOrder(StockMovementDto stockMovementDto) {
+    public static StockMovement toEntityWithoutOrderAndSourceWarehouseAndTargetWarehouse(StockMovementDto stockMovementDto) {
         return StockMovement.builder()
                 .id(stockMovementDto.getId())
-                .sourceWarehouse(stockMovementDto.getSourceWarehouseDto() != null
-                        ? WarehouseMapper.toEntity(stockMovementDto.getSourceWarehouseDto()) : null)
-                .targetWarehouse(stockMovementDto.getTargetWarehouseDto() != null
-                        ? WarehouseMapper.toEntity(stockMovementDto.getTargetWarehouseDto()) : null)
                 .note(stockMovementDto.getNote())
+                .type(stockMovementDto.getType())
                 .data(stockMovementDto.getData())
                 .build();
     }

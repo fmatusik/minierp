@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.example.backend.enums.StockMovementType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,6 +39,9 @@ public class StockMovement {
 
     @Column
     private String note;
+
+    @Column
+    private StockMovementType type;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "data")

@@ -6,4 +6,5 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource
 public interface StockMovementRepository extends JpaRepository<StockMovement, Long> {
+    StockMovement findById(long id);
 }

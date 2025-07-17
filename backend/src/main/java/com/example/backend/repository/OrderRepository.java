@@ -9,4 +9,5 @@ import java.util.Optional;
 @RepositoryRestResource
 public interface OrderRepository extends JpaRepository<Order, Long> {
     Optional<Order> findTopByOrderByDocumentNumberDesc();
+    Order findById(long id);
 }

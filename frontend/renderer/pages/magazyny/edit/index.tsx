@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   User,
@@ -7,8 +7,9 @@ import {
   Package,
   CheckCircle,
 } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 
-// Warehouse types matching your backend enum with Polish labels
+// Typy magazynów
 const warehouseTypes = [
   { label: "Magazyn regionalny", value: "REGIONAL" },
   { label: "Magazyn centralny", value: "CENTRAL" },
@@ -19,11 +20,15 @@ const warehouseTypes = [
   { label: "Magazyn tymczasowy", value: "TEMPORARY" },
 ];
 
-export default function AddWarehouseForm() {
+export default function EditWarehouseForm() {
+  const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+
   // Warehouse state
   const [name, setName] = useState("");
   const [capacity, setCapacity] = useState("");
   const [type, setType] = useState("");
+  const [addressId, setAddressId] = useState(null);
 
   // Address state
   const [street, setStreet] = useState("");
@@ -32,67 +37,109 @@ export default function AddWarehouseForm() {
   const [postalCode, setPostalCode] = useState("");
   const [city, setCity] = useState("");
   const [province, setProvince] = useState("");
+  const [addressData, setAddressData] = useState({});
+    const [warehouseId, setWarehouseId] = useState(null);
 
-  // Loading state to disable button during submit
-  const [loading, setLoading] = useState(false);
+useEffect(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const id = parseInt(urlParams.get("id"));
+  if (!isNaN(id)) {
+    setWarehouseId(id);
+  }
+}, []);
+
+
+
+  // Fetch warehouse data on mount
+  useEffect(() => {
+    if(!warehouseId) return;
+
+    const fetchData = async () => {
+      try {
+        const resWarehouse = await axios.get(
+          `http://localhost:8080/api/warehouse/one/${warehouseId}`
+        );
+        const warehouse = resWarehouse.data;
+        setName(warehouse.name);
+        setCapacity(warehouse.capacity);
+        setType(warehouse.type);
+        setAddressId(warehouse.addressDto.id);
+
+        const address = warehouse.addressDto;
+        setStreet(address.street);
+        setBuildingNumber(address.buildingNumber);
+        setApartmentNumber(address.apartmentNumber || "");
+        setPostalCode(address.postalCode);
+        setCity(address.city);
+        setProvince(address.province);
+        setAddressData(address.data)
+      } catch (err) {
+        console.error(err);
+        alert("Nie udało się pobrać danych magazynu");
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [warehouseId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
 
     try {
       const addressBody = {
+        id: addressId,
         street,
         buildingNumber,
         apartmentNumber: apartmentNumber || null,
         postalCode,
         city,
         province,
+        data: addressData, 
       };
 
-      // 1. Add address and get its ID
-      const resAddress = await axios.post(
-        "http://localhost:8080/api/address/add/warehouse",
+      // 1. Update address
+      await axios.put(
+        `http://localhost:8080/api/address/update/${addressId}`,
         addressBody
       );
 
-      const newAddressId = resAddress.data.id;
-
-      // 2. Add warehouse with addressId
+      // 2. Update warehouse
       const warehouseBody = {
         name,
         capacity: Number(capacity),
         type,
-        addressId: newAddressId,
+        addressId,
       };
-    
-      console.log(warehouseBody);
 
-      const resWarehouse = await axios.post(
-        "http://localhost:8080/api/warehouse/add",
+      await axios.put(
+        `http://localhost:8080/api/warehouse/update/${warehouseId}`,
         warehouseBody
       );
 
-      console.log("Warehouse added:", resWarehouse.data);
-      alert("Magazyn dodany pomyślnie!");
-
+      alert("Magazyn został zaktualizowany pomyślnie!");
       window.close();
     } catch (err) {
       console.error(err);
-      alert("Wystąpił problem podczas dodawania magazynu lub adresu");
+      alert("Wystąpił problem podczas aktualizacji");
       window.close();
     } finally {
       setLoading(false);
     }
   };
 
+  if (initialLoading) {
+    return <p className="text-center text-gray-500">Ładowanie danych...</p>;
+  }
+
   return (
     <form
       onSubmit={handleSubmit}
       className="space-y-6 max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-md border"
     >
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">Dodaj magazyn</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">Edytuj magazyn</h2>
 
       <LabeledInput
         icon={<User />}
@@ -136,7 +183,7 @@ export default function AddWarehouseForm() {
 
       <hr className="my-6 border-gray-200" />
 
-      <h3 className="text-xl font-bold text-gray-800 mb-4">Dodaj adres magazynu</h3>
+      <h3 className="text-xl font-bold text-gray-800 mb-4">Edytuj adres magazynu</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <LabeledInput
@@ -191,13 +238,12 @@ export default function AddWarehouseForm() {
         }`}
       >
         <CheckCircle className="w-5 h-5" />
-        {loading ? "Dodawanie..." : "Zapisz magazyn"}
+        {loading ? "Aktualizowanie..." : "Zapisz zmiany"}
       </button>
     </form>
   );
 }
 
-// LabeledInput component supporting value, onChange, and optional required prop
 function LabeledInput({ icon, label, type = "text", min = null, value, onChange, required = true }) {
   return (
     <div className="space-y-1">

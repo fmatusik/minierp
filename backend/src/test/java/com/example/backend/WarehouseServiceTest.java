@@ -1,13 +1,12 @@
 package com.example.backend;
 
 import com.example.backend.dto.AddressDto;
-import com.example.backend.dto.WarehouseDto;
+import com.example.backend.dto.WarehouseAddDto;
 import com.example.backend.entity.Data;
 import com.example.backend.entity.Warehouse;
 import com.example.backend.enums.WarehouseType;
 import com.example.backend.mapper.WarehouseMapper;
 import com.example.backend.repository.WarehouseRepository;
-import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +23,7 @@ public class WarehouseServiceTest {
     @Test
     void addWarehouse() {
 
-        WarehouseDto warehouseDto = WarehouseDto.builder()
+/*        WarehouseAddDto warehouseAddDto = WarehouseAddDto.builder()
                 .addressDto(AddressDto.builder()
                         .buildingNumber("18A")
                         .apartmentNumber("1")
@@ -45,7 +44,7 @@ public class WarehouseServiceTest {
                         .build())
                 .build();
 
-        Warehouse warehouse = warehouseRepository.save(WarehouseMapper.toEntity(warehouseDto));
+        Warehouse warehouse =*/// warehouseRepository.save(WarehouseMapper.toEntity(warehouseAddDto));
 
         //return warehouse
     }

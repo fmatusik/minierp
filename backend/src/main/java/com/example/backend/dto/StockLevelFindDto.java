@@ -8,11 +8,11 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 @Builder
-public class StockLevelDto {
+public class StockLevelFindDto {
 
     private Long id;
-    private Long productId;
-    private Long warehouseId;
+    private ProductFindDto productDto;
+    private WarehouseFindDto warehouseDto;
     private Long quantity;
     private Long minimumQuantity;
     private Data data;

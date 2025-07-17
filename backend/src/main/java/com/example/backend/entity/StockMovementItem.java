@@ -32,6 +32,9 @@ public class StockMovementItem {
     @JoinColumn(name = "data")
     private Data data;
 
+    @Column(nullable = false)
+    private Double price;
+
 
 
 

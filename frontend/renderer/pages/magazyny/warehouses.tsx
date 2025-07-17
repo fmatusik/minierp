@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const warehouses = [
   {
@@ -25,7 +26,8 @@ const warehouses = [
 ];
 
 export default function WarehousesPage() {
-
+  const [warehouses, setWarehouses] = useState([]);
+  
   const openAddWindow = () => {
     const width = 1200;
     const height = 900;
@@ -38,6 +40,35 @@ export default function WarehousesPage() {
     window.open(`/magazyny/add`, "_blank", features);
   }
 
+  useEffect(() => {
+    fetchWarehouses();
+
+  },[]);
+
+  const fetchWarehouses = () => {
+    axios.get("http://localhost:8080/api/warehouse/all")
+    .then((res) => {
+      setWarehouses(res.data);
+      console.log(res.data);
+    })
+    .catch((err) => {
+      window.ipc.invoke("show-alert", "Wystąpił nieoczekiwany problem w trakcie ładowania magazynów")
+      console.error(err);
+    })
+  }
+
+
+  const openEdit = (warehouseId) => {
+    const width = 1200;
+    const height = 900;
+
+    const left = window.screenX + (window.innerWidth - width) / 2;
+    const top = window.screenY + (window.innerHeight - height) / 2;
+
+    const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
+    console.log(warehouseId);
+      window.open(`/magazyny/edit?id=${warehouseId}`, "_blank", features);
+  }
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -58,11 +89,12 @@ export default function WarehousesPage() {
         {warehouses.map((w) => (
           <div
             key={w.id}
-            className="border rounded-xl shadow-sm hover:shadow-md transition overflow-hidden bg-white"
+            className="border rounded-xl shadow-sm hover:shadow-md transition overflow-hidden bg-white cursor-pointer"
+            onClick={() => openEdit(w.id)}
           >
             <div className="bg-gray-100 px-4 py-3 border-b">
               <h2 className="text-lg font-semibold">{w.name}</h2>
-              <p className="text-sm text-gray-500">{w.location}</p>
+              <p className="text-sm text-gray-500">{w.addressDto.street} {w.addressDto.buildingNumber}, {w.addressDto.city}</p>
             </div>
             <div className="p-4 space-y-2 text-sm">
               <div className="flex justify-between">

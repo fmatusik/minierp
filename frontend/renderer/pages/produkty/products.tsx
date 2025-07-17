@@ -149,7 +149,16 @@ export default function ProduktyPage() {
             className="cursor-pointer border rounded-lg shadow-sm hover:shadow-md transition"
           >
             <div className="h-40 bg-gray-200 overflow-hidden">
-              <img src={`http://localhost:8080${product.imagesDto[0].path}`} alt={product.name} className="w-full h-full object-cover" />
+              <img
+              src={
+                product.imagesDto?.[0]?.path
+                  ? `http://localhost:8080${product.imagesDto[0].path}`
+                  : "placeholder"
+              }
+              alt={product.name}
+              className="w-full h-full object-cover"
+            />
+
             </div>
             <div className="p-4 space-y-1">
               <h3 className="font-semibold text-lg">{product.name}</h3>

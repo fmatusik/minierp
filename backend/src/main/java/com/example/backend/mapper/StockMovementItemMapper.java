@@ -1,36 +1,31 @@
 package com.example.backend.mapper;
 
 import com.example.backend.dto.StockMovementItemDto;
+import com.example.backend.entity.Product;
+import com.example.backend.entity.StockMovement;
 import com.example.backend.entity.StockMovementItem;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class StockMovementItemMapper {
-/*
     public static StockMovementItemDto toDto(StockMovementItem stockMovementItem) {
         return StockMovementItemDto.builder()
                 .id(stockMovementItem.getId())
-                .stockMovementDto(stockMovementItem.getStockMovement() != null
-                        ? StockMovementMapper.toDto(stockMovementItem.getStockMovement())
+                .stockMovementId(stockMovementItem.getStockMovement() != null
+                        ? stockMovementItem.getStockMovement().getId()
                         : null)
-                .productDto(stockMovementItem.getProduct() != null
-                        ? ProductMapper.toDto(stockMovementItem.getProduct())
-                        : null)
+                .productId(stockMovementItem.getProduct().getId())
                 .quantity(stockMovementItem.getQuantity())
                 .data(stockMovementItem.getData())
                 .build();
     }
 
-    public static StockMovementItem toEntity(StockMovementItemDto stockMovementItemDto) {
+    public static StockMovementItem toEntity(StockMovementItemDto stockMovementItemDto, StockMovement stockMovement, Product product) {
         return StockMovementItem.builder()
                 .id(stockMovementItemDto.getId())
-                .stockMovement(stockMovementItemDto.getStockMovementDto() != null
-                        ? StockMovementMapper.toEntity(stockMovementItemDto.getStockMovementDto())
-                        : null)
-                .product(stockMovementItemDto.getProductDto() != null
-                        ? ProductMapper.toEntity(stockMovementItemDto.getProductDto())
-                        : null)
+                .stockMovement(stockMovement)
+                .product(product)
                 .quantity(stockMovementItemDto.getQuantity())
                 .data(stockMovementItemDto.getData())
                 .build();
@@ -42,9 +37,4 @@ public class StockMovementItemMapper {
                 .collect(Collectors.toList());
     }
 
-    public static List<StockMovementItem> toEntityList(List<StockMovementItemDto> dtoList) {
-        return dtoList.stream()
-                .map(StockMovementItemMapper::toEntity)
-                .collect(Collectors.toList());
-    }*/
 }

@@ -1,6 +1,7 @@
 package com.example.backend.dto;
 
 import com.example.backend.entity.Data;
+import com.example.backend.enums.StockMovementType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,9 +11,10 @@ import lombok.Getter;
 @Getter
 public class StockMovementDto {
     private Long id;
-    private WarehouseDto sourceWarehouseDto;
-    private WarehouseDto targetWarehouseDto;
-    private OrderAddDto relatedOrderAddDto;
+    private Long sourceWarehouseId;
+    private Long targetWarehouseId;
+    private Long relatedOrderId;
     private String note;
+    private StockMovementType type;
     private Data data;
 }

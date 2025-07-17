@@ -232,7 +232,7 @@ export default function KlienciPage() {
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => handleUserDelete(selectedClient.id)}
-                className="px-6 px-2 bg-gray-200 text-black rounded-md hover:bg-gray-300 transition-all font-medium">
+                className="px-6 py-2 bg-gray-200 text-black rounded-md hover:bg-gray-300 transition-all font-medium">
                   Usuń
                 </button>
               <button

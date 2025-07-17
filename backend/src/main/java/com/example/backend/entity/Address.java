@@ -25,7 +25,7 @@ public class Address {
     @Column(nullable = false, name="\"buildingNumber\"")
     private String buildingNumber;
 
-    @Column(nullable = false, name = "\"apartmentNumber\"")
+    @Column(name = "\"apartmentNumber\"")
     private String apartmentNumber;
 
     @Column(nullable = false, name = "\"postalCode\"")
