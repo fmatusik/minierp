@@ -365,7 +365,7 @@ export default function AddOrderForm() {
           type="button"
           onClick={handleAddOrderItemToList}
           disabled={!selectedProductForOrderItem || quantityForOrderItem <= 0}
-          className="md:col-span-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
+          className="md:col-span-3 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primaryhover transition-all flex items-center justify-center gap-2"
         >
           <PlusCircle className="w-5 h-5" />
           Dodaj produkt do zamówienia

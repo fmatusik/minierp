@@ -1,29 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
-const warehouses = [
-  {
-    id: 1,
-    name: "Magazyn Warszawa",
-    location: "ul. Przykładowa 12, Warszawa",
-    products: 123,
-    totalStock: 4500,
-  },
-  {
-    id: 2,
-    name: "Magazyn Kraków",
-    location: "ul. Rynek 1, Kraków",
-    products: 87,
-    totalStock: 3100,
-  },
-  {
-    id: 3,
-    name: "Magazyn Gdańsk",
-    location: "ul. Nadmorska 3, Gdańsk",
-    products: 65,
-    totalStock: 1900,
-  },
-];
+import {RefreshCcw} from 'lucide-react';
 
 export default function WarehousesPage() {
   const [warehouses, setWarehouses] = useState([]);
@@ -55,6 +32,9 @@ export default function WarehousesPage() {
       window.ipc.invoke("show-alert", "Wystąpił nieoczekiwany problem w trakcie ładowania magazynów")
       console.error(err);
     })
+  } 
+  const handleReload = () => {
+    fetchWarehouses();
   }
 
 
@@ -83,6 +63,13 @@ export default function WarehousesPage() {
           + Dodaj magazyn
         </button>
       </div>
+              <button
+          onClick={handleReload}
+          title="Odśwież zamówienia"
+          className="p-2 transition-all hover:-rotate-180 hover:text-primaryhover"
+        >
+          <RefreshCcw className="w-5 h-5" />
+        </button>
 
       {/* Grid of Warehouses */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

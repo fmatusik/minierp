@@ -5,10 +5,9 @@ import com.example.backend.dto.StockMovementDto;
 import com.example.backend.entity.StockMovement;
 import com.example.backend.services.StockMovementService;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @AllArgsConstructor
 @RestController
@@ -16,6 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class StockMovementController {
 
     private final StockMovementService stockMovementService;
+
+
+    @GetMapping("/all")
+    public List<StockMovementDto> getAllStockMovements(){
+        return stockMovementService.findAll();
+    }
 
     @PostMapping("/add")
     public StockMovementDto addStockMovement(@RequestBody StockMovementDto stockMovementDto){

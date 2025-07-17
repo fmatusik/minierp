@@ -248,7 +248,7 @@ export default function EditProductForm({ productId }) {
         {images.length > 0 && (
           <button
             type="button"
-            className="w-full font-medium text-white bg-blue-600 rounded-md py-2 hover:bg-blue-700 transition"
+            className="w-full font-medium text-white bg-primary rounded-md py-2 hover:bg-primaryhover transition"
             onClick={handleImageSubmit}
           >
             Dodaj zdjęcia

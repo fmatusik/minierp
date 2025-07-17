@@ -20,7 +20,8 @@ public class StockMovement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
+    @Column
+    private String stockMovementNumber;
 
     @ManyToOne
     @JoinColumn(name = "\"sourceWarehouse\"")

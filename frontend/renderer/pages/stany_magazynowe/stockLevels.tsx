@@ -16,6 +16,8 @@ export default function StockLevelsPage() {
     fetchFilterWarehouses();
   }, []);
 
+
+
   const fetchStockLevels = () => {
     axios
       .get("http://localhost:8080/api/stockLevels/all")

@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,12 +18,13 @@ public class StockMovementItem {
     private Long id;
 
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "\"stockMovement\"")
     private StockMovement stockMovement;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "product")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    @JsonBackReference
     private Product product;
 
     @Column(nullable = false)

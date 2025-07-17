@@ -17,6 +17,7 @@ public class StockMovementItemMapper {
                         : null)
                 .productId(stockMovementItem.getProduct().getId())
                 .quantity(stockMovementItem.getQuantity())
+                .price(stockMovementItem.getPrice())
                 .data(stockMovementItem.getData())
                 .build();
     }
@@ -27,6 +28,7 @@ public class StockMovementItemMapper {
                 .stockMovement(stockMovement)
                 .product(product)
                 .quantity(stockMovementItemDto.getQuantity())
+                .price(stockMovementItemDto.getPrice())
                 .data(stockMovementItemDto.getData())
                 .build();
     }

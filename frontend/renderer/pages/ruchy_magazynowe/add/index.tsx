@@ -17,13 +17,13 @@ import {
 import axios from "axios";
 
 export default function AddStockMovementForm() {
-  const [clients, setClients] = useState([]);
   const [products, setProducts] = useState([]);
-  const [statuses, setStatuses] = useState([]);
   const [clientAddresses, setClientAddresses] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [stockMovementId, setStockMovementId] = useState(null);
+  const [relatedOrderProducts, setRelatedOrderProducts] = useState([]);
 
   const [formData, setFormData] = useState({
     movementType: "",
@@ -44,13 +44,11 @@ export default function AddStockMovementForm() {
   const [orderItemsToAdd, setOrderItemsToAdd] = useState([]);
   const [selectedProductForOrderItem, setSelectedProductForOrderItem] = useState(null);
   const [quantityForOrderItem, setQuantityForOrderItem] = useState(1);
-
+  
 
 
   useEffect(() => {
-    fetchClients();
     fetchProducts();
-    fetchOrderStatuses();
     fetchWarehouses();
     fetchOrders();
   }, []);
@@ -60,14 +58,6 @@ export default function AddStockMovementForm() {
     else setClientAddresses([]);
   }, [formData.clientId]);
 
-  const fetchClients = async () => {
-    try {
-      const res = await axios.get("http://localhost:8080/api/client/all");
-      setClients(res.data);
-    } catch (err) {
-      console.error("Error fetching clients:", err);
-    }
-  };
 
   const fetchOrders = async () => {
     try {
@@ -96,14 +86,6 @@ export default function AddStockMovementForm() {
     }
   };
 
-  const fetchOrderStatuses = async () => {
-    try {
-      const res = await axios.get("http://localhost:8080/api/status/all/order");
-      setStatuses(res.data);
-    } catch (err) {
-      console.error("Error fetching statuses:", err);
-    }
-  };
 
   const fetchClientAddresses = async (clientId) => {
     try {
@@ -114,20 +96,82 @@ export default function AddStockMovementForm() {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+const handleChange = (e) => {
+  const { name, value } = e.target;
 
-  const handleClientChange = (e) => {
-    const clientId = e.target.value ? parseInt(e.target.value) : null;
-    setFormData((prev) => ({
-      ...prev,
-      clientId,
-      manualClientName: "", // Clear manual name if client selected
+  if (name === "movementType") {
+    setFormData({
+      movementType: value,
+      warehouseSourceId: null,
+      warehouseTargetId: null,
+      clientId: null,
+      manualClientName: "",
       addressId: null,
-    }));
-  };
+      paymentStatus: "",
+      deliveryDate: "",
+      documentNumber: "",
+      salePlace: "",
+      statusId: null,
+      relatedOrderId: "",
+      notes: "",
+    });
+    setOrderItemsToAdd([]); // opcjonalnie: czyści listę produktów
+  } 
+else if (name === "relatedOrderId") {
+  setFormData((prev) => ({ ...prev, relatedOrderId: value }));
+
+  axios.get(`http://localhost:8080/api/orders/one/${value}`)
+    .then((res) => {
+      const orderItems = res.data.orderItems;
+        console.log(orderItems);
+      if (orderItems) {
+        const itemsToAdd = orderItems.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          price: parseFloat(item.price),
+        }));
+
+        setOrderItemsToAdd(itemsToAdd);
+      } else {
+        setOrderItemsToAdd([]);
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      alert(
+        "Wystąpił nieoczekiwany problem w trakcie ładowania produktów z powiązanego zamówienia");
+    });
+}else if (name === "warehouseSourceId") {
+  const newValue = value === "" ? null : parseInt(value);
+  setFormData((prev) => {
+    const updated = { ...prev, warehouseSourceId: newValue };
+    // Jeśli magazyny są takie same — resetuj target
+    if (newValue && newValue === parseInt(prev.warehouseTargetId)) {
+      updated.warehouseTargetId = null;
+    }
+    return updated;
+  });
+  return;
+}
+else if (name === "warehouseTargetId") {
+  const newValue = value === "" ? null : parseInt(value);
+  setFormData((prev) => {
+    const updated = { ...prev, warehouseTargetId: newValue };
+    // Jeśli magazyny są takie same — resetuj source
+    if (newValue && newValue === parseInt(prev.warehouseSourceId)) {
+      updated.warehouseSourceId = null;
+    }
+    return updated;
+  });
+  return;
+}
+
+  else {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  }
+};
+
+
 
   const handleProductSelectionChange = (e) => {
     const productId = parseInt(e.target.value);
@@ -180,43 +224,53 @@ export default function AddStockMovementForm() {
     );
   };
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    handleAddStockMovement();
+    const id = await handleAddStockMovement(); // ⏳ czekamy na ID
+    if (id) {
+        await handleAddStockMovementItems(id); // ⏳ dodajemy itemy po ID
+    }
 
     setIsLoading(false);
+    };
 
 
+
+const handleAddStockMovement = async () => {
+  const stockMovementBody = {
+    note: formData.notes,
+    relatedOrderId: formData.relatedOrderId ? parseInt(formData.relatedOrderId) : null,
+    sourceWarehouseId: formData.warehouseSourceId ? parseInt(formData.warehouseSourceId) : null,
+    targetWarehouseId: formData.warehouseTargetId ? parseInt(formData.warehouseTargetId) : null,
+    type: formData.movementType
   };
 
-
-  const handleAddStockMovement = () => {
-    const stockMovementBody = {
-        note: formData.notes,
-        relatedOrderId: formData.relatedOrderId ? parseInt(formData.relatedOrderId) : null,
-        sourceWarehouseId: formData.warehouseSourceId ? parseInt(formData.warehouseSourceId) : null,
-        targetWarehouseId: formData.warehouseTargetId ? parseInt(formData.warehouseTargetId) : null,
-        type: formData.movementType
-    };
-    console.log(stockMovementBody);
-
-
-    axios.post("http://localhost:8080/api/stockMovements/add", stockMovementBody)
-    .then((res) => {
-        console.log(res.data);
-    })
-    .catch((err) => {
-        console.error(err);
-        alert("Wystąpił nieoczekiwany problem w trakcie dodawania ruchu magazynowego");
-    })
+  try {
+    const res = await axios.post("http://localhost:8080/api/stockMovements/add", stockMovementBody);
+    const id = res.data.id;
+    setStockMovementId(id);
+    return id;
+  } catch (err) {
+    console.error(err);
+    alert("Wystąpił problem podczas dodawania ruchu magazynowego.");
+    return null;
   }
+};
 
-  const handleAddStockMovementItems = () => {
-    const stockMovementItemsBody = orderItemsToAdd;
 
-    axios.post("http://localhost:8080/api/stockMovementItems/add", stockMovementItemsBody)
+  const handleAddStockMovementItems = async (id) => {
+
+    const items = orderItemsToAdd.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        price: item.price * item.quantity,
+        stockMovementId: id
+    }));
+
+    console.log(items);
+    axios.post("http://localhost:8080/api/stockMovementItems/add/list", items)
     .then((res) => {
         console.log(res.data);
     })
@@ -254,55 +308,27 @@ export default function AddStockMovementForm() {
             icon={<Warehouse className="w-4 h-4 text-gray-400" />}
             value={formData.warehouseSourceId || ""}
             onChange={handleChange}
-            options={warehouses.map((w) => ({ value: w.id, label: w.name }))}
+            options={warehouses
+                .filter((w) => w.id !== parseInt(formData.warehouseTargetId))
+                .map((w) => ({ value: w.id, label: w.name }))}
+
             required={false}
           />
 
         {(formData.movementType === "RELEASE") && (
             <>
-            <SelectField
-            label="Powiązanie zamówienie"
-            name="relatedOrderId"
-            icon={<Package className="w-4 h-4 text-gray-400"/>}
-            value={formData.relatedOrderId || ""}
-            options={orders.map((o) => ({ value: o.id, label: o.documentNumber}))}
-            onChange={handleChange}
-            required={false}
-            />
-            <LabeledInput
-              label="Nazwa kontrahenta (opcjonalnie)"
-              name="manualClientName"
-              icon={<User className="w-4 h-4 text-gray-400" />}
-              value={formData.manualClientName}
-              onChange={handleChange}
-            />
+                <SelectField
+                label="Powiązanie zamówienie"
+                name="relatedOrderId"
+                icon={<Package className="w-4 h-4 text-gray-400"/>}
+                value={formData.relatedOrderId || ""}
+                options={orders.map((o) => ({ value: o.id, label: o.documentNumber}))}
+                onChange={handleChange}
+                required={false}
+                />
             </>
           )}
 
-        {(formData.movementType === "RECEPTION") && (
-        <>
-          <SelectField
-            label="Kontrahent"
-            name="clientId"
-            icon={<User className="w-4 h-4 text-gray-400" />}
-            value={formData.clientId || ""}
-            required={false}
-            onChange={handleClientChange}
-            options={clients.map((c) => ({ value: c.id, label: c.name }))}
-          />
-            {!formData.clientId && (
-                <LabeledInput
-                label="Nazwa kontrahenta"
-                name="manualClientName"
-                icon={<User className="w-4 h-4 text-gray-400" />}
-                value={formData.manualClientName}
-                onChange={handleChange}
-                required
-                />
-            )}
-
-            </>
-        )}
 
 
         </>
@@ -317,7 +343,10 @@ export default function AddStockMovementForm() {
             value={formData.warehouseSourceId || ""}
             required={true}
             onChange={handleChange}
-            options={warehouses.map((w) => ({ value: w.id, label: w.name }))}
+            options={warehouses
+                .filter((w) => w.id !== parseInt(formData.warehouseTargetId)) 
+                .map((w) => ({ value: w.id, label: w.name }))}
+
           />
 
           <SelectField
@@ -327,12 +356,15 @@ export default function AddStockMovementForm() {
             value={formData.warehouseTargetId || ""}
             required={true}
             onChange={handleChange}
-            options={warehouses.map((w) => ({ value: w.id, label: w.name }))}
+            options={warehouses
+                .filter((w) => w.id !== parseInt(formData.warehouseSourceId))
+                .map((w) => ({ value: w.id, label: w.name }))}
+
           />
         </>
       )}
       <TextareaInput
-      label="Notakti"
+      label="Notatki"
       name="notes"
       icon={<Notebook className="w-4 h-4 text-gray-400"/>}
       value={formData.notes || ""}

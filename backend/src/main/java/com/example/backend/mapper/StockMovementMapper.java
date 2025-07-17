@@ -14,6 +14,7 @@ public class StockMovementMapper {
     public static StockMovementDto toDto(StockMovement stockMovement) {
         return StockMovementDto.builder()
                 .id(stockMovement.getId())
+                .stockMovementNumber(stockMovement.getStockMovementNumber())
                 .sourceWarehouseId(stockMovement.getSourceWarehouse() != null
                         ? stockMovement.getSourceWarehouse().getId() : null)
                 .targetWarehouseId(stockMovement.getTargetWarehouse() != null
@@ -29,6 +30,7 @@ public class StockMovementMapper {
     public static StockMovement toEntity(StockMovementDto stockMovementDto, Order relatedOrder, Warehouse sourceWarehouse, Warehouse targetWarehouse) {
         return StockMovement.builder()
                 .id(stockMovementDto.getId())
+                .stockMovementNumber(stockMovementDto.getStockMovementNumber())
                 .sourceWarehouse(sourceWarehouse)
                 .targetWarehouse(targetWarehouse)
                 .relatedOrder(relatedOrder)
@@ -53,6 +55,7 @@ public class StockMovementMapper {
     public static StockMovement toEntityWithoutOrderAndSourceWarehouseAndTargetWarehouse(StockMovementDto stockMovementDto) {
         return StockMovement.builder()
                 .id(stockMovementDto.getId())
+                .stockMovementNumber(stockMovementDto.getStockMovementNumber())
                 .note(stockMovementDto.getNote())
                 .type(stockMovementDto.getType())
                 .data(stockMovementDto.getData())

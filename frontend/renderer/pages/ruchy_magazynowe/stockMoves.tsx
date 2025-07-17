@@ -1,37 +1,9 @@
+import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 
-const initialMoves = [
-  {
-    id: 1,
-    product: "Laptop HP EliteBook",
-    type: "przyjęcie",
-    quantity: 10,
-    sourceWarehouse: null,
-    targetWarehouse: "Magazyn Warszawa",
-    date: "2025-07-01",
-  },
-  {
-    id: 2,
-    product: "Smartfon Samsung",
-    type: "wydanie",
-    quantity: -5,
-    sourceWarehouse: "Magazyn Kraków",
-    targetWarehouse: null,
-    date: "2025-07-02",
-  },
-  {
-    id: 3,
-    product: 'Monitor Dell 27"',
-    type: "przesunięcie",
-    quantity: -3,
-    sourceWarehouse: "Magazyn Warszawa",
-    targetWarehouse: "Magazyn Gdańsk",
-    date: "2025-07-03",
-  },
-];
 
 export default function StockMovesPage() {
-  const [moves, setMoves] = useState(initialMoves);
+  const [moves, setMoves] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [selectedWarehouse, setSelectedWarehouse] = useState("");
@@ -41,11 +13,23 @@ export default function StockMovesPage() {
   const modalRef = useRef(null);
   const detailsModalRef = useRef(null);
 
-  const uniqueWarehouses = [
-    ...new Set(
-      moves.flatMap((m) => [m.sourceWarehouse, m.targetWarehouse]).filter(Boolean)
-    ),
-  ];
+  const fetchMoves = () => {
+    axios.get("http://localhost:8080/api/stockMovements/all")
+    .then((res) => {
+      console.log(res.data);
+      setMoves(res.data);
+    })
+    .catch((err) => {
+      console.error(err);
+      window.ipc.invoke("show-alert", "Wystąpił nieoczekiwany problem w trakcie ładowania ruchów magazynowych");
+    })
+  }
+
+  useEffect(() => {
+    fetchMoves();
+  }, []);
+  
+
 
   const filtered = moves.filter((move) => {
     const matchType = !selectedType || move.type === selectedType;
@@ -61,24 +45,6 @@ export default function StockMovesPage() {
     setEditingMove((prev) => ({ ...prev, [field]: value }));
   };
 
-  const saveEdit = () => {
-    if (editingMove.isDuplicate) {
-      const newId = Math.max(...moves.map((m) => m.id)) + 1;
-      setMoves((prev) => [
-        ...prev,
-        { ...editingMove, id: newId, isDuplicate: undefined },
-      ]);
-    } else {
-      setMoves((prev) =>
-        prev.map((m) => (m.id === editingMove.id ? editingMove : m))
-      );
-    }
-    setEditingMove(null);
-  };
-
-  const handleDelete = (id) => {
-    setMoves((prev) => prev.filter((m) => m.id !== id));
-  };
 
   const handleDuplicate = (move) => {
     setEditingMove({ ...move, isDuplicate: true });
@@ -118,6 +84,18 @@ export default function StockMovesPage() {
     };
   }, [selectedMove]);
 
+    const handleOpenAdd = () =>{
+     const width = 1200;
+    const height = 900;
+
+    const left = window.screenX + (window.innerWidth - width) / 2;
+    const top = window.screenY + (window.innerHeight - height) / 2;
+
+    const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
+
+    window.open(`/ruchy_magazynowe/add`, "_blank", features);
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -126,7 +104,9 @@ export default function StockMovesPage() {
           <h1 className="text-3xl font-bold">Ruchy magazynowe</h1>
           <p className="text-gray-600 text-sm">Historia operacji magazynowych</p>
         </div>
-        <button className="px-4 py-2 bg-black text-white rounded-md">
+        <button className="px-4 py-2 bg-black text-white rounded-md"
+        onClick={handleOpenAdd}
+        >
           + Nowy ruch
         </button>
       </div>

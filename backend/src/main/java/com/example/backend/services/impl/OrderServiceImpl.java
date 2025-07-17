@@ -39,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderFindDto findById(Long id){
-        Order order = orderRepository.findById((long)id).orElseThrow();
+        Order order = orderRepository.findById((long)id);
         ClientDto clientDto = ClientMapper.toDto(order.getClient());
         StatusDto statusDto = StatusMapper.toDto(order.getStatus());
         AddressDto addressDto = AddressMapper.toDto(order.getAddress());
@@ -72,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderFindDto updateOrder(OrderAddDto orderAddDto, Long id){
-        Order order = orderRepository.findById((long)id).orElseThrow();
+        Order order = orderRepository.findById((long)id);
         Client client = clientRepository.findById((long) orderAddDto.getClientId());
         Status status = statusRepository.findById((long) orderAddDto.getStatusId());
         Address address = addressRepository.findById((long) orderAddDto.getAddressId());
