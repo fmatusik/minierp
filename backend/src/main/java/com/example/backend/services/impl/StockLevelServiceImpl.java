@@ -64,4 +64,37 @@ public class StockLevelServiceImpl implements StockLevelService {
         StockLevel updated = stockLevelRepository.save(existing);
         return StockLevelMapper.toFindDto(updated);
     }
+
+    @Override
+    public List<StockLevelFindDto> findStockLevelByWarehouseId(Long id) {
+        return StockLevelMapper.toDtoFindList(stockLevelRepository.findAllByWarehouseId(id));
+    }
+
+    @Override
+    public StockLevelFindDto appendStockLevel(Long id, Long quantity) {
+        var existing = stockLevelRepository.findById(id).orElseThrow(()->new RuntimeException("Nie znaleziono pozycji na magazynie o podanym ID"));
+        existing.setQuantity(existing.getQuantity() + quantity);
+        Data data = existing.getData();
+        data.setUpdatedAt(LocalDateTime.now());
+        existing.setData(data);
+        StockLevel updated = stockLevelRepository.save(existing);
+        return StockLevelMapper.toFindDto(updated);
+    }
+
+    @Override
+    public StockLevelFindDto decreaseStockLevel(Long id, Long quantity) {
+        var existing = stockLevelRepository.findById(id).orElseThrow(()->new RuntimeException("Nie znaleziono pozycji na magazynie o podanym ID"));
+        existing.setQuantity(existing.getQuantity() - quantity);
+        Data data = existing.getData();
+        data.setUpdatedAt(LocalDateTime.now());
+        existing.setData(data);
+        StockLevel updated = stockLevelRepository.save(existing);
+        return StockLevelMapper.toFindDto(updated);
+    }
+
+    @Override
+    public Boolean checkIfExists(Long productId, Long warehouseId) {
+        List<StockLevel> existing = stockLevelRepository.findAllByWarehouseIdAndProductId(warehouseId, productId);
+        return !existing.isEmpty();
+    }
 }

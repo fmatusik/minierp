@@ -1,11 +1,13 @@
 package com.example.backend.entity;
 
 import com.example.backend.enums.StockMovementType;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
 @Setter
@@ -47,6 +49,11 @@ public class StockMovement {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "data")
     private Data data;
+
+    @OneToMany(mappedBy = "stockMovement", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<StockMovementItem> stockMovementItems;
+
 
 
 

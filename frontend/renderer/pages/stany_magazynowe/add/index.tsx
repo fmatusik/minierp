@@ -48,32 +48,37 @@ export default function AddStockForm() {
 
 
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    const stockLevelBody = {
-        productId,
-      warehouseId,
-      quantity: Number(quantity),
-      minimumQuantity: Number(minStock),
-    };
-
-    axios.post("http://localhost:8080/api/stockLevels/add", stockLevelBody)
-    .then((res) => {
-        console.log(res.data);
-        alert("Pomyślnie dodano stan magazynowy");
-        setLoading(false);
-        window.close();
-    })
-    .catch((err) => {
-        console.error(err);
-        alert("Wystąpił nieoczekiwany problem w trakcie dodawania magazynu")
-        window.close();
-        setLoading(false);
-    })
-        setLoading(false);
+  const stockLevelBody = {
+    productId,
+    warehouseId,
+    quantity: Number(quantity),
+    minimumQuantity: Number(minStock),
   };
+
+  try {
+    const response = await axios.get(`http://localhost:8080/api/stockLevels/checkIfExists/${stockLevelBody.productId}/${stockLevelBody.warehouseId}`);
+    const exists = response.data;
+    console.log(exists)
+    if (!exists) {
+      const res = await axios.post("http://localhost:8080/api/stockLevels/add", stockLevelBody);
+      console.log(res.data);
+      alert("Pomyślnie dodano stan magazynowy");
+    } else {
+      alert("Istnieje już taki stan magazynowy!");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Wystąpił nieoczekiwany problem w trakcie dodawania magazynu");
+  } finally {
+    setLoading(false);
+    window.close();
+  }
+};
+
 
   return (
     <form

@@ -2,7 +2,7 @@ package com.example.backend.controllers;
 
 
 import com.example.backend.dto.StockMovementDto;
-import com.example.backend.entity.StockMovement;
+import com.example.backend.dto.StockMovementFindDto;
 import com.example.backend.services.StockMovementService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ public class StockMovementController {
 
 
     @GetMapping("/all")
-    public List<StockMovementDto> getAllStockMovements(){
+    public List<StockMovementFindDto> getAllStockMovements(){
         return stockMovementService.findAll();
     }
 

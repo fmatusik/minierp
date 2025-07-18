@@ -45,7 +45,7 @@ export default function ClientAddPage() {
         </div>
         <br />
         <div className="w-full">
-          <label className="block mb-1 text-sm font-medium text-gray-700">Nota`tka</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">Notatka</label>
           <textarea 
             value={client.notes}
             onChange={(e) => setClient({ ...client, notes: e.target.value })}

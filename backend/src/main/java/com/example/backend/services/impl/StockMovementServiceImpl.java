@@ -2,6 +2,7 @@ package com.example.backend.services.impl;
 
 import com.example.backend.dto.OrderAddDto;
 import com.example.backend.dto.StockMovementDto;
+import com.example.backend.dto.StockMovementFindDto;
 import com.example.backend.entity.*;
 import com.example.backend.mapper.StockMovementMapper;
 import com.example.backend.repository.*;
@@ -49,8 +50,8 @@ public class StockMovementServiceImpl implements StockMovementService {
     }
 
     @Override
-    public List<StockMovementDto> findAll() {
-        return StockMovementMapper.toDtoList(stockMovementRepository.findAll());
+    public List<StockMovementFindDto> findAll() {
+        return StockMovementMapper.toDtoFindList(stockMovementRepository.findAll());
     }
 
     private Optional<String> findLastDocumentNumber() {

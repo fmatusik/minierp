@@ -1,10 +1,8 @@
 package com.example.backend.mapper;
 
 import com.example.backend.dto.StockMovementDto;
-import com.example.backend.entity.Address;
-import com.example.backend.entity.Order;
-import com.example.backend.entity.StockMovement;
-import com.example.backend.entity.Warehouse;
+import com.example.backend.dto.StockMovementFindDto;
+import com.example.backend.entity.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,5 +58,32 @@ public class StockMovementMapper {
                 .type(stockMovementDto.getType())
                 .data(stockMovementDto.getData())
                 .build();
+    }
+
+
+    public static StockMovementFindDto toFindDto(StockMovement stockMovement) {
+        return StockMovementFindDto.builder()
+                .id(stockMovement.getId())
+                .stockMovementNumber(stockMovement.getStockMovementNumber())
+                .sourceWarehouse(stockMovement.getSourceWarehouse() != null
+                        ? WarehouseMapper.toFindDto(stockMovement.getSourceWarehouse()) : null)
+                .targetWarehouse(stockMovement.getTargetWarehouse() != null  // Poprawiony warunek
+                        ? WarehouseMapper.toFindDto(stockMovement.getTargetWarehouse()) : null)
+                .relatedOrder(stockMovement.getRelatedOrder() != null
+                        ? OrderMapper.toDtoFind(stockMovement.getRelatedOrder(), 
+                            ClientMapper.toDto(stockMovement.getRelatedOrder().getClient()), 
+                            StatusMapper.toDto(stockMovement.getRelatedOrder().getStatus()), 
+                            AddressMapper.toDtoWithoutClient(stockMovement.getRelatedOrder().getAddress())) : null)
+                .stockMovementItemsDto(stockMovement.getStockMovementItems() != null ? StockMovementItemMapper.toDtoFindList(stockMovement.getStockMovementItems()) : null)
+                .note(stockMovement.getNote())
+                .type(stockMovement.getType())
+                .data(stockMovement.getData())
+                .build();
+    }
+
+    public static List<StockMovementFindDto> toDtoFindList(List<StockMovement> entityList) {
+        return entityList.stream()
+                .map(StockMovementMapper::toFindDto)
+                .collect(Collectors.toList());
     }
 }

@@ -27,8 +27,27 @@ public class StockLevelController {
         return stockLevelService.findAll();
     }
 
+    @GetMapping("/checkIfExists/{productId}/{warehouseId}")
+    public Boolean checkIfExists(@PathVariable Long productId, @PathVariable Long warehouseId){
+        return stockLevelService.checkIfExists(productId, warehouseId);
+    }
+
     @PutMapping("/update/{id}")
     public StockLevelFindDto updateStockLevel(@PathVariable Long id, @RequestBody StockLevelDto stockLevel) {
         return stockLevelService.update(id, stockLevel);
+    }
+
+    @PutMapping("/append/{id}")
+    public StockLevelFindDto appendStockLevel(@PathVariable Long id, @RequestBody Long quantity) {
+        return stockLevelService.appendStockLevel(id, quantity);
+    }
+    @PutMapping("/decrease/{id}")
+    public StockLevelFindDto decreaseStockLevel(@PathVariable Long id, @RequestBody Long quantity) {
+        return  stockLevelService.decreaseStockLevel(id, quantity);
+    }
+
+    @GetMapping("/warehouse/{id}")
+    public List<StockLevelFindDto> findStockLevelsByWarehouseId(@PathVariable Long id){
+        return stockLevelService.findStockLevelByWarehouseId(id);
     }
 }

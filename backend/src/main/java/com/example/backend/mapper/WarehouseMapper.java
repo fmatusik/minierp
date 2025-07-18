@@ -66,7 +66,7 @@ public class WarehouseMapper {
 
     public static WarehouseFindDto toFindDto(Warehouse warehouse) {
         return WarehouseFindDto.builder()
-                .id(warehouse.getId())
+                .id(warehouse.getId() != null ? warehouse.getId() : null)
                 .name(warehouse.getName())
                 .addressDto(warehouse.getAddress() != null ? AddressMapper.toDto(warehouse.getAddress()) : null)
                 .type(warehouse.getType())
