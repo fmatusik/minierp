@@ -9,6 +9,7 @@ export default function StockMovesPage() {
   const [selectedWarehouse, setSelectedWarehouse] = useState("");
   const [editingMove, setEditingMove] = useState(null);
   const [selectedMove, setSelectedMove] = useState(null);
+  const [warehouses, setWarehouses] = useState([]);
 
   const modalRef = useRef(null);
   const detailsModalRef = useRef(null);
@@ -25,8 +26,21 @@ export default function StockMovesPage() {
     })
   }
 
+  const fetchWarehouses = () => {
+    axios.get("http://localhost:8080/api/warehouse/all")
+    .then((res) => {
+      setWarehouses(res.data);
+      console.log(res.data);
+    })
+    .catch((err) => {
+      console.error(err);
+      window.ipc.invoke("show-alert", "Wystąpił nieoczekiwany problem w trakcie ładowania magazynów");
+    })
+  }
+
   useEffect(() => {
     fetchMoves();
+    fetchWarehouses();
   }, []);
   
 
@@ -136,9 +150,9 @@ export default function StockMovesPage() {
           className="px-3 py-2 border rounded-md"
         >
           <option value="">Wszystkie magazyny</option>
-          {uniqueWarehouses.map((w, i) => (
+          {warehouses.map((w, i) => (
             <option key={i} value={w}>
-              {w}
+              {w.name}
             </option>
           ))}
         </select>
