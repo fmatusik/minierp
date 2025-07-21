@@ -74,7 +74,6 @@ export const createWindow = (
   const win = new BrowserWindow({
     ...state,
     ...options,
-    icon: path.join(__dirname, '../../resources/icon.ico'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
