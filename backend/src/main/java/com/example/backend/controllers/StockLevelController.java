@@ -5,8 +5,10 @@ import com.example.backend.dto.StockLevelFindDto;
 import com.example.backend.services.StockLevelService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @AllArgsConstructor
@@ -50,4 +52,16 @@ public class StockLevelController {
     public List<StockLevelFindDto> findStockLevelsByWarehouseId(@PathVariable Long id){
         return stockLevelService.findStockLevelByWarehouseId(id);
     }
+
+    @DeleteMapping("/delete/{id}")
+    public String deleteStockLevel(@PathVariable Long id) {
+        return stockLevelService.deleteStockLevel(id);
+    }
+
+    @GetMapping("/csv/all")
+    public ResponseEntity<byte[]> exportStockLevelsToCsv() throws IOException {
+        return stockLevelService.exportStockLevelsToCSV();
+    }
+
+
 }

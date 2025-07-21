@@ -85,4 +85,18 @@ public class OrderMapper {
     }
 
 
+    public static OrderFindDto toDtoFindWithoutOrderItemStatusAndAddress(Order order) {
+        return OrderFindDto.builder()
+                .id(order.getId())
+                .data(order.getData())
+                .price(order.getPrice())
+                .paymentStatus(order.getPaymentStatus())
+                .deliveryDate(order.getDeliveryDate())
+                .documentNumber(order.getDocumentNumber())
+                .salePlace(order.getSalePlace())
+                .clientDto(ClientMapper.toDtoWithoutContactsAndAddresses(order.getClient()))
+                .build();
+    }
+
+
 }

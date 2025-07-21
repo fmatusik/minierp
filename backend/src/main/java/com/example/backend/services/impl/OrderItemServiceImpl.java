@@ -39,7 +39,7 @@ public class OrderItemServiceImpl implements OrderItemService {
         orderItemEntity.setData(Data.builder()
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now()).build());
-        orderItemEntity.setRelatedOrder(orderRepository.findById(orderItemDto.getOrderId()).orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderItemDto.getOrderId())));
+        orderItemEntity.setRelatedOrder(orderRepository.findById(orderItemDto.getOrder().getId()).orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderItemDto.getOrder().getId())));
         orderItemEntity = orderItemRepository.save(orderItemEntity);
         return orderItemMapper.toDto(orderItemEntity);
     }
@@ -53,8 +53,8 @@ public class OrderItemServiceImpl implements OrderItemService {
                             .createdAt(LocalDateTime.now())
                             .updatedAt(LocalDateTime.now())
                             .build());
-                    entity.setRelatedOrder(orderRepository.findById(dto.getOrderId())
-                            .orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + dto.getOrderId())));
+                    entity.setRelatedOrder(orderRepository.findById(dto.getOrder().getId())
+                            .orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + dto.getOrder().getId())));
                     return entity;
                 })
                 .toList(); // or .collect(Collectors.toList()) for Java 8
@@ -77,8 +77,8 @@ public class OrderItemServiceImpl implements OrderItemService {
                 () -> new RuntimeException("Order item nie istnieje!")
         );
 
-        var order = orderRepository.findById(orderItemDto.getOrderId())
-                .orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + orderItemDto.getOrderId()));
+        var order = orderRepository.findById(orderItemDto.getOrder().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + orderItemDto.getOrder().getId()));
 
         var product = productRepository.findById(orderItemDto.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + orderItemDto.getProductId()));

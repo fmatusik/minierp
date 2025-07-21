@@ -12,4 +12,5 @@ public interface ProductService {
    List<ProductFindDto> findAllDto();
    ProductFindDto findById(Long id);
    ProductFindDto updateProduct(Long id, ProductAddDto updatedProductDto);
+   String deleteProduct(Long id);
 }

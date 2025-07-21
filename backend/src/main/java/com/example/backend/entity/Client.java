@@ -29,6 +29,7 @@ public class Client {
     @JoinColumn(name = "data_id")
     private Data data;
 
+    @Column(length = 4000)
     private String notes;
 
     //client contact

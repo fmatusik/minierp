@@ -32,10 +32,10 @@ public class Product {
     @JoinColumn(name = "data")
     private Data data;
 
-    @Column
+    @Column(length = 4000)
     private String description;
 
-    @Column
+    @Column(length = 4000)
     private String notes;
 
     @Column(nullable = false)
@@ -54,9 +54,10 @@ public class Product {
 
 
     @ManyToOne
-    @JoinColumn(name="\"categoryId\"")
+    @JoinColumn(name="\"categoryId\"", nullable = true)
     @JsonBackReference
     private Category category;
+
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

@@ -185,8 +185,7 @@ const handleAddOrderItemToList = () => {
         "http://localhost:8080/api/orders/add",
         orderCreationPayload
       );
-      const newOrderId = orderRes.data.id; // Get the ID of the newly created order
-      console.log("Order created with ID:", newOrderId);
+      const newOrder = orderRes.data;
 
       // 2. Add Order Items using the newOrderId
     if (orderItemsToAdd.length > 0) {
@@ -194,25 +193,26 @@ const handleAddOrderItemToList = () => {
         productId: item.productId,
         quantity: item.quantity,
         price: item.price * item.quantity, // Ensure this is the per-item price
-        orderId: newOrderId, // Explicitly set the orderId here
+        order: newOrder, // Explicitly set the orderId here
       }));
 
-  try {
-    // Create an array of promises from all the axios.post calls
-    await axios.post(
-      `http://localhost:8080/api/orderItems/add/list`,
-      orderItemsPayload
-    );
+      try {
+        // Create an array of promises from all the axios.post calls
+        await axios.post(
+          `http://localhost:8080/api/orderItems/add/list`,
+          orderItemsPayload
+        );
 
-    console.log("All order items added successfully!");
-  } catch (error) {
-    console.error("Error adding order items:", error);
-    // Handle the error appropriately, e.g., show a user message
-  }
-}
-
-      alert("Zamówienie utworzone pomyślnie!");
+        console.log("All order items added successfully!");
+              alert("Zamówienie utworzone pomyślnie!");
       window.close(); // Close window on successful submission
+      } catch (error) {
+        console.error("Error adding order items:", error);
+        // Handle the error appropriately, e.g., show a user message
+      }
+    }
+
+
     } catch (err) {
       console.error(
         "Error creating order or adding items:",
@@ -372,13 +372,13 @@ const handleAddOrderItemToList = () => {
           </div>
         </div>
         <LabeledInput
+          name="quantity"
           icon={<Layers className="w-4 h-4 text-gray-400" />}
           label="Ilość"
           type="number"
           value={quantityForOrderItem}
           onChange={handleQuantityChange}
           min="1"
-          className="w-full"
         />
         <button
           type="button"
@@ -445,7 +445,7 @@ const handleAddOrderItemToList = () => {
               })}
               <tr>
                 <td
-                  colSpan="3"
+                  colSpan={3}
                   className="px-6 py-4 text-right text-base font-bold text-gray-900"
                 >
                   Suma całkowita:

@@ -15,21 +15,37 @@ export default function ProduktyPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [topProductId, setTopProductId] = useState(null);
+
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  const fetchProducts = () => {
-    axios.get("http://localhost:8080/api/products/all")
-      .then((res) => {
-        setProducts(res.data);
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.error("Błąd podczas pobierania produktów:", err);
-      });
-  };
+const fetchProducts = () => {
+  axios.get("http://localhost:8080/api/products/all")
+    .then((res) => {
+      const products = res.data;
+
+      // Oblicz sumę zamówień każdego produktu
+      const productWithOrderCount = products.map(p => ({
+        ...p,
+        totalOrders: p.orderItemDtos?.reduce((sum, item) => sum + item.quantity, 0) || 0
+      }));  
+
+      // Znajdź produkt z największą ilością zamówień
+      const topProduct = productWithOrderCount.reduce((max, p) =>
+        p.totalOrders > max.totalOrders ? p : max, productWithOrderCount[0]
+      );
+
+      setProducts(productWithOrderCount); // aktualizacja produktów z totalOrders
+      setTopProductId(topProduct?.id);    // ustawienie ID topowego produktu
+    })
+    .catch((err) => {
+      console.error("Błąd podczas pobierania produktów:", err);
+    });
+};
+
 
   const handleReload = () =>{
     fetchProducts();
@@ -143,11 +159,17 @@ export default function ProduktyPage() {
       {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredProducts.map((product) => (
-          <div
-            key={product.id}
-            onClick={() => setSelectedProduct(product)}
-            className="cursor-pointer border rounded-lg shadow-sm hover:shadow-md transition"
-          >
+      <div
+        key={product.id}
+        onClick={() => setSelectedProduct(product)}
+        className={clsx(
+          "cursor-pointer border rounded-lg transition hover:shadow-md",
+          product.id === topProductId
+            ? "shadow-[0_0_10px] shadow-primary "
+            : "shadow-sm"
+        )}
+      >
+
             <div className="h-40 bg-gray-200 overflow-hidden">
               <img
               src={

@@ -7,8 +7,10 @@ import com.example.backend.mapper.OrderMapper;
 import com.example.backend.repository.OrderRepository;
 import com.example.backend.services.OrderService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @AllArgsConstructor
@@ -41,6 +43,11 @@ public class OrderController {
     @DeleteMapping("/delete/{id}")
     public String deleteOrder(@PathVariable Long id) {
         return orderService.deleteOrder(id);
+    }
+
+    @GetMapping("/csv/all")
+    public ResponseEntity<byte[]> exportOrdersToCsv() throws IOException {
+        return orderService.exportOrdersToCSV();
     }
 
 }

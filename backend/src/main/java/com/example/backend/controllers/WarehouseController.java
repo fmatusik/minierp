@@ -35,4 +35,9 @@ public class WarehouseController {
     public WarehouseFindDto updateWarehouse(@PathVariable Long id, @RequestBody WarehouseAddDto warehouseAddDto){
         return warehouseService.updateWarehouseById(warehouseAddDto, id);
     }
+
+    @DeleteMapping("/delete/{id}")
+    public String deleteWarehouse(@PathVariable Long id){
+        return warehouseService.deleteWarehouse(id);
+    }
 }

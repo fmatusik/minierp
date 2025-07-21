@@ -55,6 +55,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public String deleteCategory(Long id) {
         try {
+            Category category = categoryRepository.findById(id).orElseThrow(()->new RuntimeException("Nie znaleziono kategorii o id: "+id));
+            category.getProducts().forEach(product -> product.setCategory(null));
             categoryRepository.deleteById(id);
             return "Pomyślnie usunięto kategorię";
         } catch (EmptyResultDataAccessException e) {

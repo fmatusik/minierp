@@ -60,7 +60,10 @@ export default function CategoryPage({ categoryId }) {
     
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
+    const confirm = await window.ipc.invoke("show-confirm", "Czy napewno chcesz usunąć kategorie?")
+    if(!confirm) return;
+    
     axios.delete(`http://localhost:8080/api/category/delete/${category.id}`)
     .then((res) => {
       console.log(res.data);

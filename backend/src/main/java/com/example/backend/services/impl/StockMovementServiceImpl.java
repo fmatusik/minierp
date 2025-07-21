@@ -10,11 +10,16 @@ import com.example.backend.services.StockMovementService;
 import lombok.AllArgsConstructor;
 import org.hibernate.annotations.NaturalId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @AllArgsConstructor
 @Service
@@ -52,6 +57,16 @@ public class StockMovementServiceImpl implements StockMovementService {
     @Override
     public List<StockMovementFindDto> findAll() {
         return StockMovementMapper.toDtoFindList(stockMovementRepository.findAll());
+    }
+
+    @Override
+    public String deleteById(Long id) {
+        if(stockMovementRepository.existsById(id)){
+            stockMovementRepository.deleteById(id);
+            return "Pomyślnie usunięto ruch magazynowy";
+        }else{
+            return "Wystąpił nieoczekiwany problem w trakcie usuwania ruchu magazynowego";
+        }
     }
 
     private Optional<String> findLastDocumentNumber() {
@@ -101,5 +116,55 @@ public class StockMovementServiceImpl implements StockMovementService {
         // Fallback dla nieoczekiwanych formatów lub jeśli istniejące numery nie pasują do oczekiwanego wzorca.
         // W przypadku produkcji, może być potrzebna bardziej zaawansowana obsługa błędów lub strategia migracji danych.
         return prefix + "001"; // Domyślny dla nieobsłużonych lub nieprawidłowych istniejących numerów
+    }
+
+
+
+    @Override
+    public ResponseEntity<byte[]> exportStockMovementsToCSV() throws IOException {
+        List<String[]> dataLines = stockMovementRepository.findAll().stream()
+                .map(sm -> new String[]{
+                        sm.getStockMovementNumber(),
+                        sm.getType().toString(),
+                        sm.getSourceWarehouse().getName(),
+                        sm.getTargetWarehouse() != null ? sm.getTargetWarehouse().getName() : "",
+                        sm.getData().getCreatedAt().toString(),
+                })
+                .collect(Collectors.toList());
+
+        StringBuilder csvBuilder = new StringBuilder();
+        // Nagłówek CSV - 8 kolumn
+        csvBuilder.append(convertToCSV(new String[]{
+                "Stock Movement Number","Type", "Source Warehouse", "Target Warehouse", "Data"
+        })).append("\n");
+
+        // Dane
+        dataLines.forEach(line -> csvBuilder.append(convertToCSV(line)).append("\n"));
+
+        byte[] csvBytes = csvBuilder.toString().getBytes(StandardCharsets.UTF_8);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=orders.csv")
+                .header("Content-Type", "text/csv")
+                .body(csvBytes);
+    }
+
+
+
+    private String escapeSpecialCharacters(String data) {
+        String escapedData = data.replaceAll("\"", "\"\"");
+        if (data.contains(",") || data.contains("\"") || data.contains("\n")) {
+            return "\"" + escapedData + "\"";
+        } else {
+            return data;
+        }
+
+    }
+
+
+    public String convertToCSV(String[] data) {
+        return Stream.of(data)
+                .map(this::escapeSpecialCharacters)
+                .collect(Collectors.joining(","));
     }
 }

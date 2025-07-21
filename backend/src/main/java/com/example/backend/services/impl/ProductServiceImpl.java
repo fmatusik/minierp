@@ -62,10 +62,24 @@ public class ProductServiceImpl implements ProductService {
         existing.setSku(updatedProductDto.getSku());
         existing.setWeight(updatedProductDto.getWeight());
         existing.setDimensions(updatedProductDto.getDimensions());
-        existing.setStatus(statusRepository.findById(updatedProductDto.getStatusId()).orElseThrow(()->new RuntimeException("Nie znaleziono statusu o podanym ID")));
-        existing.setCategory(categoryRepository.findById(updatedProductDto.getCategoryId()).orElseThrow(()->new RuntimeException("Nie znaleziono kategorii o podanym ID")));
+        existing.setStatus(
+                updatedProductDto.getStatusId() == null ? null :
+                statusRepository.findById(updatedProductDto.getStatusId()).orElseThrow(()->new RuntimeException("Nie znaleziono statusu o podanym ID")));
+        existing.setCategory(
+                updatedProductDto.getCategoryId() == null ? null :
+                categoryRepository.findById(updatedProductDto.getCategoryId()).orElseThrow(()->new RuntimeException("Nie znaleziono kategorii o podanym ID")));
         productRepository.save(existing);
         return ProductMapper.toFindDto(existing);
+    }
+
+    @Override
+    public String deleteProduct(Long id) {
+        if(productRepository.existsById(id)){
+            productRepository.deleteById(id);
+            return "Pomyślnie usunięto produkt";
+        }else{
+            return "Wystąpił nieoczekiwany proble w trakcie usuwania produktu. Pamiętaj, produkt nie może być dodany do jakiegokolwiek zamówienia, aby go usunąć!";
+        }
     }
 
 }

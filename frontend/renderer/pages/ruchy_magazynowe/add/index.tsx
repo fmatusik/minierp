@@ -509,6 +509,7 @@ const handleAddStockMovementItems = async (id) => {
         icon={<Notebook className="w-4 h-4 text-gray-400"/>}
         value={formData.notes || ""}
         onChange={handleChange}
+        max={4000}
         />
 
 
@@ -529,7 +530,7 @@ const handleAddStockMovementItems = async (id) => {
             }))}
           />
 
-          <LabeledInput label="Ilość" icon={<Layers />} type="number" min={1} value={quantityForOrderItem} onChange={handleQuantityChange} />
+          <LabeledInput name="quantity" label="Ilość" icon={<Layers />} type="number" min={1} value={quantityForOrderItem} onChange={handleQuantityChange} />
           <button
             type="button"
             onClick={handleAddOrderItemToList}
@@ -574,8 +575,8 @@ const handleAddStockMovementItems = async (id) => {
                   );
                 })}
                 <tr>
-                  <td colSpan="3" className="text-right font-bold">Suma:</td>
-                  <td colSpan="2" className="font-bold">{calculateTotalPrice().toFixed(2)} zł</td>
+                  <td colSpan={3} className="text-right font-bold">Suma:</td>
+                  <td colSpan={2} className="font-bold">{calculateTotalPrice().toFixed(2)} zł</td>
                 </tr>
               </tbody>
             </table>
@@ -632,7 +633,7 @@ const handleAddStockMovementItems = async (id) => {
     );
   }
 
-  function TextareaInput({ icon, label, name, value, onChange, required = false }) {
+  function TextareaInput({ icon, label, name, value, onChange, required = false, max }) {
     return (
       <div className="space-y-1 col-span-2">
         <label className="text-sm font-medium text-gray-700">{label}</label>
@@ -645,6 +646,7 @@ const handleAddStockMovementItems = async (id) => {
             rows={4}
             className="ml-2 w-full outline-none resize-none"
             required={required}
+            maxLength={max``}
           />
         </div>
       </div>

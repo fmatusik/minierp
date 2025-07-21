@@ -12,4 +12,5 @@ public interface WarehouseService {
     WarehouseFindDto findWarehouseById(Long id);
     List<WarehouseFindDto> findAllDto();
     WarehouseFindDto updateWarehouseById(WarehouseAddDto warehouseAddDto, Long id);
+    String deleteWarehouse(Long id);
 }

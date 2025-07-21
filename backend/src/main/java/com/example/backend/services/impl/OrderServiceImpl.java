@@ -10,11 +10,16 @@ import com.example.backend.repository.*;
 import com.example.backend.services.OrderService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @AllArgsConstructor
 @Service
@@ -141,6 +146,64 @@ public class OrderServiceImpl implements OrderService {
         // Fallback dla nieoczekiwanych formatów lub jeśli istniejące numery nie pasują do oczekiwanego wzorca.
         // W przypadku produkcji, może być potrzebna bardziej zaawansowana obsługa błędów lub strategia migracji danych.
         return prefix + "001"; // Domyślny dla nieobsłużonych lub nieprawidłowych istniejących numerów
+    }
+
+
+    @Override
+    public ResponseEntity<byte[]> exportOrdersToCSV() throws IOException {
+        List<String[]> dataLines = orderRepository.findAll().stream()
+                .map(ord -> new String[]{
+                        ord.getDocumentNumber(),
+                        ord.getClient().getName(),
+                        ord.getPrice().toString(),
+                        ord.getPaymentStatus(),
+                        ord.getDeliveryDate() != null ? ord.getDeliveryDate().toString() : "",
+                        ord.getSalePlace(),
+                        ord.getOrderItems().stream()
+                                .map(OrderItem::getProduct)
+                                .map(Product::getName)
+                                .collect(Collectors.joining(", ")),
+                        ord.getOrderItems().stream()
+                                .map(OrderItem::getQuantity)
+                                .map(String::valueOf)
+                                .collect(Collectors.joining(", "))
+                })
+                .collect(Collectors.toList());
+
+        StringBuilder csvBuilder = new StringBuilder();
+        // Nagłówek CSV - 8 kolumn
+        csvBuilder.append(convertToCSV(new String[]{
+                "Document Number","Client Name", "Price", "Payment Status", "Delivery Date", "Sale Place", "Products", "Quantities"
+        })).append("\n");
+
+        // Dane
+        dataLines.forEach(line -> csvBuilder.append(convertToCSV(line)).append("\n"));
+
+        byte[] csvBytes = csvBuilder.toString().getBytes(StandardCharsets.UTF_8);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=orders.csv")
+                .header("Content-Type", "text/csv")
+                .body(csvBytes);
+    }
+
+
+
+    private String escapeSpecialCharacters(String data) {
+        String escapedData = data.replaceAll("\"", "\"\"");
+        if (data.contains(",") || data.contains("\"") || data.contains("\n")) {
+            return "\"" + escapedData + "\"";
+        } else {
+            return data;
+        }
+
+    }
+
+
+    public String convertToCSV(String[] data) {
+        return Stream.of(data)
+                .map(this::escapeSpecialCharacters)
+                .collect(Collectors.joining(","));
     }
 
 }

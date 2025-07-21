@@ -93,6 +93,7 @@
         name="description"
         value={formData.description}
         onChange={handleChange}
+        max={4000}
     />
 
     <TextareaInput
@@ -101,6 +102,7 @@
         name="notes"
         value={formData.notes}
         onChange={handleChange}
+        max={4000}
     />
 
     <LabeledInput
@@ -192,7 +194,7 @@
 
 
 
-    function TextareaInput({ icon, label, name, value, onChange }) {
+    function TextareaInput({ icon, label, name, value, onChange, max }) {
     return (
         <div className="space-y-1 col-span-2">
         <label className="text-sm font-medium text-gray-700">{label}</label>
@@ -203,6 +205,7 @@
             value={value}
             onChange={onChange}
             rows={4}
+            maxLength={max}
             className="ml-2 w-full outline-none resize-none"
             />
         </div>

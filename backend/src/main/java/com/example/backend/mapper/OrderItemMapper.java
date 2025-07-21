@@ -21,6 +21,7 @@ public class OrderItemMapper {
                 .productId(orderItem.getProduct() != null ? ProductMapper.toDto(orderItem.getProduct()).getId() : null)
                 .quantity(orderItem.getQuantity())
                 .price(orderItem.getPrice())
+                .order(orderItem.getRelatedOrder() != null ? OrderMapper.toDtoFindWithoutOrderItemStatusAndAddress(orderItem.getRelatedOrder()) : null)
                 .data(orderItem.getData())
                 .build();
     }

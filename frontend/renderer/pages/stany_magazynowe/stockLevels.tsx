@@ -161,28 +161,40 @@ export default function StockLevelsPage() {
     });
 };
 
+  const handleDelete = async (id) => {
+    const confirm = await window.ipc.invoke("show-confirm", "Czy napewno chcesz usunąć ten stan magazynowy?")
+    if (!confirm) return;
 
-  const handleExportCSV = () => {
-    const csv = [
-      ["Produkt", "Magazyn", "Ilość", "Minimalny stan"],
-      ...filtered.map((item) => [
-        item.productDto.name,
-        item.warehouseDto.name,
-        item.quantity,
-        item.minimumQuantity,
-      ]),
-    ]
-      .map((row) => row.join(","))
-      .join("\n");
+    try{
+      const res = await axios.delete(`http://localhost:8080/api/stockLevels/delete/${id}`)
+      console.log(res.data);
+      window.ipc.invoke("show-alert", res.data);
+    }catch(err) {
+      console.error(err);
+      window.ipc.invoke("show-alert", "Wystąpił nieoczekiwany problem w trakcie usuwania stanu magazynowego");
+    }
+  }
 
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "stock_levels.csv";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+const handleExportCSV = () => {
+  axios.get("http://localhost:8080/api/stockLevels/csv/all", {
+    responseType: 'blob', // important to handle binary data like CSV
+  })
+  .then((res) => {
+    // Create a URL for the blob object
+    const url = window.URL.createObjectURL(new Blob([res.data], { type: 'text/csv' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'stockLevels.csv'); // specify the file name
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+};
+
 
   const renderSortIcon = (key) => {
     if (sortConfig.key !== key)
@@ -341,7 +353,7 @@ export default function StockLevelsPage() {
                     </button> 
                      / 
                     <button
-                      onClick={() => {}}
+                      onClick={() => handleDelete(item.id)}
                       className="text-red-600 hover:underline"
                     >
                       Usuń

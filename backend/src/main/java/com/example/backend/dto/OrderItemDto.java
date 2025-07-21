@@ -19,5 +19,5 @@ public class OrderItemDto {
     private Long quantity;
     private double price;
     private Data data;
-    private Long orderId;
+    private OrderFindDto order;
 }

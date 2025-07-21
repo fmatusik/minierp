@@ -2,7 +2,6 @@ package com.example.backend.services.impl;
 
 import com.example.backend.dto.StockLevelDto;
 import com.example.backend.dto.StockLevelFindDto;
-import com.example.backend.dto.WarehouseFindDto;
 import com.example.backend.entity.Data;
 import com.example.backend.entity.Product;
 import com.example.backend.entity.StockLevel;
@@ -13,10 +12,17 @@ import com.example.backend.repository.StockLevelRepository;
 import com.example.backend.repository.WarehouseRepository;
 import com.example.backend.services.StockLevelService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class StockLevelServiceImpl implements StockLevelService {
@@ -97,4 +103,60 @@ public class StockLevelServiceImpl implements StockLevelService {
         List<StockLevel> existing = stockLevelRepository.findAllByWarehouseIdAndProductId(warehouseId, productId);
         return !existing.isEmpty();
     }
+
+    @Override
+    public String deleteStockLevel(Long id) {
+        if(stockLevelRepository.existsById(id)){
+            stockLevelRepository.deleteById(id);
+            return "Pomyślnie usunięto stan magazynowy";
+        }else{
+            return "Nie odnaleziono danego poziomu magazynowego";
+        }
+    }
+
+    @Override
+    public ResponseEntity<byte[]> exportStockLevelsToCSV() throws IOException {
+        List<String[]> dataLines = stockLevelRepository.findAll().stream()
+                .map(sl -> new String[]{
+                        sl.getId().toString(),
+                        sl.getProduct().getName(),
+                        sl.getWarehouse().getName(),
+                        sl.getQuantity().toString(),
+                        sl.getMinimumQuantity().toString()
+                })
+                .collect(Collectors.toList());
+
+        StringBuilder csvBuilder = new StringBuilder();
+        // Write header
+        csvBuilder.append(convertToCSV(new String[]{"Id", "Product", "Warehouse", "Quantity", "MinimumQuantity"})).append("\n");
+        // Write data lines
+        dataLines.forEach(line -> csvBuilder.append(convertToCSV(line)).append("\n"));
+
+        byte[] csvBytes = csvBuilder.toString().getBytes(StandardCharsets.UTF_8);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=stock_levels.csv")
+                .header("Content-Type", "text/csv")
+                .body(csvBytes);
+    }
+
+
+    private String escapeSpecialCharacters(String data) {
+        String escapedData = data.replaceAll("\"", "\"\"");
+        if (data.contains(",") || data.contains("\"") || data.contains("\n")) {
+            return "\"" + escapedData + "\"";
+        } else {
+            return data;
+        }
+
+    }
+
+
+    public String convertToCSV(String[] data) {
+        return Stream.of(data)
+                .map(this::escapeSpecialCharacters)
+                .collect(Collectors.joining(","));
+    }
+
+
 }

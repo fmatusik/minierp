@@ -478,13 +478,13 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
           </div>
         </div>
         <LabeledInput
+          name="quantity"
           icon={<Layers className="w-4 h-4 text-gray-400" />}
           label="Ilość"
           type="number"
           value={quantityForOrderItem}
           onChange={handleQuantityChange}
           min="1"
-          className="w-full"
         />
         <button
           type="button"
@@ -551,7 +551,7 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
               })}
               <tr>
                 <td
-                  colSpan="3"
+                  colSpan={3}
                   className="px-6 py-4 text-right text-base font-bold text-gray-900"
                 >
                   Suma całkowita:

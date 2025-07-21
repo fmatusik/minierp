@@ -60,8 +60,10 @@ export default function KlienciPage() {
       }
     });
 
-    const handleUserDelete = (clientId) => {
-      if (!clientId) return alert("Client ID is missing")
+    const handleUserDelete = async (clientId) => {
+      const confirm = await window.ipc.invoke("show-confirm", "Czy napewno chcesz usunąć tego kontrahenta?")
+      if(!confirm) return;
+      
       axios.delete(`http://localhost:8080/api/client/delete/${clientId}`)
       .then((res) =>{
         console.log(res.data);
@@ -108,13 +110,13 @@ export default function KlienciPage() {
         <input
           type="text"
           placeholder="Szukaj..."
-          className="px-3 py-2 border rounded-md w-full sm:w-64 outline-none"
+          className="px-3 py-2 border rounded-md w-full sm:w-64"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
 
         <select
-          className="px-3 py-2 border rounded-md outline-none"
+          className="px-3 py-2 border rounded-md"
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value)}
         >

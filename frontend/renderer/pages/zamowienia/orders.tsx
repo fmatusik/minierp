@@ -194,7 +194,8 @@ export default function ZamowieniaPage() {
 
   // Usuń zamówienie przez API
   const handleDelete = async (id) => {
-    if (window.confirm("Czy na pewno chcesz usunąć to zamówienie?")) {
+    const confirm = await window.ipc.invoke("show-confirm", "Czy napewno chcesz usunąć to zamówienie?");
+    if(!confirm) return ;
       try {
         await axios.delete(`http://localhost:8080/api/orders/delete/${id}`);
         setOrders((prev) => prev.filter((order) => order.id !== id));
@@ -207,7 +208,6 @@ export default function ZamowieniaPage() {
         console.error("Failed to delete order", err);
         window.ipc.invoke("show-alert", "Nie udało się usunąć zamówienia");
       }
-    }
   };
 
 
@@ -215,6 +215,28 @@ export default function ZamowieniaPage() {
     fetchOrders();
     fetchStatuses();
 };
+
+
+const handleExportCSV = () => {
+  axios.get("http://localhost:8080/api/orders/csv/all", {
+    responseType: 'blob', // important to handle binary data like CSV
+  })
+  .then((res) => {
+    // Create a URL for the blob object
+    const url = window.URL.createObjectURL(new Blob([res.data], { type: 'text/csv' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'orders.csv'); // specify the file name
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+};
+
 
 
   return (
@@ -226,23 +248,33 @@ export default function ZamowieniaPage() {
             Przeglądaj i zarządzaj zamówieniami klientów
           </p>
         </div>
-        <button className="px-4 py-2 bg-black text-white rounded-md"
-          onClick={openAddPanel}
-        >
-          + Nowe zamówienie
-        </button>
+
+        <div className="flex gap-2">
+          <button
+            className="px-4 py-2 bg-gray-200 text-black hover:bg-gray-300 font-medium transition-all rounded-md"
+            onClick={openAddPanel}
+          >
+            + Nowe zamówienie
+          </button>
+          <button className="px-4 py-2 bg-black text-white rounded-md"
+            onClick={handleExportCSV}
+            >
+            Eksport CSV
+          </button>
+ 
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-4">
         <input
           type="text"
           placeholder="Szukaj po kliencie lub numerze..."
-          className="px-3 py-2 border rounded-md w-full sm:w-64 outline-none"
+          className="px-3 py-2 border rounded-md w-full sm:w-64"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <select
-          className="px-3 py-2 border rounded-md outline-none"
+          className="px-3 py-2 border rounded-md"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -255,7 +287,7 @@ export default function ZamowieniaPage() {
         </select>
 
         <select
-          className="px-3 py-2 border rounded-md outline-none"
+          className="px-3 py-2 border rounded-md"
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value)}
         >
@@ -295,7 +327,7 @@ export default function ZamowieniaPage() {
             {visibleOrders.map((order, idx) => (
               <tr key={`${order.id}-${idx}`} className="border-t hover:bg-gray-50">
                 <td
-                  className="px-4 py-2 font-medium text-primary cursor-pointer"
+                  className="px-4 py-2 font-medium text-primary cursor-pointer hover:underline"
                   onClick={() => handleEditClick(order)}
                 >
                   {order.documentNumber}
@@ -311,7 +343,7 @@ export default function ZamowieniaPage() {
                 <td className="px-4 py-2 space-x-2">
                   <button
                     onClick={() => handleDelete(order.id)}
-                    className="text-red-600 underline"
+                    className="text-red-600 hover:underline"
                   >
                     Usuń
                   </button>
@@ -403,7 +435,7 @@ export default function ZamowieniaPage() {
                         <td className="px-4 py-2">{product.name}</td>
                         <td className="px-4 py-2">{item?.quantity ?? '-'}</td>
                         <td className="px-4 py-2">
-                          {parseFloat(item?.price / item?.quantity).toFixed(2)} PLN
+                          {(item?.price / item?.quantity).toFixed(2)} PLN
                         </td>
                         <td className="px-4 py-2">
                           {(item ? product.price * item.quantity : 0).toFixed(2)} PLN

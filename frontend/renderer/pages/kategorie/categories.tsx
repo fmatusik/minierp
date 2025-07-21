@@ -85,12 +85,12 @@ export default function KategoriePage() {
           placeholder="Szukaj kategorii..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="px-3 py-2 border rounded-md w-full sm:w-64 outline-none"
+          className="px-3 py-2 border rounded-md w-full sm:w-64"
         />
         <select
           value={sortOrder}
           onChange={(e) => setSortOrder(e.target.value)}
-          className="px-3 py-2 border rounded-md w-full sm:w-64 outline-none"
+          className="px-3 py-2 border rounded-md w-full sm:w-64"
         >
           <option value="desc">Najnowsze</option>
           <option value="asc">Najstarsze</option>

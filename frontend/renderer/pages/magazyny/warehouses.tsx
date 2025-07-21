@@ -4,7 +4,7 @@ import {RefreshCcw} from 'lucide-react';
 
 export default function WarehousesPage() {
   const [warehouses, setWarehouses] = useState([]);
-  
+
   const openAddWindow = () => {
     const width = 1200;
     const height = 900;
@@ -37,6 +37,19 @@ export default function WarehousesPage() {
     fetchWarehouses();
   }
 
+  const deleteWarehouse = async (id) => {
+    const confirm = await window.ipc.invoke("show-confirm", "Czy napewno chcesz usunąć ten magazyn?")
+    if(!confirm) return ;
+
+    try{
+      const res = await axios.delete(`http://localhost:8080/api/warehouse/delete/${id}`)
+      handleReload();
+    }catch(err) {
+      console.error(err);
+      window.ipc.invoke("show-alert", "Wystąpił nieoczekiwany problem w trakcie usuwania magazynu");
+    }
+
+  }
 
   const openEdit = (warehouseId) => {
     const width = 1200;
@@ -77,7 +90,7 @@ export default function WarehousesPage() {
           <div
             key={w.id}
             className="border rounded-xl shadow-sm hover:shadow-md transition overflow-hidden bg-white cursor-pointer"
-            onClick={() => openEdit(w.id)}
+
           >
             <div className="bg-gray-100 px-4 py-3 border-b">
               <h2 className="text-lg font-semibold">{w.name}</h2>
@@ -86,11 +99,25 @@ export default function WarehousesPage() {
             <div className="p-4 space-y-2 text-sm">
               <div className="flex justify-between">
                 <span>Liczba produktów:</span>
-                <span className="font-medium">{w.products}</span>
+                <span className="font-medium">{w.stockLevelsDto.length}</span>
               </div>
               <div className="flex justify-between">
                 <span>Łączny stan magazynowy:</span>
-                <span className="font-medium">{w.totalStock}</span>
+                <span className="font-medium">
+                  {w.stockLevelsDto.reduce((total, item) => total + item.quantity, 0)}
+                </span>
+              </div>
+              <div className="flex gap-2">
+                <button 
+                onClick={() => deleteWarehouse(w.id)}
+                className="bg-gray-200 hover:bg-gray-300 transition-all w-full rounded-md py-1 text-black font-medium">
+                  Usuń 
+                </button>
+                <button
+                  onClick={() => openEdit(w.id)}
+                  className="bg-primary hover:bg-primaryhover w-full rounded-md py-1 text-white font-medium">
+                  Edytuj
+                </button>
               </div>
             </div>
           </div>

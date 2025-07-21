@@ -23,7 +23,7 @@ function LabeledInput({ icon, label, name, value, onChange, type = "text" }) {
   );
 }
 
-function TextareaInput({ icon, label, name, value, onChange }) {
+function TextareaInput({ icon, label, name, value, onChange, max }) {
   return (
     <div className="space-y-1 col-span-2">
       <label className="text-sm font-medium text-gray-700">{label}</label>
@@ -34,6 +34,7 @@ function TextareaInput({ icon, label, name, value, onChange }) {
           value={value}
           onChange={onChange}
           rows={4}
+          maxLength={max}
           className="ml-2 w-full outline-none resize-none"
         />
       </div>
@@ -107,17 +108,40 @@ export default function EditProductForm({ productId }) {
       });
   };
 
+
+  const handleProductDelete = async () => {
+    try{
+      const confirmed = await window.ipc.invoke("show-confirm", "Czy na pewno chcesz usunąć ten produkt?");
+      if (!confirmed) return;
+      
+
+
+      const res = await axios.delete(`http://localhost:8080/api/products/delete/${productId}`)
+      fetchedImages.map((img) => {
+         handleDeleteFetchedImage(img.id);
+      })
+      window.ipc.invoke("show-alert", res.data);
+      
+    }
+    catch(err) {
+      console.error(err);
+      window.ipc.invoke("show-alert", "Wystąpił nieoczekiwany problem w trakcie usuwania produktu. Pamiętaj, produkt nie może być dodany do jakiegokolwiek zamówienia, aby go usunąć!");
+    }
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const files = Array.from(e.target.files) as File[];  // make sure TypeScript knows these are Files
+
     const totalImages = fetchedImages.length + images.length + files.length;
 
     if (totalImages > 9) {
-      alert("Maksymalnie 9 zdjęć ogółem.");
+      window.ipc.invoke("show-alert", "Maksymalnie 9 zdjęć ogółem.");
       return;
     }
 
@@ -128,18 +152,22 @@ export default function EditProductForm({ productId }) {
     setPreviews(prev => [...prev, ...newPreviews]);
   };
 
+
   const removeImage = (index) => {
     setImages(prev => prev.filter((_, i) => i !== index));
     setPreviews(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleDeleteFetchedImage = async (imageId) => {
+    const confirm = await window.ipc.invoke("show-confirm", "Czy napewno chcesz usunąć to zdjęcie?");
+    if(!confirm) return;
+
     try {
       await axios.delete(`http://localhost:8080/api/images/delete/${imageId}`);
       setFetchedImages(prev => prev.filter(img => img.id !== imageId));
     } catch (error) {
       console.error(error);
-      alert("Błąd przy usuwaniu zdjęcia.");
+      window.ipc.invoke("show-alert", "Błąd przy usuwaniu zdjęcia.");
     }
   };
 
@@ -155,13 +183,13 @@ export default function EditProductForm({ productId }) {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      alert("Zdjęcia zostały dodane.");
+      window.ipc.invoke("show-alert", "Zdjęcia zostały dodane.");
       setImages([]);
       setPreviews([]);
       fetchImages(); // Reload existing images
     } catch (error) {
       console.error(error);
-      alert("Błąd podczas dodawania zdjęć.");
+      window.ipc.invoke("show-alert", "Błąd podczas dodawania zdjęć.");
     }
   };
 
@@ -169,10 +197,10 @@ export default function EditProductForm({ productId }) {
     e.preventDefault();
     try {
       await axios.put(`http://localhost:8080/api/products/update/${productId}`, formData);
-      alert("Produkt zaktualizowany.");
+      window.ipc.invoke("show-alert", "Produkt zaktualizowany.");
     } catch (err) {
       console.error(err);
-      alert("Wystąpił błąd przy aktualizacji.");
+      window.ipc.invoke("show-alert", "Wystąpił błąd przy aktualizacji.");
     }
   };
 
@@ -182,9 +210,9 @@ export default function EditProductForm({ productId }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <LabeledInput icon={<Tag className="w-4 h-4 text-gray-400" />} label="Nazwa" name="name" value={formData.name} onChange={handleChange} />
-        <LabeledInput icon={<Package className="w-4 h-4 text-gray-400" />} label="Wymiary" name="dimensions" value={formData.dimensions} onChange={handleChange} />
-        <TextareaInput icon={<Clipboard className="w-4 h-4 text-gray-400" />} label="Opis" name="description" value={formData.description} onChange={handleChange} />
-        <TextareaInput icon={<FileText className="w-4 h-4 text-gray-400" />} label="Notatka" name="notes" value={formData.notes} onChange={handleChange} />
+        <LabeledInput icon={<Package className="w-4 h-4 text-gray-400" />} label="Wymiary" name="dimensions" value={formData.dimensions} onChange={handleChange}/>
+        <TextareaInput icon={<Clipboard className="w-4 h-4 text-gray-400" />} label="Opis" name="description" value={formData.description} onChange={handleChange} max={4000} />
+        <TextareaInput icon={<FileText className="w-4 h-4 text-gray-400" />} label="Notatka" name="notes" value={formData.notes} onChange={handleChange} max={4000}/>
         <LabeledInput icon={<DollarSign className="w-4 h-4 text-gray-400" />} label="Cena" name="price" type="number" value={formData.price} onChange={handleChange} />
         <LabeledInput icon={<Layers className="w-4 h-4 text-gray-400" />} label="SKU" name="sku" value={formData.sku} onChange={handleChange} />
         <LabeledInput icon={<Weight className="w-4 h-4 text-gray-400" />} label="Waga (kg)" name="weight" type="number" value={formData.weight} onChange={handleChange} />
@@ -256,10 +284,16 @@ export default function EditProductForm({ productId }) {
         )}
       </div>
 
-      <button type="submit" className="mt-4 px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-all flex items-center gap-2">
-        <CheckCircle className="w-5 h-5" />
-        Zapisz zmiany
-      </button>
+      <div className="flex gap-2">
+        <button type="submit" className="mt-4 px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-all flex items-center gap-2">
+          <CheckCircle className="w-5 h-5" />
+          Zapisz zmiany
+        </button>
+
+        <button onClick={handleProductDelete} type="button" className="mt-4 px-6 py-3 bg-gray-200 text-black font-medium rounded-lg hover:bg-gray-300 transition-all flex items-center gap-2">
+          Usuń produkt
+        </button>
+      </div>
     </form>
   );
 }

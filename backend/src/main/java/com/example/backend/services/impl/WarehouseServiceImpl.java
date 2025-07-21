@@ -46,6 +46,16 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
+    public String deleteWarehouse(Long id) {
+        if(warehouseRepository.existsById(id)){
+            warehouseRepository.deleteById(id);
+            return "Pomyślnie usunięto magazyn";
+        }else{
+            return "Nie odnaleziono danego magazynu";
+        }
+    }
+
+    @Override
     public WarehouseFindDto updateWarehouseById(WarehouseAddDto warehouseAddDto, Long id) {
         var existing = warehouseRepository.findById(id).orElseThrow(()->new RuntimeException("Nie znaleziono magazynu o podanym ID"));
         existing.setName(warehouseAddDto.getName());

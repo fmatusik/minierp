@@ -10,14 +10,8 @@ import {
   Bar,
 } from "recharts";
 import axios from "axios";
+import { User } from "lucide-react";
 
-const clients = [
-  { name: "Helena", email: "email@email.net" },
-  { name: "Oscar", email: "email@email.net" },
-  { name: "Daniel", email: "email@email.net" },
-  { name: "Daniel Jay Park", email: "email@email.net" },
-  { name: "Mark Rojas", email: "email@email.net" },
-];
 
 export default function ProductDashboard({ productId }) {
   const [product, setProduct] = useState(null);
@@ -28,6 +22,7 @@ export default function ProductDashboard({ productId }) {
   const [availableProductCount, setAvailableProductCount] = useState(0);
   const [salesGrowth, setSalesGrowth] = useState("0%");
   const [unitsGrowth, setUnitsGrowth] = useState("0%");
+  const [clients, setClients] = useState([]);
 
   const getProcentByMonth = (orderItems) => {
     // Get current and previous month
@@ -147,6 +142,22 @@ export default function ProductDashboard({ productId }) {
         setLineData(finalSalesData);
       }
 
+      const uniqueClientsMap = new Map();
+
+      data.orderItemDtos.forEach((item) => {
+        const client = item.order?.clientDto;
+        if (client && !uniqueClientsMap.has(client.id)) {
+          uniqueClientsMap.set(client.id, {
+            name: client.name,
+            email: `client${client.id}@example.com`, // zastąp, jeśli backend zwraca email
+          });
+        }
+      });
+
+      // Pobierz maksymalnie 6 klientów
+      setClients(Array.from(uniqueClientsMap.values()).slice(0, 6));
+      console.log("clients:", clients);
+
       const stockLevels = res.data.stockLevelsDto;
       const formattedBarData = stockLevels.map((item) => ({
         warehouse: item.warehouseDto?.name,
@@ -224,11 +235,9 @@ export default function ProductDashboard({ productId }) {
         <ul className="space-y-4">
           {clients.map((client, index) => (
             <li key={index} className="flex items-center space-x-4">
-              <img
-                src={`https://i.pravatar.cc/150?img=${index + 1}`}
-                alt={client.name}
-                className="w-10 h-10 rounded-full"
-              />
+              <div className="bg-gray-200 p-2 rounded-full">
+                <User size={24} className="text-gray-600" />
+              </div>
               <div>
                 <p className="font-medium">{client.name}</p>
                 <p className="text-sm text-gray-500">{client.email}</p>

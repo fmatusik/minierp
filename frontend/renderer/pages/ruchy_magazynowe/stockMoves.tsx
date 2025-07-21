@@ -44,11 +44,39 @@ export default function StockMovesPage() {
     })
   }
 
-  const handleDelete = () => {
-    
 
+  const handleDelete = async (id) => {
+    const confirm = await window.ipc.invoke("show-confirm", "Czy napewno chcesz usunąć ten ruch magazynowy?");
+    if(!confirm) return;
 
+    try{
+      const res = await axios.delete(`http://localhost:8080/api/stockMovements/delete/${id}`)
+      window.ipc.invoke("show-alert", res.data);
+    }catch(err){
+      console.error(err);
+      window.ipc.invoke("show-alert", "Wystąpił nieoczekiwany problem w trakcie usuwania ruchu magazynowego");
+    }
   }
+
+  const handleExportCSV = () => {
+  axios.get("http://localhost:8080/api/stockMovements/csv/all", {
+    responseType: 'blob', // important to handle binary data like CSV
+  })
+  .then((res) => {
+    // Create a URL for the blob object
+    const url = window.URL.createObjectURL(new Blob([res.data], { type: 'text/csv' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'stockMovements.csv'); // specify the file name
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+};
 
   useEffect(() => {
     fetchMoves();
@@ -66,8 +94,9 @@ export default function StockMovesPage() {
     const matchType = !selectedType || move.type === selectedType;
     const matchWarehouse =
       !selectedWarehouse ||
-      move.sourceWarehouse?.id === selectedWarehouse ||
-      move.targetWarehouse?.id === selectedWarehouse;
+      move.sourceWarehouse?.id === Number(selectedWarehouse) ||
+      move.targetWarehouse?.id === Number(selectedWarehouse);
+
       const matchSearch = move.stockMovementNumber?.toLowerCase().includes(search.toLowerCase()) || false;
     return matchType && matchWarehouse && matchSearch;
   });
@@ -132,6 +161,7 @@ export default function StockMovesPage() {
 };
 
 
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -140,18 +170,27 @@ export default function StockMovesPage() {
           <h1 className="text-3xl font-bold">Ruchy magazynowe</h1>
           <p className="text-gray-600 text-sm">Historia operacji magazynowych</p>
         </div>
-        <button className="px-4 py-2 bg-black text-white rounded-md"
-        onClick={handleOpenAdd}
-        >
-          + Nowy ruch
-        </button>
+        <div className="flex gap-2">
+          <button className="px-4 py-2 bg-gray-200 text-black hover:bg-gray-300 font-medium transition-all rounded-md"
+          onClick={handleOpenAdd}
+          >
+            + Nowy ruch
+          </button>
+
+          <button
+            className="px-4 py-2 bg-black text-white rounded-md"
+            onClick={handleExportCSV}
+          >
+            Eksport CSV
+          </button>
+          </div>
       </div>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-4">
         <input
           type="text"
-          placeholder="Szukaj produktu..."
+          placeholder="Szukaj ruchu magazynowego..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="px-3 py-2 border rounded-md w-full sm:w-64"
@@ -232,7 +271,7 @@ export default function StockMovesPage() {
                 <td className="px-4 py-3">{formatDate(move.data.createdAt)}</td>
                 <td className="px-4 py-3 flex gap-1">
                   <button
-                    //onClick={() => handleDelete(move.id)}
+                    onClick={() => handleDelete(move.id)}
                     className="text-red-600 hover:underline"
                   >
                     Usuń

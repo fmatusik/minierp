@@ -131,12 +131,12 @@ const handleDelete = async (id) => {
           placeholder="Szukaj..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-3 py-2 border rounded-md w-full sm:w-64 outline-none"
+          className="px-3 py-2 border rounded-md w-full sm:w-64"
         />
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="px-3 py-2 border rounded-md outline-none"
+          className="px-3 py-2 border rounded-md"
         >
           <option value="">Wszystkie typy</option>
             {types.map((type, index) => (
@@ -218,7 +218,7 @@ const handleDelete = async (id) => {
                   type="text"
                   value={editedStatus.name}
                   onChange={(e) => handleEditChange("name", e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md outline-none"
+                  className="w-full px-3 py-2 border rounded-md"
                 />
               </div>
               <div>
@@ -226,7 +226,7 @@ const handleDelete = async (id) => {
                 <select
                   value={editedStatus.type}
                   onChange={(e) => handleEditChange("type", e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md outline-none"
+                  className="w-full px-3 py-2 border rounded-md"
                 >
                   {types.map((type, index) => (
                     <option key={index} value={type.value}>{type.label}</option>

@@ -48,6 +48,7 @@ export default function ClientAddPage() {
           <label className="block mb-1 text-sm font-medium text-gray-700">Notatka</label>
           <textarea 
             value={client.notes}
+            maxLength={4000}
             onChange={(e) => setClient({ ...client, notes: e.target.value })}
             className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-primary"
             ></textarea>
