@@ -69,7 +69,7 @@ public class ProductMapper {
                 .collect(Collectors.toList());
     }
 
-    public static Product toEntityWithoutCategoryAndStatus(ProductFindDto productFindDto) {
+    public static Product toEntityWithoutCategoryAndStatusAndStockLevel(ProductFindDto productFindDto) {
         return Product.builder()
                 .id(productFindDto.getId())
                 .name(productFindDto.getName())
@@ -83,16 +83,13 @@ public class ProductMapper {
                 .images(productFindDto.getImagesDto() != null
                         ? ImageMapper.toEntityList(productFindDto.getImagesDto())
                         : null)
-                .stockLevels(productFindDto.getStockLevelsDto() != null
-                        ? StockLevelMapper.toEntityList(productFindDto.getStockLevelsDto())
-                        : null)
                 .category(null) // Avoids circular reference
                 .build();
     }
 
     public static List<Product> toEntityListWithoutCategory(List<ProductFindDto> dtoList) {
         return dtoList.stream()
-                .map(ProductMapper::toEntityWithoutCategoryAndStatus)
+                .map(ProductMapper::toEntityWithoutCategoryAndStatusAndStockLevel)
                 .collect(Collectors.toList());
     }
 
@@ -114,7 +111,7 @@ public class ProductMapper {
                         ? ImageMapper.toDtoList(product.getImages())
                         : null)
                 .stockLevelsDto(product.getStockLevels() != null
-                        ? StockLevelMapper.toDtoList(product.getStockLevels())
+                        ? StockLevelMapper.toDtoFindListWithoutProduct(product.getStockLevels())
                         : null)
                 .orderItemDtos(product.getOrderItems() != null ? OrderItemMapper.toDtoList(product.getOrderItems()) : null)
                 .build();
@@ -142,7 +139,7 @@ public class ProductMapper {
                         ? ImageMapper.toDtoList(product.getImages())
                         : null)
                 .stockLevelsDto(product.getStockLevels() != null
-                        ? StockLevelMapper.toDtoList(product.getStockLevels())
+                        ? StockLevelMapper.toDtoFindListWithoutProduct(product.getStockLevels())
                         : null)
                 .orderItemDtos(product.getOrderItems() != null ? OrderItemMapper.toDtoList(product.getOrderItems()) : null)
                 .build();

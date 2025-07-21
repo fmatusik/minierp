@@ -114,21 +114,40 @@ export default function AddOrderForm() {
     setQuantityForOrderItem(parseInt(e.target.value));
   };
 
-  const handleAddOrderItemToList = () => {
-    if (selectedProductForOrderItem && quantityForOrderItem > 0) {
-      const newItem = {
-        productId: selectedProductForOrderItem.id,
-        quantity: quantityForOrderItem,
-        price: parseFloat(selectedProductForOrderItem.price), // Use price from selected product
-      };
+const handleAddOrderItemToList = () => {
+  if (selectedProductForOrderItem && quantityForOrderItem > 0) {
+    setOrderItemsToAdd((prev) => {
+      const existingIndex = prev.findIndex(
+        (item) => item.productId === selectedProductForOrderItem.id
+      );
 
-      setOrderItemsToAdd((prev) => [...prev, newItem]);
+      if (existingIndex !== -1) {
+        // Produkt już istnieje — aktualizujemy ilość
+        const updatedItems = [...prev];
+        updatedItems[existingIndex] = {
+          ...updatedItems[existingIndex],
+          quantity: updatedItems[existingIndex].quantity + quantityForOrderItem,
+        };
+        return updatedItems;
+      } else {
+        // Nowy produkt — dodajemy
+        return [
+          ...prev,
+          {
+            productId: selectedProductForOrderItem.id,
+            quantity: quantityForOrderItem,
+            price: parseFloat(selectedProductForOrderItem.price),
+          },
+        ];
+      }
+    });
 
-      // Reset picker
-      setSelectedProductForOrderItem(null);
-      setQuantityForOrderItem(1);
-    }
-  };
+    // Reset picker
+    setSelectedProductForOrderItem(null);
+    setQuantityForOrderItem(1);
+  }
+};
+
 
   const handleRemoveOrderItemFromList = (indexToRemove) => {
     setOrderItemsToAdd((prev) =>

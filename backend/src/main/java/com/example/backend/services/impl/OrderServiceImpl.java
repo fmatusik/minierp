@@ -19,15 +19,12 @@ import java.util.Optional;
 @AllArgsConstructor
 @Service
 public class OrderServiceImpl implements OrderService {
-    @Autowired
+
     private final OrderRepository orderRepository;
-    @Autowired
     private final OrderMapper orderMapper;
     private final ClientRepository clientRepository;
     private final StatusRepository statusRepository;
-    @Autowired
     private AddressRepository addressRepository;
-    @Autowired
     private DataRepository dataRepository;
 
 
@@ -89,6 +86,16 @@ public class OrderServiceImpl implements OrderService {
 
         orderRepository.save(order);
         return orderMapper.toDtoFind(order, ClientMapper.toDto(client), StatusMapper.toDto(status), AddressMapper.toDto(address));
+    }
+
+    @Override
+    public String deleteOrder(Long id) {
+        if(orderRepository.findById(id) != null) {
+            orderRepository.deleteById(id);
+            return "Pomyślnie usunięto zamówienie";
+        }else {
+            return "Wystąpił nieoczekiwany problem w trakcie usuwania zamówienia";
+        }
     }
 
 

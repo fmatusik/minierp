@@ -10,4 +10,5 @@ public interface ClientService {
     ClientDto addClient(ClientDto clientDto);
     List<ClientDto> findAllDto();
     Boolean deleteClient(Long id);
+    List <ClientDto> findLastFive(Long productId);
 }

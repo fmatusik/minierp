@@ -21,9 +21,7 @@ import java.util.List;
 @Service
 public class ClientServiceImpl implements ClientService {
 
-    @Autowired
     private final ClientRepository clientRepository;
-    @Autowired
     private ClientMapper clientMapper;
     private final AddressRepository addressRepository;
     private final OrderRepository orderRepository;
@@ -62,6 +60,11 @@ public class ClientServiceImpl implements ClientService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<ClientDto> findLastFive(Long productId) {
+        return List.of();
     }
 
 }

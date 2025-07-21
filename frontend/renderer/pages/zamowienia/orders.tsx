@@ -71,9 +71,10 @@ export default function ZamowieniaPage() {
   // Szukanie tylko po numerze zamówienia
   if (searchTerm) {
     const lower = searchTerm.toLowerCase();
-    filtered = filtered.filter(order =>
-      order.documentNumber.toLowerCase().includes(lower)
-    );
+  filtered = filtered.filter(order =>
+    order.documentNumber.toLowerCase().includes(lower) ||
+    order.clientDto.name.toLowerCase().includes(lower)
+  );
   }
 
   // Filtrowanie po statusie
@@ -305,7 +306,7 @@ export default function ZamowieniaPage() {
                 <td className="px-4 py-2">{new Date(order.deliveryDate).toLocaleDateString()}</td>
                 <td className="px-4 py-2">{order.paymentStatus}</td>
                 <td className="px-4 py-2">
-                  {order.price.toLocaleString()} PLN
+                  {parseFloat(order.price).toFixed(2)} PLN
                 </td>
                 <td className="px-4 py-2 space-x-2">
                   <button
@@ -349,7 +350,7 @@ export default function ZamowieniaPage() {
                   <td className="px-4 py-2">{new Date(selectedOrder.deliveryDate).toLocaleDateString()}</td>
                   <td className="px-4 py-2">{selectedOrder.paymentStatus}</td>
                   <td className="px-4 py-2">
-                    {parseInt(selectedOrder.price).toLocaleString()} PLN
+                    {parseFloat(selectedOrder.price).toFixed(2)} PLN
                   </td>
                 </tr>
               </tbody>
@@ -402,7 +403,7 @@ export default function ZamowieniaPage() {
                         <td className="px-4 py-2">{product.name}</td>
                         <td className="px-4 py-2">{item?.quantity ?? '-'}</td>
                         <td className="px-4 py-2">
-                          {parseFloat(product.price).toFixed(2)} PLN
+                          {parseFloat(item?.price / item?.quantity).toFixed(2)} PLN
                         </td>
                         <td className="px-4 py-2">
                           {(item ? product.price * item.quantity : 0).toFixed(2)} PLN

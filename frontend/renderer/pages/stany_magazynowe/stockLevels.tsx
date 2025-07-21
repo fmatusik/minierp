@@ -7,7 +7,7 @@ export default function StockLevelsPage() {
   const [selectedWarehouse, setSelectedWarehouse] = useState("");
   const [stock, setStock] = useState([]);
   const [uniqueWarehouses, setUniqueWarehouses] = useState([]);
-  const [editingQuantities, setEditingQuantities] = useState({});
+  const [editingMinimums, setEditingMinimums] = useState({});
   const [alertMessage, setAlertMessage] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
@@ -103,76 +103,64 @@ export default function StockLevelsPage() {
     return matchWarehouse && matchSearch;
   });
 
-  const handleQuantityChange = (id, value) => {
-    const quantity = Math.max(0, Number(value));
-    setEditingQuantities((prev) => ({
+  const handleMinimumChange = (id, value) => {
+    const minimum = Math.max(0, Number(value));
+    setEditingMinimums((prev) => ({
       ...prev,
-      [id]: quantity,
+      [id]: minimum,
     }));
   };
 
-  const applyQuantityChange = (stockLevel) => {
-    if (editingQuantities[stockLevel.id] === undefined)  return;
 
-    const updatedItem = stock.find((item) => item.id === stockLevel.id);
-    if (!updatedItem) return;
+  const applyMinimumChange = (stockLevel) => {
+  if (editingMinimums[stockLevel.id] === undefined) return;
 
-    if (updatedItem.quantity === editingQuantities[stockLevel.id]) return;
+  const updatedItem = stock.find((item) => item.id === stockLevel.id);
+  if (!updatedItem) return;
 
-    const newQty = editingQuantities[stockLevel.id];
+  const newMin = editingMinimums[stockLevel.id];
 
+  if (updatedItem.minimumQuantity === newMin) return;
 
-    setStock((prevStock) =>
-      prevStock.map((item) =>
-        item.id === stockLevel ? { ...item, quantity: newQty } : item
-      )
-    );
+  setStock((prevStock) =>
+    prevStock.map((item) =>
+      item.id === stockLevel.id ? { ...item, minimumQuantity: newMin } : item
+    )
+  );
 
-    const stockLevelUpdateBody = {
-      quantity: newQty,
-    }
+  const stockLevelUpdateBody = {
+    minimumQuantity: newMin,
+  };
 
-    axios.put(`http://localhost:8080/api/stockLevels/update/${stockLevel.id}`, stockLevelUpdateBody)
+  axios
+    .put(
+      `http://localhost:8080/api/stockLevels/update/${stockLevel.id}`,
+      stockLevelUpdateBody
+    )
     .then((res) => {
       console.log(res.data);
-      if (newQty < updatedItem.minimumQuantity) {
-      setAlertMessage(
-        `Uwaga! Produkt "${updatedItem.productDto.name}" ma niski stan.`
-      );
-    } else {
-      setAlertMessage(
-        `Produkt "${updatedItem.productDto.name}" zaktualizowany poprawnie.`
-      );
-    }
+      if (updatedItem.quantity < newMin) {
+        setAlertMessage(
+          `Uwaga! Produkt "${updatedItem.productDto.name}" ma niski stan.`
+        );
+      } else {
+        setAlertMessage(
+          `Minimalny stan dla "${updatedItem.productDto.name}" został zaktualizowany.`
+        );
+      }
 
-    setTimeout(() => setAlertMessage(null), 3000);
-    handleReload();
+      setTimeout(() => setAlertMessage(null), 3000);
+      handleReload();
     })
     .catch((err) => {
       console.error(err);
-      window.ipc.invoke("show-alert", "Wystąpił nieoczekiwany problem w trakcie edycji stanu magazynowego");
-    })
+      window.ipc.invoke(
+        "show-alert",
+        "Wystąpił nieoczekiwany problem w trakcie edycji minimalnego stanu"
+      );
+    });
+};
 
-
-
-
-  };
-
-  const incrementQuantity = (id) => {
-    const current =
-      editingQuantities[id] ??
-      stock.find((item) => item.id === id)?.quantity ??
-      0;
-    handleQuantityChange(id, current + 1);
-  };
-
-  const decrementQuantity = (id) => {
-    const current =
-      editingQuantities[id] ??
-      stock.find((item) => item.id === id)?.quantity ??
-      0;
-    handleQuantityChange(id, current - 1);
-  };
 
   const handleExportCSV = () => {
     const csv = [
@@ -311,39 +299,27 @@ export default function StockLevelsPage() {
           <tbody>
             {filtered.map((item) => {
               const isLow = item.quantity < item.minimumQuantity;
-              const editingValue = editingQuantities[item.id];
-              const displayQuantity =
-                editingValue !== undefined ? editingValue : item.quantity;
-
               return (
                 <tr key={item.id} className="border-t">
                   <td className="px-4 py-3">{item.productDto.name}</td>
                   <td className="px-4 py-3">{item.warehouseDto.name}</td>
                   <td className="px-4 py-3 flex items-center gap-2">
-                    <button
-                      onClick={() => decrementQuantity(item.id)}
-                      className="px-2 py-1 bg-gray-200 rounded"
-                    >
-                      -
-                    </button>
+                    {item.quantity}
+                  </td>
+                  <td className="px-4 py-3">
                     <input
                       type="number"
                       min="0"
-                      value={displayQuantity}
-                      onChange={(e) =>
-                        handleQuantityChange(item.id, e.target.value)
+                      value={
+                        editingMinimums[item.id] !== undefined
+                          ? editingMinimums[item.id]
+                          : item.minimumQuantity
                       }
-                      onBlur={() => applyQuantityChange(item.id)}
+                      onChange={(e) => handleMinimumChange(item.id, e.target.value)}
+                      onBlur={() => applyMinimumChange(item)}
                       className="w-16 text-center border rounded"
                     />
-                    <button
-                      onClick={() => incrementQuantity(item.id)}
-                      className="px-2 py-1 bg-gray-200 rounded"
-                    >
-                      +
-                    </button>
                   </td>
-                  <td className="px-4 py-3">{item.minimumQuantity}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`text-xs px-2 py-1 rounded ${
@@ -355,9 +331,10 @@ export default function StockLevelsPage() {
                       {isLow ? "Niski stan" : "OK"}
                     </span>
                   </td>
+
                   <td className="px-4 py-3 flex gap-2">
                     <button
-                      onClick={() => applyQuantityChange(item)}
+                      onClick={() => applyMinimumChange(item)}
                       className="text-blue-600 hover:underline"
                     >
                       Zapisz

@@ -14,7 +14,6 @@ import {
   Package,
 } from "lucide-react";
 import axios from "axios";
-import { data } from "../../dummyData";
 
 export default function EditOrderForm() { // Added orderId prop and onClose for modal/window closing
   const [clients, setClients] = useState([]);
@@ -146,7 +145,7 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
       setInitialOrderLoaded(true); // Mark as loaded
     } catch (err) {
       console.error("Error fetching order details:", err);
-      window.ipc.invoke("show-alert", "Błąd podczas ładowania szczegółów zamówienia.");
+      alert("Błąd podczas ładowania szczegółów zamówienia.");
     } finally {
       setIsLoading(false);
     }
@@ -181,20 +180,27 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
       );
 
       if (existingItemIndex > -1) {
-        // If it exists, update the quantity of the existing item
+        // If it exists, update the quantity AND price of the existing item
         setOrderItemsToAdd((prev) =>
           prev.map((item, index) =>
             index === existingItemIndex
-              ? { ...item, quantity: item.quantity + quantityForOrderItem }
+              ? {
+                  ...item,
+                  quantity: item.quantity + quantityForOrderItem,
+                  price:
+                    (item.quantity + quantityForOrderItem) *
+                    parseFloat(selectedProductForOrderItem.price),
+                }
               : item
           )
         );
-      } else {
+      }
+      else {
         // Otherwise, add as a new item
         const newItem = {
           productId: selectedProductForOrderItem.id,
           quantity: quantityForOrderItem,
-          price: parseFloat(selectedProductForOrderItem.price), // Use price from selected product
+          price: parseFloat(selectedProductForOrderItem.price) * quantityForOrderItem,
           orderId: orderId,
         };
         setOrderItemsToAdd((prev) => [...prev, newItem]);
@@ -214,18 +220,33 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
     }
   };
 
-  const handleRemoveOrderItemFromList = (indexToRemove) => {
+  const handleRemoveOrderItemFromList = (id) => {
+    deleteOrderItem(id);
     setOrderItemsToAdd((prev) =>
-      prev.filter((_, index) => index !== indexToRemove)
+      prev.filter((item) => item.id !== id)
     );
+
   };
+
+
+  const deleteOrderItem = (id) => {
+    axios.delete(`http://localhost:8080/api/orderItems/delete/${id}`)
+    .then((res) => {
+      console.log(res.data);
+    })
+    .catch((err) => {
+      console.error(err);
+    })
+  }
 
   const calculateTotalPrice = () => {
     return orderItemsToAdd.reduce(
-      (total, item) => total + item.price,
+      (total, item) => total + item.price,  // ✅ price already includes quantity
       0
     );
+
   };
+
 
   // --- Submission Logic for Editing ---
   const handleSubmit = async (e) => {
@@ -258,7 +279,7 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
           id: item.id, 
           productId: item.productId,
           quantity: item.quantity,
-          price: item.price * item.quantity,
+          price: item.price,
           orderId: orderId,
           data: item.data,
         }));
@@ -285,15 +306,14 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
         }
       }
 
-      window.ipc.invoke("show-alert", "Zamówienie zaktualizowano pomyślnie!");
+      alert("Zamówienie zaktualizowano pomyślnie!");
       window.close(); // Fallback if not used in a modal
     } catch (err) {
       console.error(
         "Error updating order or items:",
         err.response ? err.response.data : err.message
       );
-      window.ipc.invoke(
-        "show-alert",
+      alert(
         "Błąd podczas aktualizacji zamówienia: " +
           (err.response ? err.response.data.message : err.message)
       );
@@ -470,7 +490,7 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
           type="button"
           onClick={handleAddOrderItemToList}
           disabled={!selectedProductForOrderItem || quantityForOrderItem <= 0}
-          className="md:col-span-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
+          className="md:col-span-3 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primaryhover cursor-pointer transition-all flex items-center justify-center gap-2"
         >
           <PlusCircle className="w-5 h-5" />
           Dodaj produkt do zamówienia
@@ -512,15 +532,15 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
                       {item.quantity}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {item.price.toFixed(2)} zł
+                      {(item.price / item.quantity).toFixed(2)} zł
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {(item.quantity * item.price).toFixed(2)} zł
+                      {item.price.toFixed(2)} zł
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         type="button"
-                        onClick={() => handleRemoveOrderItemFromList(index)}
+                        onClick={() => handleRemoveOrderItemFromList(item.id)}
                         className="text-red-600 hover:text-red-900"
                       >
                         <XCircle className="w-5 h-5" />

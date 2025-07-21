@@ -57,7 +57,7 @@ public class StockLevelServiceImpl implements StockLevelService {
     @Override
     public StockLevelFindDto update(Long id, StockLevelDto stockLevel) {
         var existing = stockLevelRepository.findById(id).orElseThrow(()->new RuntimeException("Nie znaleziono pozycji na magazynie o podanym ID"));
-        existing.setQuantity(stockLevel.getQuantity());
+        existing.setMinimumQuantity(stockLevel.getMinimumQuantity());
         Data data = existing.getData();
         data.setUpdatedAt(LocalDateTime.now());
         existing.setData(data);

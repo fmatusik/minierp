@@ -72,4 +72,20 @@ public class StockLevelMapper {
                 .collect(Collectors.toList());
     }
 
+    public static StockLevelFindDto toFindDtoWithoutProduct(StockLevel stockLevel) {
+        return StockLevelFindDto.builder()
+                .id(stockLevel.getId())
+                .warehouseDto(stockLevel.getWarehouse() != null ? WarehouseMapper.toFindDto(stockLevel.getWarehouse()) : null)
+                .quantity(stockLevel.getQuantity())
+                .minimumQuantity(stockLevel.getMinimumQuantity())
+                .data(stockLevel.getData())
+                .build();
+    }
+
+    public static List<StockLevelFindDto> toDtoFindListWithoutProduct(List<StockLevel> entityList){
+        return entityList.stream()
+                .map(StockLevelMapper::toFindDtoWithoutProduct)
+                .collect(Collectors.toList());
+    }
+
 }

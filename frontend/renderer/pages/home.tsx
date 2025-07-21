@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import {
   Home,
@@ -22,16 +22,19 @@ import StockMovesPage from "./ruchy_magazynowe/stockMoves";
 import WarehousesPage from "./magazyny/warehouses";
 import StatusesPage from "./statusy/statuses";
 import SystemDataPage from "./dane_systemowe/systemData";
+import axios from "axios";
+import clsx from "clsx";
 
 export default function HomePage() {
   const [activeView, setActiveView] = useState("home");
+  const [categories, setCategories] = useState([])
+  const [products, setProducts] = useState([]);
 
   const menuItems = [
     {
       section: null,
       items: [
         { label: "Strona główna", key: "home", icon: <Home size={18} /> },
-        { label: "Wyszukaj", key: "search", icon: <Search size={18} /> },
         { label: "Zamówienia", key: "orders", icon: <ListOrdered size={18} /> },
         { label: "Produkty", key: "products", icon: <PackageOpen size={18} /> },
         { label: "Kategorie", key: "categories", icon: <Boxes size={18} /> },
@@ -55,6 +58,35 @@ export default function HomePage() {
     },
   ];
 
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, []);
+
+
+  const fetchProducts = () => {
+    axios.get("http://localhost:8080/api/products/all")
+    .then((res) => {
+      setProducts(res.data);
+    })
+    .catch((err) => {
+      console.error(err);
+      window.ipc.invoke("show-alert", "Wystąpił nieoczekiwany problem w trakcie ładowania produktów");
+    })
+  }
+
+
+  const fetchCategories = () => {
+    axios.get("http://localhost:8080/api/category/all")
+    .then((res) => {
+      setCategories(res.data);
+    })
+    .catch((err) => {
+      console.error(err);
+      window.ipc.invoke("show-alert", "Wystąpił nieoczekiwany problem w trakcie ładowania kategorii");
+    })
+  }
+
   const renderContent = () => {
     if (activeView === "home") {
       return (
@@ -70,22 +102,44 @@ export default function HomePage() {
           <div className="flex justify-between items-center mb-6">
             <div className="flex flex-col gap-1">
               <h1 className="text-3xl font-bold">Produkty</h1>
-              <p className="text-gray-600 text-sm cursor-pointer hover:text-primary transition-all">Zobacz więcej</p>
+              <p className="text-gray-600 text-sm cursor-pointer hover:text-primary transition-all" onClick={() => setActiveView("products")}>Zobacz więcej</p>
             </div>
-            <button className="px-4 py-2 bg-black text-white rounded-md">Button</button>
           </div>
 
           <section className="mb-10">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {[1, 2, 3, 4].map((item) => (
-                <div key={item} className="rounded-lg overflow-hidden shadow-sm border">
-                  <div className="bg-gray-200 h-40"></div>
-                  <div className="p-4">
-                    <h3 className="font-semibold">Produkt {item}</h3>
-                    <p className="text-sm text-gray-500">Opis produktu</p>
-                  </div>
-                </div>
-              ))}
+              {products.map((product) => (
+                        <div
+                          key={product.id}
+                          className="cursor-pointer border rounded-lg shadow-sm hover:shadow-md transition"
+                        >
+                          <div className="h-40 bg-gray-200 overflow-hidden">
+                            <img
+                            src={
+                              product.imagesDto?.[0]?.path
+                                ? `http://localhost:8080${product.imagesDto[0].path}`
+                                : "placeholder"
+                            }
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                          />
+              
+                          </div>
+                          <div className="p-4 space-y-1">
+                            <h3 className="font-semibold text-lg">{product.name}</h3>
+                            <p className="text-sm text-gray-500">{product.categoryDto?.name}</p>
+                            <p className="text-sm text-gray-800">{product.price}</p>
+                            <span
+                              className={clsx(
+                                "inline-block text-xs px-2 py-1 rounded",
+                                product.statusDto?.color
+                              )}
+                            >
+                              {product.statusDto?.name || "Brak statusu"}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
             </div>
           </section>
 
@@ -93,23 +147,26 @@ export default function HomePage() {
           <section>
             <div className="flex flex-col mb-4 gap-1">
               <h2 className="text-2xl font-bold">Kategorie</h2>
-              <p className="text-gray-600 text-sm cursor-pointer hover:text-primary transition-all">Zobacz więcej</p>
+              <p className="text-gray-600 text-sm cursor-pointer hover:text-primary transition-all" onClick={() => setActiveView("categories")}>Zobacz więcej</p>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {["Laptopy", "Smartfony", "Słuchawki", "Monitory", "Tablety", "Smartwatche"].map(
-                (category, i) => (
-                  <div
-                    key={i}
-                    className="rounded-lg overflow-hidden border shadow-sm hover:shadow-md transition-shadow"
-                  >
-                    <div className="bg-gray-300 h-28 flex items-center justify-center" />
-                    <div className="p-2">
-                      <h3 className="font-semibold text-sm">{category}</h3>
-                      <p className="text-xs text-gray-500">Zobacz produkty</p>
-                    </div>
-                  </div>
-                )
-              )}
+              {categories.map((cat) => (
+                          <div
+                            key={cat.id}
+                            className="rounded-lg border shadow-sm p-4 hover:shadow-md transition flex flex-col items-center text-center cursor-pointer"
+                          >
+                          <div className={`rounded-full p-3 mb-3 ${cat.color}`}>
+                              <Boxes size={28} className="text-white" />
+                            </div>
+                            <h3 className="font-semibold text-sm">{cat.name}</h3>
+                            <p className="text-xs text-gray-500">
+                              {cat.productCount ?? 0} produktów
+                            </p>
+                            <p className="text-[10px] text-gray-400 mt-1">
+                              Dodano: {new Date(cat.data.createdAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                        ))}
             </div>
           </section>
         </>

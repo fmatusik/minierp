@@ -12,4 +12,5 @@ public interface OrderService {
     List<OrderFindDto> findAllOrdersDto();
     OrderFindDto findById(Long id);
     OrderFindDto updateOrder(OrderAddDto orderAddDto, Long id);
+    String deleteOrder(Long id);
 }

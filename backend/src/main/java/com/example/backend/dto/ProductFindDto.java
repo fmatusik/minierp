@@ -23,6 +23,6 @@ public class ProductFindDto{
     private StatusDto statusDto;
     private CategoryDto categoryDto;
     private List<ImageDto> imagesDto;
-    private List<StockLevelDto> stockLevelsDto;
+    private List<StockLevelFindDto> stockLevelsDto;
     private List<OrderItemDto> orderItemDtos;
 }
