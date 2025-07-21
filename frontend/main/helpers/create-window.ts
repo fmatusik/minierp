@@ -74,12 +74,16 @@ export const createWindow = (
   const win = new BrowserWindow({
     ...state,
     ...options,
+    icon: path.join(__dirname, '..', '..', 'resources', 'icon.ico'), // 👈 Dodaj to
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       ...options.webPreferences,
     },
+    show: false,
   })
+
+  win.on("ready-to-show", win.show);
 
   win.on('close', saveState)
 

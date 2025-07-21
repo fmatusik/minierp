@@ -1,10 +1,5 @@
   import React, { useState, useEffect } from "react";
   import {
-    User,
-    MapPin,
-    Calendar,
-    CreditCard,
-    ShoppingBag,
     PlusCircle,
     XCircle,
     CheckCircle,
@@ -15,7 +10,6 @@
     Notebook,
   } from "lucide-react";
   import axios from "axios";
-  import { stockLevels } from "../../dummyData";
 
   export default function AddStockMovementForm() {
     const [products, setProducts] = useState([]);
@@ -24,7 +18,6 @@
     const [orders, setOrders] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [stockMovementId, setStockMovementId] = useState(null);
-    const [relatedOrderProducts, setRelatedOrderProducts] = useState([]);
 
     const [formData, setFormData] = useState({
       movementType: "",
@@ -646,7 +639,7 @@ const handleAddStockMovementItems = async (id) => {
             rows={4}
             className="ml-2 w-full outline-none resize-none"
             required={required}
-            maxLength={max``}
+            maxLength={max}
           />
         </div>
       </div>

@@ -20,7 +20,11 @@ public class BackendApplication {
 	public CorsFilter corsFilter() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 		corsConfiguration.setAllowCredentials(true);
-		corsConfiguration.setAllowedOrigins(List.of("http://localhost:8888"));
+		corsConfiguration.setAllowedOriginPatterns(List.of(
+				"http://localhost:*", // dev
+				"app://.*",           // Electron produkcja
+				"null"                // fallback np. file://
+		));
 		corsConfiguration.setAllowedHeaders(List.of("*"));
 		corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
@@ -29,4 +33,5 @@ public class BackendApplication {
 
 		return new CorsFilter(source);
 	}
+
 }

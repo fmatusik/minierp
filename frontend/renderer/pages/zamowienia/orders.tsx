@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { RefreshCcw } from "lucide-react";
 import axios from "axios";
-import { products } from "../dummyData";
 
 const ITEMS_PER_LOAD = 20;
 
