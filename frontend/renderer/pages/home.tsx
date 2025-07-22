@@ -21,7 +21,6 @@ import StockLevelsPage from "./stany_magazynowe/stockLevels";
 import StockMovesPage from "./ruchy_magazynowe/stockMoves";
 import WarehousesPage from "./magazyny/warehouses";
 import StatusesPage from "./statusy/statuses";
-import SystemDataPage from "./dane_systemowe/systemData";
 import axios from "axios";
 import clsx from "clsx";
 
@@ -53,7 +52,6 @@ export default function HomePage() {
       section: "Ustawienia",
       items: [
         { label: "Statusy", key: "statuses", icon: <Settings size={18} /> },
-        { label: "Dane systemowe", key: "systemData", icon: <Database size={18} /> },
       ],
     },
   ];
@@ -207,11 +205,6 @@ export default function HomePage() {
     if(activeView == "statuses") {
       return <StatusesPage/>
     }
-
-    if(activeView == "systemData") {
-      return <SystemDataPage/>
-    }
-
     // Placeholdery dla innych zakładek
     return <h1 className="text-2xl font-bold">{menuItems.flatMap(s => s.items).find(i => i.key === activeView)?.label}</h1>;
   };
