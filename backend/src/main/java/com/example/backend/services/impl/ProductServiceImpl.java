@@ -1,19 +1,23 @@
 package com.example.backend.services.impl;
 
+import com.example.backend.dto.ImageDto;
 import com.example.backend.dto.ProductAddDto;
 import com.example.backend.dto.ProductFindDto;
-import com.example.backend.entity.Category;
-import com.example.backend.entity.Data;
-import com.example.backend.entity.Product;
-import com.example.backend.entity.Status;
+import com.example.backend.entity.*;
 import com.example.backend.mapper.ProductMapper;
 import com.example.backend.repository.CategoryRepository;
+import com.example.backend.repository.ImageRepository;
 import com.example.backend.repository.ProductRepository;
 import com.example.backend.repository.StatusRepository;
 import com.example.backend.services.ProductService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,6 +28,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
     private final StatusRepository statusRepository;
+    private final ImageRepository imageRepository;
 
     @Override
     public ProductAddDto addProduct(ProductAddDto productAddDto) {
@@ -72,14 +77,38 @@ public class ProductServiceImpl implements ProductService {
         return ProductMapper.toFindDto(existing);
     }
 
+    @Transactional
     @Override
     public String deleteProduct(Long id) {
-        if(productRepository.existsById(id)){
+        if (!productRepository.existsById(id)) {
+            return "Nie znaleziono produktu o podanym ID.";
+        }
+
+        try {
+            // Delete image files associated with the product
+            var images = imageRepository.findAllByProductId(id);
+            if (images != null && !images.isEmpty()) {
+                for (Image image : images) {
+                    if (image.getPath() != null) {
+                        Path filePath = Paths.get("./uploads", Paths.get(image.getPath()).getFileName().toString());
+                        Files.deleteIfExists(filePath);
+                    }
+                }
+                // Optionally delete the image metadata from the database (if needed)
+                imageRepository.deleteAllByProductId(id); // You need to implement this method in your repository
+            }
+
+            // Finally delete the product
             productRepository.deleteById(id);
-            return "Pomyślnie usunięto produkt";
-        }else{
-            return "Wystąpił nieoczekiwany proble w trakcie usuwania produktu. Pamiętaj, produkt nie może być dodany do jakiegokolwiek zamówienia, aby go usunąć!";
+            return "Pomyślnie usunięto produkt oraz powiązane obrazy.";
+
+        } catch (IOException e) {
+            // Log the exception (if using logging)
+            return "Błąd podczas usuwania plików obrazu: " + e.getMessage();
+        } catch (Exception e) {
+            return "Wystąpił błąd podczas usuwania produktu: " + e.getMessage();
         }
     }
+
 
 }

@@ -47,7 +47,7 @@ public class ImageController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteImage(@PathVariable Long id) {
         try {
-            // Pobierz dane obrazka z bazy
+
             ImageDto imageDto = imageService.getImageById(id);
             if (imageDto == null) {
                 return ResponseEntity.notFound().build();

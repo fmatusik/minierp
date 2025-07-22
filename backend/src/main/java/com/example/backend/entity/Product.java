@@ -67,7 +67,7 @@ public class Product {
     @JsonManagedReference
     private List<StockLevel> stockLevels;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product")
     @JsonManagedReference
     private List<OrderItem> orderItems;
 

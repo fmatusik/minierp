@@ -27,6 +27,4 @@ public class Data {
     @Column(nullable = false, name = "\"updatedAt\"")
     private LocalDateTime updatedAt;
 
-    @Column(nullable = true, name = "\"deletedAt\"")
-    private LocalDateTime deletedAt;
 }

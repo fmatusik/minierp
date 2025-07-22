@@ -113,13 +113,10 @@ export default function EditProductForm({ productId }) {
     try{
       const confirmed = await window.ipc.invoke("show-confirm", "Czy na pewno chcesz usunąć ten produkt?");
       if (!confirmed) return;
-      
 
 
       const res = await axios.delete(`http://localhost:8080/api/products/delete/${productId}`)
-      fetchedImages.map((img) => {
-         handleDeleteFetchedImage(img.id);
-      })
+
       window.ipc.invoke("show-alert", res.data);
       
     }
@@ -159,8 +156,6 @@ export default function EditProductForm({ productId }) {
   };
 
   const handleDeleteFetchedImage = async (imageId) => {
-    const confirm = await window.ipc.invoke("show-confirm", "Czy napewno chcesz usunąć to zdjęcie?");
-    if(!confirm) return;
 
     try {
       await axios.delete(`http://localhost:8080/api/images/delete/${imageId}`);
