@@ -57,7 +57,7 @@ export default function AddOrderForm() {
 
   const fetchClients = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/client/all");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/client/all`);
       setClients(res.data);
     } catch (err) {
       console.error("Error fetching clients:", err);
@@ -66,7 +66,7 @@ export default function AddOrderForm() {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/products/all");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/products/all`);
       setProducts(res.data);
     } catch (err) {
       console.error("Error fetching products:", err);
@@ -75,7 +75,7 @@ export default function AddOrderForm() {
 
   const fetchOrderStatuses = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/status/all/order");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/status/all/order`);
       setStatuses(res.data);
     } catch (err) {
       console.error("Error fetching order statuses:", err);
@@ -85,7 +85,7 @@ export default function AddOrderForm() {
   const fetchClientAddresses = async (clientId) => {
     try {
       const res = await axios.get(
-        `http://localhost:8080/api/address/one/${clientId}`
+        `${process.env.NEXT_PUBLIC_SERVER}/api/address/one/${clientId}`
       );
       setClientAddresses(res.data);
     } catch (err) {
@@ -182,7 +182,7 @@ const handleAddOrderItemToList = () => {
 
       console.log("Creating Order:", orderCreationPayload);
       const orderRes = await axios.post(
-        "http://localhost:8080/api/orders/add",
+        `${process.env.NEXT_PUBLIC_SERVER}/api/orders/add`,
         orderCreationPayload
       );
       const newOrder = orderRes.data;
@@ -199,7 +199,7 @@ const handleAddOrderItemToList = () => {
       try {
         // Create an array of promises from all the axios.post calls
         await axios.post(
-          `http://localhost:8080/api/orderItems/add/list`,
+          `${process.env.NEXT_PUBLIC_SERVER}/api/orderItems/add/list`,
           orderItemsPayload
         );
 

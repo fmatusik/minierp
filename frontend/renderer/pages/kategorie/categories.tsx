@@ -14,7 +14,7 @@ export default function KategoriePage() {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:8080/api/category/all");
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/category/all`);
       setCategories(response.data);
     } catch (err) {
       console.error("Error fetching categories:", err);

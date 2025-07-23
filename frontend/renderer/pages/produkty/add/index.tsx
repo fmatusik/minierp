@@ -34,7 +34,7 @@
         e.preventDefault();
         console.log("Produkt do wysłania:", formData);
         // Tutaj możesz dodać wysyłkę przez axios
-        axios.post("http://localhost:8080/api/products/add", formData)
+        axios.post(`${process.env.NEXT_PUBLIC_SERVER}/api/products/add`, formData)
         .then((res) => {
             window.close();
         })
@@ -45,7 +45,7 @@
 
 
     const fetchCategories = () => {
-        axios.get("http://localhost:8080/api/category/all")
+        axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/category/all`)
         .then((res) =>{
             console.log(res.data);
             setCategories(res.data);
@@ -56,7 +56,7 @@
     }
 
     const fetchStatuses = () => {
-        axios.get("http://localhost:8080/api/status/all/product")
+        axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/status/all/product`)
         .then((res) => {
             console.log(res.data);
             setStatuses(res.data);

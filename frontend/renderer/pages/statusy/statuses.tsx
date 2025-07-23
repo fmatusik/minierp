@@ -15,7 +15,7 @@ export default function StatusesPage() {
   // Fetch statuses from API
   const fetchStatuses = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/status/all");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/status/all`);
       setAllStatuses(res.data);
     } catch (error) {
       console.error("Failed to fetch statuses", error);
@@ -63,7 +63,7 @@ export default function StatusesPage() {
 
 const handleSaveEdit = async () => {
   try {
-    const res = await axios.put(`http://localhost:8080/api/status/edit/${editedStatus.id}`, editedStatus);
+    const res = await axios.put(`${process.env.NEXT_PUBLIC_SERVER}/api/status/edit/${editedStatus.id}`, editedStatus);
     fetchStatuses(); // reload whole list, which will include the updated status
     setShowEditModal(false);
     setEditedStatus(null);
@@ -78,7 +78,7 @@ const handleDelete = async (id) => {
     const confirmed = await window.ipc.invoke("show-confirm", "Czy na pewno chcesz usunąć ten status?");
     if (!confirmed) return;
 
-    const res = await axios.delete(`http://localhost:8080/api/status/delete/${id}`);
+    const res = await axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/status/delete/${id}`);
     window.ipc.invoke("show-alert", res.data);
     fetchStatuses();
   } catch (err) {

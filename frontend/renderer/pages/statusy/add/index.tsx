@@ -27,7 +27,7 @@ export default function AddStatusForm() {
     e.preventDefault();
     console.log("Status do wysłania:", formData);
     
-    axios.post("http://localhost:8080/api/status/add", formData)
+    axios.post(`${process.env.NEXT_PUBLIC_SERVER}/api/status/add`, formData)
     .then((res) => {
         window.close();
     }

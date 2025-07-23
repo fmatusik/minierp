@@ -12,7 +12,7 @@ export default function CategoryPage({ categoryId }) {
   
   const fetchCategoryData = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/category/one/${categoryId}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER}/api/category/one/${categoryId}`);
         if (!res.ok) throw new Error("Failed to fetch category");
         const data = await res.json();
 
@@ -37,13 +37,13 @@ export default function CategoryPage({ categoryId }) {
     category: category?.name || "Brak kategorii",
     price: `${product.price?.toFixed(2)} PLN`,
     status: product.statusDto || "Nieznany",
-    image: `http://localhost:8080${product.imagesDto[0]?.path }`|| "https://via.placeholder.com/300x200",
+    image: `${process.env.NEXT_PUBLIC_SERVER}${product.imagesDto[0]?.path }`|| "https://placehold.co/300x200",
   }));
 
   const handleSetHeaderColor = (color) => {
     setHeaderColor(color);
     axios.put(
-      `http://localhost:8080/api/category/update/color/${category.id}`,
+      `${process.env.NEXT_PUBLIC_SERVER}/api/category/update/color/${category.id}`,
       color,
       {
         headers: {
@@ -64,7 +64,7 @@ export default function CategoryPage({ categoryId }) {
     const confirm = await window.ipc.invoke("show-confirm", "Czy napewno chcesz usunąć kategorie?")
     if(!confirm) return;
     
-    axios.delete(`http://localhost:8080/api/category/delete/${category.id}`)
+    axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/category/delete/${category.id}`)
     .then((res) => {
       console.log(res.data);
     })

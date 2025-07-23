@@ -56,7 +56,7 @@
 
     const fetchOrders = async () => {
       try {
-          const res = await axios.get("http://localhost:8080/api/orders/all");
+          const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/orders/all`);
           setOrders(res.data);
       }catch(err) {
           console.error(err);
@@ -65,7 +65,7 @@
 
     const fetchWarehouses = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/api/warehouse/all");
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/warehouse/all`);
         setWarehouses(res.data);
       } catch (err) {
         console.error("Error fetching warehouses:", err);
@@ -74,7 +74,7 @@
 
     const fetchProducts = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/api/products/all");
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/products/all`);
         setProducts(res.data);
       } catch (err) {
         console.error("Error fetching products:", err);
@@ -84,7 +84,7 @@
 
     const fetchStockLevelProducts = async (warehouseId) => {
       try {
-        const res = await axios.get(`http://localhost:8080/api/stockLevels/warehouse/${warehouseId}`);
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/stockLevels/warehouse/${warehouseId}`);
         const stockLevels = res.data;
         const productDtos = stockLevels.map((s) => ({
           ...s.productDto,
@@ -112,7 +112,7 @@
 
     const appendStockLevel = (stockLevelId, quantity) => {
       
-      axios.put(`http://localhost:8080/api/stockLevels/append/${stockLevelId}`, quantity,  {headers: {
+      axios.put(`${process.env.NEXT_PUBLIC_SERVER}/api/stockLevels/append/${stockLevelId}`, quantity,  {headers: {
     'Content-Type': 'application/json'}
   })
       .then((res) => {
@@ -127,7 +127,7 @@
 
     const decreaseStockLeves = (stockLevelId, quantity) => {
 
-      axios.put(`http://localhost:8080/api/stockLevels/decrease/${stockLevelId}`, quantity,  {headers: {
+      axios.put(`${process.env.NEXT_PUBLIC_SERVER}/api/stockLevels/decrease/${stockLevelId}`, quantity,  {headers: {
     'Content-Type': 'application/json'}
   })
       .then((res) => {
@@ -141,7 +141,7 @@
 
     const fetchClientAddresses = async (clientId) => {
       try {
-        const res = await axios.get(`http://localhost:8080/api/address/one/${clientId}`);
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/address/one/${clientId}`);
         setClientAddresses(res.data);
       } catch (err) {
         console.error("Error fetching addresses:", err);
@@ -175,7 +175,7 @@
     setOrderItemsToAdd([]);
 
     try {
-      const res = await axios.get(`http://localhost:8080/api/orders/one/${value}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/orders/one/${value}`);
       const orderItems = res.data.orderItems;
 
       if (!orderItems || orderItems.length === 0) {
@@ -339,7 +339,7 @@
     };
 
     try {
-      const res = await axios.post("http://localhost:8080/api/stockMovements/add", stockMovementBody);
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_SERVER}/api/stockMovements/add`, stockMovementBody);
       const id = res.data.id;
       setStockMovementId(id);
       return id;
@@ -359,7 +359,7 @@ const handleAddStockMovementItems = async (id) => {
   }));
 
   try {
-    const res = await axios.post("http://localhost:8080/api/stockMovementItems/add/list", items);
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_SERVER}/api/stockMovementItems/add/list`, items);
     console.log(res.data);
 
     // Aktualizacja stanów magazynowych
@@ -381,7 +381,7 @@ const handleAddStockMovementItems = async (id) => {
     }
 
     alert("Pomyślnie dodano ruch magazynowy!");
-    //window.close();
+    window.close();
   } catch (err) {
     console.error(err);
     alert("Wystąpił nieoczekiwany problem w trakcie dodawania zamawianych produktów");
@@ -391,14 +391,14 @@ const handleAddStockMovementItems = async (id) => {
 
     const getStockLevelId = async (warehouseId, productId, fallbackQuantity = 0, fallbackPrice = 0) => {
   try {
-    const res = await axios.get(`http://localhost:8080/api/stockLevels/warehouse/${warehouseId}`);
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/stockLevels/warehouse/${warehouseId}`);
     const stockLevels = res.data;
     const stock = stockLevels.find((s) => s.productDto?.id === productId);
 
     if (stock) return stock.id;
 
     // Jeśli brak — utwórz nowy stockLevel
-    const createRes = await axios.post("http://localhost:8080/api/stockLevels/add", {
+    const createRes = await axios.post(`${process.env.NEXT_PUBLIC_SERVER}/api/stockLevels/add`, {
       warehouseId,
       productId,
       quantity: fallbackQuantity,

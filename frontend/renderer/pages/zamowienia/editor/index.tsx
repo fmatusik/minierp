@@ -76,7 +76,7 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
 
   const fetchClients = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/client/all");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/client/all`);
       setClients(res.data);
     } catch (err) {
       console.error("Error fetching clients:", err);
@@ -85,7 +85,7 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/products/all");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/products/all`);
       setProducts(res.data);
     } catch (err) {
       console.error("Error fetching products:", err);
@@ -94,7 +94,7 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
 
   const fetchOrderStatuses = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/status/all/order");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/status/all/order`);
       setStatuses(res.data);
     } catch (err) {
       console.error("Error fetching order statuses:", err);
@@ -104,7 +104,7 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
   const fetchClientAddresses = async (clientId) => {
     try {
       const res = await axios.get(
-        `http://localhost:8080/api/address/one/${clientId}`
+        `${process.env.NEXT_PUBLIC_SERVER}/api/address/one/${clientId}`
       );
       setClientAddresses(res.data);
     } catch (err) {
@@ -115,7 +115,7 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
   const fetchOrderDetails = async (id) => {
     setIsLoading(true);
     try {
-      const orderRes = await axios.get(`http://localhost:8080/api/orders/one/${id}`);
+      const orderRes = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/orders/one/${id}`);
       const orderData = orderRes.data;
 
       // Populate main form data
@@ -132,7 +132,7 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
       });
 
       // Populate order items
-      const itemsRes = await axios.get(`http://localhost:8080/api/orderItems/order/${id}`);
+      const itemsRes = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/orderItems/order/${id}`);
       console.log(itemsRes.data);
       const fetchedItems = itemsRes.data.map(item => ({
         id: item.id, 
@@ -205,7 +205,7 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
         };
         setOrderItemsToAdd((prev) => [...prev, newItem]);
         console.log(newItem);
-        axios.post("http://localhost:8080/api/orderItems/add", newItem)
+        axios.post(`${process.env.NEXT_PUBLIC_SERVER}/api/orderItems/add`, newItem)
         .then((res) => {
           console.log("Dodano", res.data);
         })
@@ -230,7 +230,7 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
 
 
   const deleteOrderItem = (id) => {
-    axios.delete(`http://localhost:8080/api/orderItems/delete/${id}`)
+    axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/orderItems/delete/${id}`)
     .then((res) => {
       console.log(res.data);
     })
@@ -269,7 +269,7 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
 
       console.log("Updating Order:", orderUpdatePayload);
       await axios.put(
-        `http://localhost:8080/api/orders/update/${orderId}`, 
+        `${process.env.NEXT_PUBLIC_SERVER}/api/orders/update/${orderId}`, 
         orderUpdatePayload
       );
       console.log("Order updated successfully!");
@@ -288,7 +288,7 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
           console.log("orderitems:", orderItemsPayload);
           const existingItems = orderItemsToAdd.filter(item => item.id);
           await axios.put( // Assuming a PUT endpoint for list update
-            `http://localhost:8080/api/orderItems/update/list/${orderId}`, // Endpoint to update all items for an order
+            `${process.env.NEXT_PUBLIC_SERVER}/api/orderItems/update/list/${orderId}`, // Endpoint to update all items for an order
             existingItems
           );
           console.log("All order items updated successfully!");
@@ -299,7 +299,7 @@ export default function EditOrderForm() { // Added orderId prop and onClose for 
       } else {
         // If no items are left, you might want to send a request to delete all items for this order
         try {
-          await axios.delete(`http://localhost:8080/api/orderItems/delete/${orderId}`);
+          await axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/orderItems/delete/${orderId}`);
           console.log("All order items deleted successfully.");
         } catch (error) {
           console.error("Error deleting all order items:", error);

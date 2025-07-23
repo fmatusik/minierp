@@ -11,7 +11,7 @@ export default function KlienciPage() {
 
   const loadClients = () => {
     axios
-      .get("http://localhost:8080/api/client/all")
+      .get(`${process.env.NEXT_PUBLIC_SERVER}/api/client/all`)
       .then((response) => {
         setClients(response.data);
       })
@@ -64,7 +64,7 @@ export default function KlienciPage() {
       const confirm = await window.ipc.invoke("show-confirm", "Czy napewno chcesz usunąć tego kontrahenta?")
       if(!confirm) return;
       
-      axios.delete(`http://localhost:8080/api/client/delete/${clientId}`)
+      axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/client/delete/${clientId}`)
       .then((res) =>{
         console.log(res.data);
         loadClients();

@@ -21,7 +21,7 @@ export default function AddCategoryPage() {
   const handleSave = () => {
     setSaving(true);
     axios
-      .post("http://localhost:8080/api/category/add", category)
+      .post(`${process.env.NEXT_PUBLIC_SERVER}/api/category/add`, category)
       .then(() => {
         window.close();
       })

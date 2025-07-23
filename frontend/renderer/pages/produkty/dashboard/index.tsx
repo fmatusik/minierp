@@ -83,7 +83,7 @@ export default function ProductDashboard({ productId }) {
   const fetchProduct = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8080/api/products/one/${productId}`
+        `${process.env.NEXT_PUBLIC_SERVER}/api/products/one/${productId}`
       );
       const data = res.data;
       setProduct(data);

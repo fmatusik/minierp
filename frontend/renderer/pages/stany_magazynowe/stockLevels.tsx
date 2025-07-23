@@ -20,7 +20,7 @@ export default function StockLevelsPage() {
 
   const fetchStockLevels = () => {
     axios
-      .get("http://localhost:8080/api/stockLevels/all")
+      .get(`${process.env.NEXT_PUBLIC_SERVER}/api/stockLevels/all`)
       .then((res) => {
         setStock(res.data);
       })
@@ -34,7 +34,7 @@ export default function StockLevelsPage() {
   };
 
   const fetchFilterWarehouses = () => {
-    axios.get("http://localhost:8080/api/warehouse/all")
+    axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/warehouse/all`)
     .then((res) => {
       setUniqueWarehouses(res.data)
     })
@@ -134,7 +134,7 @@ export default function StockLevelsPage() {
 
   axios
     .put(
-      `http://localhost:8080/api/stockLevels/update/${stockLevel.id}`,
+      `${process.env.NEXT_PUBLIC_SERVER}/api/stockLevels/update/${stockLevel.id}`,
       stockLevelUpdateBody
     )
     .then((res) => {
@@ -166,7 +166,7 @@ export default function StockLevelsPage() {
     if (!confirm) return;
 
     try{
-      const res = await axios.delete(`http://localhost:8080/api/stockLevels/delete/${id}`)
+      const res = await axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/stockLevels/delete/${id}`)
       console.log(res.data);
       window.ipc.invoke("show-alert", res.data);
     }catch(err) {
@@ -176,7 +176,7 @@ export default function StockLevelsPage() {
   }
 
 const handleExportCSV = () => {
-  axios.get("http://localhost:8080/api/stockLevels/csv/all", {
+  axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/stockLevels/csv/all`, {
     responseType: 'blob', // important to handle binary data like CSV
   })
   .then((res) => {

@@ -18,7 +18,7 @@ export default function AddStockForm() {
     const[products, setProducts] = useState([]);
 
   const fetchWarehouses = () => {
-    axios.get("http://localhost:8080/api/warehouse/all")
+    axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/warehouse/all`)
     .then((res) => {
         setWarehouses(res.data);
     })
@@ -30,7 +30,7 @@ export default function AddStockForm() {
   }
 
   const fetchProducts = () => {
-    axios.get("http://localhost:8080/api/products/all")
+    axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/products/all`)
     .then((res) => {
         setProducts(res.data);
     })
@@ -60,11 +60,11 @@ export default function AddStockForm() {
   };
 
   try {
-    const response = await axios.get(`http://localhost:8080/api/stockLevels/checkIfExists/${stockLevelBody.productId}/${stockLevelBody.warehouseId}`);
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/stockLevels/checkIfExists/${stockLevelBody.productId}/${stockLevelBody.warehouseId}`);
     const exists = response.data;
     console.log(exists)
     if (!exists) {
-      const res = await axios.post("http://localhost:8080/api/stockLevels/add", stockLevelBody);
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_SERVER}/api/stockLevels/add`, stockLevelBody);
       console.log(res.data);
       alert("Pomyślnie dodano stan magazynowy");
     } else {

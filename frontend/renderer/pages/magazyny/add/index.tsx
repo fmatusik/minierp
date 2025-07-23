@@ -53,7 +53,7 @@ export default function AddWarehouseForm() {
 
       // 1. Add address and get its ID
       const resAddress = await axios.post(
-        "http://localhost:8080/api/address/add/warehouse",
+        `${process.env.NEXT_PUBLIC_SERVER}/api/address/add/warehouse`,
         addressBody
       );
 
@@ -70,7 +70,7 @@ export default function AddWarehouseForm() {
       console.log(warehouseBody);
 
       const resWarehouse = await axios.post(
-        "http://localhost:8080/api/warehouse/add",
+        `${process.env.NEXT_PUBLIC_SERVER}/api/warehouse/add`,
         warehouseBody
       );
 

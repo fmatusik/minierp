@@ -23,7 +23,7 @@ export default function WarehousesPage() {
   },[]);
 
   const fetchWarehouses = () => {
-    axios.get("http://localhost:8080/api/warehouse/all")
+    axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/warehouse/all`)
     .then((res) => {
       setWarehouses(res.data);
       console.log(res.data);
@@ -42,7 +42,7 @@ export default function WarehousesPage() {
     if(!confirm) return ;
 
     try{
-      const res = await axios.delete(`http://localhost:8080/api/warehouse/delete/${id}`)
+      const res = await axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/warehouse/delete/${id}`)
       handleReload();
     }catch(err) {
       console.error(err);

@@ -12,7 +12,7 @@ export default function ProductPage({ selectedProduct }) {
 
   const fetchProduct = async () => {
     try {
-      const res = await axios.get(`http://localhost:8080/api/products/one/${selectedProduct}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/products/one/${selectedProduct}`);
       setProduct(res.data);
       console.log(res.data);
     } catch (error) {
@@ -30,7 +30,7 @@ export default function ProductPage({ selectedProduct }) {
   const maxImages = 9;
   const images = productImages.length > 0
     ? productImages.slice(0, maxImages)
-    : Array(1).fill("https://via.placeholder.com/300x200");
+    : Array(1).fill("https://placehold.co/300x200");
 
   const itemsPerPage = 3;
   const totalPages = Math.ceil(images.length / itemsPerPage);
@@ -73,7 +73,7 @@ export default function ProductPage({ selectedProduct }) {
                 className={`h-64 snap-start transition-transform duration-500 ease-out ${imageWidthClass} flex-shrink-0`}
               >
                 <img
-                  src={`http://localhost:8080${image}`}
+                  src={`${process.env.NEXT_PUBLIC_SERVER}${image}`}
                   alt={`${product.name || "Product"} ${idx + 1}`}
                   className="w-full h-full object-cover"
                 />

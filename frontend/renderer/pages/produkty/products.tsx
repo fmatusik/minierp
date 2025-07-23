@@ -23,7 +23,7 @@ export default function ProduktyPage() {
   }, []);
 
 const fetchProducts = () => {
-  axios.get("http://localhost:8080/api/products/all")
+  axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/products/all`)
     .then((res) => {
       const products = res.data;
 
@@ -174,7 +174,7 @@ const fetchProducts = () => {
               <img
               src={
                 product.imagesDto?.[0]?.path
-                  ? `http://localhost:8080${product.imagesDto[0].path}`
+                  ? `${process.env.NEXT_PUBLIC_SERVER}${product.imagesDto[0].path}`
                   : "placeholder"
               }
               alt={product.name}

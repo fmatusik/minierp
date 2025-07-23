@@ -34,7 +34,7 @@ useEffect(() => {
   setNewAddress((prev) => ({ ...prev, clientId }));
 
   axios
-    .get(`http://localhost:8080/api/client/one/${clientId}`)
+    .get(`${process.env.NEXT_PUBLIC_SERVER}/api/client/one/${clientId}`)
     .then((res) => {
       if (res.data) {
         setClient(res.data);
@@ -51,7 +51,7 @@ useEffect(() => {
 
   const handleContactAdd = () => {
     if(newContact != null){
-      axios.post("http://localhost:8080/api/clientContact/add", newContact)
+      axios.post(`${process.env.NEXT_PUBLIC_SERVER}/api/clientContact/add`, newContact)
       .then((res) => {
         setNewContact((prev) => ({...prev, id:res.data.id}));
         addContact();
@@ -66,7 +66,7 @@ const handleAddressAdd = async () => {
   if (!newAddress) return;
 
   try {
-    const res = await axios.post("http://localhost:8080/api/address/add", newAddress);
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_SERVER}/api/address/add`, newAddress);
     console.log("Response data:", res.data);
     setNewAddress((prev) => ({ ...prev, id: res.data.id }));
     addAddress(); // Consider passing res.data.id if needed
@@ -94,7 +94,7 @@ const handleContactChange = (index, field, value) => {
 
   const removeContact = (contactId) => {
     if (!contactId) return alert("Contact ID is missing");
-    axios.delete(`http://localhost:8080/api/clientContact/delete/${contactId}`)
+    axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/clientContact/delete/${contactId}`)
     .then((res) => {
       window.location.reload()
     })
@@ -128,7 +128,7 @@ const handleContactChange = (index, field, value) => {
   
   const removeAddress = (addressId) => {
     if (!addressId) return alert("Address ID is missing");
-    axios.delete(`http://localhost:8080/api/address/delete/${addressId}`)
+    axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/address/delete/${addressId}`)
     .then((res) => {
         window.location.reload();
       }
@@ -138,7 +138,7 @@ const handleContactChange = (index, field, value) => {
 const updateContact = async (contact) => {
   if (!contact.id) return;
   try {
-    await axios.put(`http://localhost:8080/api/clientContact/update/${contact.id}`, contact);
+    await axios.put(`${process.env.NEXT_PUBLIC_SERVER}/api/clientContact/update/${contact.id}`, contact);
   } catch (err) {
     alert("Błąd podczas aktualizacji kontaktu: " + err);
   }
@@ -147,7 +147,7 @@ const updateContact = async (contact) => {
 const updateAddress = async (address) => {
   if (!address.id) return;
   try {
-    await axios.put(`http://localhost:8080/api/address/update/${address.id}`, address);
+    await axios.put(`${process.env.NEXT_PUBLIC_SERVER}/api/address/update/${address.id}`, address);
   } catch (err) {
     alert("Błąd podczas aktualizacji adresu: " + err);
   }

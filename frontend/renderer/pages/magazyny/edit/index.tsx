@@ -57,7 +57,7 @@ useEffect(() => {
     const fetchData = async () => {
       try {
         const resWarehouse = await axios.get(
-          `http://localhost:8080/api/warehouse/one/${warehouseId}`
+          `${process.env.NEXT_PUBLIC_SERVER}/api/warehouse/one/${warehouseId}`
         );
         const warehouse = resWarehouse.data;
         setName(warehouse.name);
@@ -102,7 +102,7 @@ useEffect(() => {
 
       // 1. Update address
       await axios.put(
-        `http://localhost:8080/api/address/update/${addressId}`,
+        `${process.env.NEXT_PUBLIC_SERVER}/api/address/update/${addressId}`,
         addressBody
       );
 
@@ -115,7 +115,7 @@ useEffect(() => {
       };
 
       await axios.put(
-        `http://localhost:8080/api/warehouse/update/${warehouseId}`,
+        `${process.env.NEXT_PUBLIC_SERVER}/api/warehouse/update/${warehouseId}`,
         warehouseBody
       );
 

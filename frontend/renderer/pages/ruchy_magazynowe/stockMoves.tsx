@@ -21,7 +21,7 @@ export default function StockMovesPage() {
   ]
 
   const fetchMoves = () => {
-    axios.get("http://localhost:8080/api/stockMovements/all")
+    axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/stockMovements/all`)
     .then((res) => {
       console.log(res.data);
       setMoves(res.data);
@@ -33,7 +33,7 @@ export default function StockMovesPage() {
   }
 
   const fetchWarehouses = () => {
-    axios.get("http://localhost:8080/api/warehouse/all")
+    axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/warehouse/all`)
     .then((res) => {
       setWarehouses(res.data);
       console.log(res.data);
@@ -50,7 +50,7 @@ export default function StockMovesPage() {
     if(!confirm) return;
 
     try{
-      const res = await axios.delete(`http://localhost:8080/api/stockMovements/delete/${id}`)
+      const res = await axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/stockMovements/delete/${id}`)
       window.ipc.invoke("show-alert", res.data);
     }catch(err){
       console.error(err);
@@ -59,7 +59,7 @@ export default function StockMovesPage() {
   }
 
   const handleExportCSV = () => {
-  axios.get("http://localhost:8080/api/stockMovements/csv/all", {
+  axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/stockMovements/csv/all`, {
     responseType: 'blob', // important to handle binary data like CSV
   })
   .then((res) => {

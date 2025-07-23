@@ -62,9 +62,8 @@ export default function HomePage() {
     fetchCategories();
   }, []);
 
-
   const fetchProducts = () => {
-    axios.get("http://localhost:8080/api/products/all")
+    axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/products/all`)
     .then((res) => {
       setProducts(res.data);
     })
@@ -76,7 +75,7 @@ export default function HomePage() {
 
 
   const fetchCategories = () => {
-    axios.get("http://localhost:8080/api/category/all")
+    axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/category/all`)
     .then((res) => {
       setCategories(res.data);
     })

@@ -22,7 +22,7 @@ export default function ZamowieniaPage() {
   // Fetch all orders on mount
 
     const fetchOrders = async () => {
-      axios.get("http://localhost:8080/api/orders/all")
+      axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/orders/all`)
       .then((res) => {
         console.log(res.data)
         setOrders(res.data);
@@ -34,7 +34,7 @@ export default function ZamowieniaPage() {
   };
   
     const fetchStatuses = () => {
-      axios.get("http://localhost:8080/api/status/all/order")
+      axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/status/all/order`)
       .then((res) => setOrderStatuses(res.data))
       .catch((err) => {
         console.error("Błąd podczas pobierania statusów", err);
@@ -178,7 +178,7 @@ export default function ZamowieniaPage() {
   const fetchProductsForOrder = async (orderItems) => {
     try {
       const productRequests = orderItems.map(item =>
-        axios.get(`http://localhost:8080/api/products/one/${item.productId}`)
+        axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/products/one/${item.productId}`)
       );
 
       const responses = await Promise.all(productRequests);
@@ -196,7 +196,7 @@ export default function ZamowieniaPage() {
     const confirm = await window.ipc.invoke("show-confirm", "Czy napewno chcesz usunąć to zamówienie?");
     if(!confirm) return ;
       try {
-        await axios.delete(`http://localhost:8080/api/orders/delete/${id}`);
+        await axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/orders/delete/${id}`);
         setOrders((prev) => prev.filter((order) => order.id !== id));
 
         // Zamknij modal jeśli usuwane jest wybrane zamówienie
@@ -217,7 +217,7 @@ export default function ZamowieniaPage() {
 
 
 const handleExportCSV = () => {
-  axios.get("http://localhost:8080/api/orders/csv/all", {
+  axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/orders/csv/all`, {
     responseType: 'blob', // important to handle binary data like CSV
   })
   .then((res) => {

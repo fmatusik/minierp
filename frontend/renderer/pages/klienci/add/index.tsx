@@ -12,7 +12,7 @@ export default function ClientAddPage() {
 
   const handleSave = () => {
     axios
-      .post("http://localhost:8080/api/client/add", client)
+      .post(`${process.env.NEXT_PUBLIC_SERVER}/api/client/add`, client)
       .then((res) => {
         const newClientId = res.data.id; // Ensure backend returns ID
 

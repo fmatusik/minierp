@@ -68,7 +68,7 @@ export default function EditProductForm({ productId }) {
   }, []);
 
   const fetchProduct = () => {
-    axios.get(`http://localhost:8080/api/products/one/${productId}`)
+    axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/products/one/${productId}`)
       .then((res) => {
         const product = res.data;
         setFormData({
@@ -88,19 +88,19 @@ export default function EditProductForm({ productId }) {
 
 
   const fetchCategories = () => {
-    axios.get("http://localhost:8080/api/category/all")
+    axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/category/all`)
       .then((res) => setCategories(res.data))
       .catch(console.error);
   };
 
   const fetchStatuses = () => {
-    axios.get("http://localhost:8080/api/status/all/product")
+    axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/status/all/product`)
       .then((res) => setStatuses(res.data))
       .catch(console.error);
   };
 
   const fetchImages = () => {
-    axios.get(`http://localhost:8080/api/images/product/${productId}`)
+    axios.get(`${process.env.NEXT_PUBLIC_SERVER}/api/images/product/${productId}`)
       .then((res) => setFetchedImages(res.data))
       .catch((err) => {
         window.ipc?.invoke("show-alert", "Wystąpił problem w trakcie wczytywania zdjęć");
@@ -115,7 +115,7 @@ export default function EditProductForm({ productId }) {
       if (!confirmed) return;
 
 
-      const res = await axios.delete(`http://localhost:8080/api/products/delete/${productId}`)
+      const res = await axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/products/delete/${productId}`)
 
       window.ipc.invoke("show-alert", res.data);
       
@@ -158,7 +158,7 @@ export default function EditProductForm({ productId }) {
   const handleDeleteFetchedImage = async (imageId) => {
 
     try {
-      await axios.delete(`http://localhost:8080/api/images/delete/${imageId}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/images/delete/${imageId}`);
       setFetchedImages(prev => prev.filter(img => img.id !== imageId));
     } catch (error) {
       console.error(error);
@@ -174,7 +174,7 @@ export default function EditProductForm({ productId }) {
     formDataImg.append("productId", productId);
 
     try {
-      await axios.post(`http://localhost:8080/api/images/upload/files`, formDataImg, {
+      await axios.post(`${process.env.NEXT_PUBLIC_SERVER}/api/images/upload/files`, formDataImg, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -191,7 +191,7 @@ export default function EditProductForm({ productId }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:8080/api/products/update/${productId}`, formData);
+      await axios.put(`${process.env.NEXT_PUBLIC_SERVER}/api/products/update/${productId}`, formData);
       window.ipc.invoke("show-alert", "Produkt zaktualizowany.");
     } catch (err) {
       console.error(err);
@@ -242,7 +242,7 @@ export default function EditProductForm({ productId }) {
           {/* Istniejące zdjęcia */}
           {fetchedImages.map((img, index) => (
             <div key={`fetched-${img.id}`} className="relative">
-              <img src={`http://localhost:8080${img.path}`} alt={`existing-${index}`} className="w-full h-32 object-cover rounded-md" />
+              <img src={`${process.env.NEXT_PUBLIC_SERVER}${img.path}`} alt={`existing-${index}`} className="w-full h-32 object-cover rounded-md" />
               <button
                 type="button"
                 onClick={() => handleDeleteFetchedImage(img.id)}
