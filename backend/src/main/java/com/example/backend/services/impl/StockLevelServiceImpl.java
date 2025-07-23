@@ -11,19 +11,17 @@ import com.example.backend.repository.ProductRepository;
 import com.example.backend.repository.StockLevelRepository;
 import com.example.backend.repository.WarehouseRepository;
 import com.example.backend.services.StockLevelService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@AllArgsConstructor
 @Service
 public class StockLevelServiceImpl implements StockLevelService {
 
@@ -31,12 +29,6 @@ public class StockLevelServiceImpl implements StockLevelService {
     private final ProductRepository productRepository;
     private final WarehouseRepository warehouseRepository;
 
-    @Autowired
-    public StockLevelServiceImpl(StockLevelRepository stockLevelRepository, ProductRepository productRepository, WarehouseRepository warehouseRepository) {
-        this.stockLevelRepository = stockLevelRepository;
-        this.productRepository = productRepository;
-        this.warehouseRepository = warehouseRepository;
-    }
 
 
 
@@ -62,7 +54,7 @@ public class StockLevelServiceImpl implements StockLevelService {
 
     @Override
     public StockLevelFindDto update(Long id, StockLevelDto stockLevel) {
-        var existing = stockLevelRepository.findById(id).orElseThrow(()->new RuntimeException("Nie znaleziono pozycji na magazynie o podanym ID"));
+        StockLevel existing = stockLevelRepository.findById(id).orElseThrow(()->new RuntimeException("Nie znaleziono pozycji na magazynie o podanym ID"));
         existing.setMinimumQuantity(stockLevel.getMinimumQuantity());
         Data data = existing.getData();
         data.setUpdatedAt(LocalDateTime.now());
@@ -78,7 +70,7 @@ public class StockLevelServiceImpl implements StockLevelService {
 
     @Override
     public StockLevelFindDto appendStockLevel(Long id, Long quantity) {
-        var existing = stockLevelRepository.findById(id).orElseThrow(()->new RuntimeException("Nie znaleziono pozycji na magazynie o podanym ID"));
+        StockLevel existing = stockLevelRepository.findById(id).orElseThrow(()->new RuntimeException("Nie znaleziono pozycji na magazynie o podanym ID"));
         existing.setQuantity(existing.getQuantity() + quantity);
         Data data = existing.getData();
         data.setUpdatedAt(LocalDateTime.now());
@@ -89,7 +81,7 @@ public class StockLevelServiceImpl implements StockLevelService {
 
     @Override
     public StockLevelFindDto decreaseStockLevel(Long id, Long quantity) {
-        var existing = stockLevelRepository.findById(id).orElseThrow(()->new RuntimeException("Nie znaleziono pozycji na magazynie o podanym ID"));
+        StockLevel existing = stockLevelRepository.findById(id).orElseThrow(()->new RuntimeException("Nie znaleziono pozycji na magazynie o podanym ID"));
         existing.setQuantity(existing.getQuantity() - quantity);
         Data data = existing.getData();
         data.setUpdatedAt(LocalDateTime.now());

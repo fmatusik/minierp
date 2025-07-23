@@ -9,13 +9,10 @@ import lombok.Getter;
 @Getter
 @Builder
 public class StockLevelDto {
-
     private Long id;
     private Long productId;
     private Long warehouseId;
     private Long quantity;
     private Long minimumQuantity;
     private Data data;
-
-
 }

@@ -4,7 +4,6 @@ import com.example.backend.dto.StockLevelDto;
 import com.example.backend.dto.StockLevelFindDto;
 import com.example.backend.services.StockLevelService;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

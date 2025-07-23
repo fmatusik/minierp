@@ -7,7 +7,6 @@ import com.example.backend.mapper.CategoryMapper;
 import com.example.backend.repository.CategoryRepository;
 import com.example.backend.services.CategoryService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,6 @@ import java.util.List;
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
-    @Autowired
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 

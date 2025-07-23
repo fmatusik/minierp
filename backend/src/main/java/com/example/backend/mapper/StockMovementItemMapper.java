@@ -1,6 +1,5 @@
 package com.example.backend.mapper;
 
-import com.example.backend.dto.StockMovementFindDto;
 import com.example.backend.dto.StockMovementItemDto;
 import com.example.backend.dto.StockMovementItemFindDto;
 import com.example.backend.entity.Product;

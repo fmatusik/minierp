@@ -4,12 +4,11 @@ import com.example.backend.dto.*;
 import com.example.backend.entity.*;
 import com.example.backend.mapper.AddressMapper;
 import com.example.backend.mapper.ClientMapper;
-import com.example.backend.mapper.OrderMapper; // Ensure this is imported
+import com.example.backend.mapper.OrderMapper;
 import com.example.backend.mapper.StatusMapper;
 import com.example.backend.repository.*;
 import com.example.backend.services.OrderService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 

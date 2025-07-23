@@ -11,7 +11,6 @@ import com.example.backend.repository.OrderRepository;
 import com.example.backend.services.ClientService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -44,10 +43,10 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Transactional
-    public Boolean deleteClient(Long id){
+    public String deleteClient(Long id){
         try {
             if (!clientRepository.existsById(id)) {
-                return false;
+                return "Nie odnaleziono klienta o podanym ID";
             }
 
             Client client = clientRepository.findById(id).orElseThrow();
@@ -56,7 +55,7 @@ public class ClientServiceImpl implements ClientService {
             clientContactRepository.deleteAll(client.getClientContacts());
 
             clientRepository.delete(client);
-            return true;
+            return "Pomyślnie usunięto klienta";
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

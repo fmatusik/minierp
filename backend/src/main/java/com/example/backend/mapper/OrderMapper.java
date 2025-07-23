@@ -5,17 +5,16 @@ import com.example.backend.entity.Address;
 import com.example.backend.entity.Client;
 import com.example.backend.entity.Order;
 import com.example.backend.entity.Status;
-import lombok.AllArgsConstructor; // Add this import
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-@AllArgsConstructor // Add this to allow constructor injection
+@AllArgsConstructor
 public class OrderMapper {
 
-    // Inject OrderItemMapper
     private final OrderItemMapper orderItemMapper;
 
     public static OrderAddDto toDto(Order order) {
@@ -34,7 +33,7 @@ public class OrderMapper {
                 .build();
     }
 
-    public Order toEntity(OrderAddDto orderAddDto, Client client, Status status, Address address) { // Make this method non-static
+    public Order toEntity(OrderAddDto orderAddDto, Client client, Status status, Address address) {
         return Order.builder()
                 .id(orderAddDto.getId())
                 .client(client)

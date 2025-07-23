@@ -67,7 +67,7 @@ public class StockMovementMapper {
                 .stockMovementNumber(stockMovement.getStockMovementNumber())
                 .sourceWarehouse(stockMovement.getSourceWarehouse() != null
                         ? WarehouseMapper.toFindDto(stockMovement.getSourceWarehouse()) : null)
-                .targetWarehouse(stockMovement.getTargetWarehouse() != null  // Poprawiony warunek
+                .targetWarehouse(stockMovement.getTargetWarehouse() != null
                         ? WarehouseMapper.toFindDto(stockMovement.getTargetWarehouse()) : null)
                 .relatedOrder(stockMovement.getRelatedOrder() != null
                         ? OrderMapper.toDtoFind(stockMovement.getRelatedOrder(), 

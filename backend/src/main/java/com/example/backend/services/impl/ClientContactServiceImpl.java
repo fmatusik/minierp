@@ -5,7 +5,6 @@ import com.example.backend.entity.Client;
 import com.example.backend.entity.ClientContact;
 import com.example.backend.entity.Data;
 import com.example.backend.mapper.ClientContactMapper;
-import com.example.backend.repository.AddressRepository;
 import com.example.backend.repository.ClientContactRepository;
 import com.example.backend.repository.ClientRepository;
 import com.example.backend.repository.DataRepository;
@@ -20,13 +19,9 @@ import java.time.LocalDateTime;
 @Service
 public class ClientContactServiceImpl implements ClientContactService {
 
-    @Autowired
     private final ClientContactRepository clientContactRepository;
-    @Autowired
     private ClientRepository clientRepository;
-    @Autowired
     private final ClientContactMapper clientContactMapper;
-    @Autowired
     private DataRepository dataRepository;
 
     @Override
@@ -42,21 +37,21 @@ public class ClientContactServiceImpl implements ClientContactService {
     }
 
     @Override
-    public Boolean deleteClientContact(Long id) {
+    public String deleteClientContact(Long id) {
         try {
             if (!clientContactRepository.existsById(id)) {
-                return false;
+                return "Nie odnaleziono kontaktu o podanym ID";
             }
             clientContactRepository.deleteById(id);
-            return true;
+            return "Pomyślnie usunięto kontakt";
         } catch (Exception e) {
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public ClientContactDto updateClientContact(ClientContactDto updatedContactDto) {
-        var existing = clientContactRepository.findById(updatedContactDto.getId())
+        ClientContact existing = clientContactRepository.findById(updatedContactDto.getId())
                 .orElseThrow(() -> new RuntimeException("Kontakt nie istnieje"));
 
         existing.setFirstName(updatedContactDto.getFirstName());

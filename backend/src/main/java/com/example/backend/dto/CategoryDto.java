@@ -11,18 +11,10 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class CategoryDto {
-
     private Long id;
-
     private String name;
-
     private String color;
-
     private Data data;
-
     private int productCount;
-
     private List<ProductFindDto> productsDto;
-
-
 }

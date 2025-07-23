@@ -22,11 +22,7 @@ public class ClientContactController {
 
     @DeleteMapping("/delete/{id}")
     public String deleteClientContact(@PathVariable Long id){
-        if(clientContactService.deleteClientContact(id)){
-            return "Pomyślnie usunięto kontakt";
-        }else{
-            return "Wystąpił nieoczekiwany błąd";
-        }
+        return clientContactService.deleteClientContact(id);
     }
 
     @PutMapping("/update/{id}")

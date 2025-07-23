@@ -1,6 +1,5 @@
 package com.example.backend.mapper;
 
-import com.example.backend.dto.AddressDto;
 import com.example.backend.dto.WarehouseAddDto;
 import com.example.backend.dto.WarehouseFindDto;
 import com.example.backend.entity.Address;
@@ -56,12 +55,6 @@ public class WarehouseMapper {
                 .map(WarehouseMapper::toDto)
                 .collect(Collectors.toList());
     }
-
-/*    public static List<Warehouse> toEntityList(List<WarehouseAddDto> dtoList) {
-        return dtoList.stream()
-                .map(WarehouseMapper::toEntity)
-                .collect(Collectors.toList());
-    }*/
 
 
     public static WarehouseFindDto toFindDto(Warehouse warehouse) {

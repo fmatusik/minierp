@@ -2,8 +2,6 @@ package com.example.backend.controllers;
 
 
 import com.example.backend.dto.StatusDto;
-import com.example.backend.entity.Status;
-import com.example.backend.enums.StatusType;
 import com.example.backend.services.StatusService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +36,7 @@ public class StatusController {
 
     @DeleteMapping("/delete/{id}")
     public String deleteStatus(@PathVariable Long id){
-        if(statusService.deleteStatus(id)){
-            return "Pomyślnie usunięto status";
-        }else{
-            return "Wystąpił nieoczekiwany problem w trakcie usuwania statusu. Pamiętaj aby wszelkie produkty/zamówienia nie miały tego statusu.";
-        }
+        return statusService.deleteStatus(id);
     }
 
     @GetMapping("/all/product")

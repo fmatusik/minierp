@@ -2,7 +2,6 @@ package com.example.backend.controllers;
 
 import com.example.backend.dto.AddressDto;
 import com.example.backend.services.AddressService;
-import com.example.backend.services.impl.AddressServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,11 +21,7 @@ public class AddressController {
 
     @DeleteMapping("/delete/{id}")
     public String deleteAddress(@PathVariable Long id){
-        if(addressService.deleteAddress(id)){
-            return "Pomyślnie usunięto adres";
-        }else{
-            return "Nieudana próba usunięcia adresu";
-        }
+        return addressService.deleteAddress(id);
     }
 
     @GetMapping("/one/{clientId}")

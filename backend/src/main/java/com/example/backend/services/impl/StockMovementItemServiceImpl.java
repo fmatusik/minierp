@@ -11,7 +11,6 @@ import com.example.backend.repository.StockMovementItemRepository;
 import com.example.backend.repository.StockMovementRepository;
 import com.example.backend.services.StockMovementItemService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

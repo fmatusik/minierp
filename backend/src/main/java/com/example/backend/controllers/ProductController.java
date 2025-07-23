@@ -2,11 +2,8 @@ package com.example.backend.controllers;
 
 import com.example.backend.dto.ProductAddDto;
 import com.example.backend.dto.ProductFindDto;
-import com.example.backend.mapper.ProductMapper;
-import com.example.backend.repository.ProductRepository;
 import com.example.backend.services.ProductService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,8 +13,7 @@ import java.util.List;
 @RequestMapping("/api/products")
 public class ProductController {
 
-    private final ProductRepository productRepository;
-    private final ProductMapper productMapper;
+
     private final ProductService productService;
 
 

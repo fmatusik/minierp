@@ -1,7 +1,6 @@
 package com.example.backend.dto;
 
 import com.example.backend.entity.Data;
-import com.example.backend.entity.Warehouse;
 import com.example.backend.enums.StockMovementType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

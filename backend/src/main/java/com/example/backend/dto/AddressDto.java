@@ -1,13 +1,9 @@
 package com.example.backend.dto;
 
-import com.example.backend.entity.ClientContact;
 import com.example.backend.entity.Data;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-
-import java.time.LocalDateTime;
 
 @Builder
 @Getter
@@ -22,5 +18,4 @@ public class AddressDto {
     private String street;
     private Data data;
     private Long clientId;
-
 }

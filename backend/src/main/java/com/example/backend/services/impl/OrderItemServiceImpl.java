@@ -2,9 +2,10 @@ package com.example.backend.services.impl;
 
 import com.example.backend.dto.OrderItemDto;
 import com.example.backend.entity.Data;
+import com.example.backend.entity.Order;
 import com.example.backend.entity.OrderItem;
+import com.example.backend.entity.Product;
 import com.example.backend.mapper.OrderItemMapper;
-import com.example.backend.mapper.OrderMapper;
 import com.example.backend.repository.DataRepository;
 import com.example.backend.repository.OrderItemRepository;
 import com.example.backend.repository.OrderRepository;
@@ -12,7 +13,6 @@ import com.example.backend.repository.ProductRepository;
 import com.example.backend.services.OrderItemService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,14 +23,10 @@ import java.util.List;
 @Service
 public class OrderItemServiceImpl implements OrderItemService {
 
-    @Autowired
     private final OrderItemRepository orderItemRepository;
-    @Autowired
     private OrderItemMapper orderItemMapper;
     private OrderRepository orderRepository;
-    @Autowired
     private ProductRepository productRepository;
-    @Autowired
     private DataRepository dataRepository;
 
     @Override
@@ -73,17 +69,17 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     public OrderItemDto updateOrderItem(Long id, OrderItemDto orderItemDto) {
-        var existing = orderItemRepository.findById(id).orElseThrow(
+        OrderItem existing = orderItemRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Order item nie istnieje!")
         );
 
-        var order = orderRepository.findById(orderItemDto.getOrder().getId())
+        Order order = orderRepository.findById(orderItemDto.getOrder().getId())
                 .orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + orderItemDto.getOrder().getId()));
 
-        var product = productRepository.findById(orderItemDto.getProductId())
+        Product product = productRepository.findById(orderItemDto.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + orderItemDto.getProductId()));
 
-        var data = dataRepository.findById(orderItemDto.getData().getId());
+        Data data = dataRepository.findById(orderItemDto.getData().getId());
 
         data.setUpdatedAt(LocalDateTime.now());
 
@@ -103,14 +99,14 @@ public class OrderItemServiceImpl implements OrderItemService {
         List<OrderItemDto> updatedItems = new ArrayList<>();
 
         for (OrderItemDto dto : orderItemDtos) {
-            var existing = orderItemRepository.findById(dto.getId()).orElseThrow(
+            OrderItem existing = orderItemRepository.findById(dto.getId()).orElseThrow(
                     () -> new RuntimeException("Order item with ID " + dto.getId() + " nie istnieje!")
             );
 
-            var product = productRepository.findById(dto.getProductId())
+            Product product = productRepository.findById(dto.getProductId())
                     .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + dto.getProductId()));
 
-            var data = dataRepository.findById(dto.getData().getId());
+            Data data = dataRepository.findById(dto.getData().getId());
 
             data.setUpdatedAt(LocalDateTime.now());
 

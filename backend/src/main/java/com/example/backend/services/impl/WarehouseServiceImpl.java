@@ -57,7 +57,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     public WarehouseFindDto updateWarehouseById(WarehouseAddDto warehouseAddDto, Long id) {
-        var existing = warehouseRepository.findById(id).orElseThrow(()->new RuntimeException("Nie znaleziono magazynu o podanym ID"));
+        Warehouse existing = warehouseRepository.findById(id).orElseThrow(()->new RuntimeException("Nie znaleziono magazynu o podanym ID"));
         existing.setName(warehouseAddDto.getName());
         existing.setCapacity(warehouseAddDto.getCapacity());
         existing.setType(warehouseAddDto.getType());

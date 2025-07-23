@@ -14,4 +14,6 @@ public interface ImageService {
     List<ImageDto> getImagesByProductId(Long productId);
     String deleteImage(Long id);
     ImageDto getImageById(Long id);
+    List<String> uploadFiles(MultipartFile[] files, Long productId);
+
 }

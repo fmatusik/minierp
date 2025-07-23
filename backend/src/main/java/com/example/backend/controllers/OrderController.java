@@ -3,8 +3,6 @@ package com.example.backend.controllers;
 
 import com.example.backend.dto.OrderAddDto;
 import com.example.backend.dto.OrderFindDto;
-import com.example.backend.mapper.OrderMapper;
-import com.example.backend.repository.OrderRepository;
 import com.example.backend.services.OrderService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +17,6 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
-    private final OrderMapper orderMapper;
 
 
     @RequestMapping("/add")

@@ -1,6 +1,5 @@
 package com.example.backend.services.impl;
 
-import com.example.backend.dto.ClientContactDto;
 import com.example.backend.dto.StatusDto;
 import com.example.backend.entity.Data;
 import com.example.backend.entity.Status;
@@ -9,7 +8,6 @@ import com.example.backend.mapper.StatusMapper;
 import com.example.backend.repository.StatusRepository;
 import com.example.backend.services.StatusService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,7 +18,6 @@ import java.util.List;
 public class StatusServiceImpl implements StatusService {
 
     private final StatusRepository statusRepository;
-    private final StatusMapper statusMapper;
 
 
     @Override
@@ -41,12 +38,12 @@ public class StatusServiceImpl implements StatusService {
 
     @Override
     public StatusDto updateStatus(StatusDto statusDto) {
-        var existing = statusRepository.findById(statusDto.getId())
+        Status existing = statusRepository.findById(statusDto.getId())
                 .orElseThrow(() -> new RuntimeException("Status nie istnieje"));
         existing.setName(statusDto.getName());
         existing.setType(statusDto.getType());
         existing.setColor(statusDto.getColor());
-        var data = existing.getData();
+        Data data = existing.getData();
         if (data == null) {
             data = new Data();
             data.setCreatedAt(LocalDateTime.now());
@@ -59,15 +56,15 @@ public class StatusServiceImpl implements StatusService {
     }
 
     @Override
-    public Boolean deleteStatus(Long id) {
+    public String deleteStatus(Long id) {
         try {
             if (!statusRepository.existsById(id)) {
-                return false;
+                return "Nie odnaleziono statusu o podanym ID";
             }
             statusRepository.deleteById(id);
-            return true;
+            return "Pomyślnie usunięto status";
         } catch (Exception e) {
-            return false;
+            throw new RuntimeException(e);
         }
     }
 

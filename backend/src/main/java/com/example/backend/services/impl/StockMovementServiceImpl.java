@@ -1,6 +1,5 @@
 package com.example.backend.services.impl;
 
-import com.example.backend.dto.OrderAddDto;
 import com.example.backend.dto.StockMovementDto;
 import com.example.backend.dto.StockMovementFindDto;
 import com.example.backend.entity.*;
@@ -8,8 +7,6 @@ import com.example.backend.mapper.StockMovementMapper;
 import com.example.backend.repository.*;
 import com.example.backend.services.StockMovementService;
 import lombok.AllArgsConstructor;
-import org.hibernate.annotations.NaturalId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 

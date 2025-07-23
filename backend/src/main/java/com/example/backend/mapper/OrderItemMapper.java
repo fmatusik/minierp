@@ -2,18 +2,18 @@ package com.example.backend.mapper;
 
 import com.example.backend.dto.OrderItemDto;
 import com.example.backend.entity.OrderItem;
-import com.example.backend.repository.ProductRepository; // Make sure this import is correct
+import com.example.backend.repository.ProductRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component; // Add this annotation for Spring to manage it
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component // Mark as a Spring component
-@AllArgsConstructor // Lombok annotation for constructor injection
+@Component
+@AllArgsConstructor
 public class OrderItemMapper {
 
-    private final ProductRepository productRepository; // Use 'final' as it's injected
+    private final ProductRepository productRepository;
 
     public static OrderItemDto toDto(OrderItem orderItem) {
         return OrderItemDto.builder()
@@ -26,7 +26,6 @@ public class OrderItemMapper {
                 .build();
     }
 
-    // This method needs to be non-static to use productRepository
     public OrderItem toEntity(OrderItemDto orderItemDto) {
         return OrderItem.builder()
                 .id(orderItemDto.getId())
@@ -43,10 +42,9 @@ public class OrderItemMapper {
                 .collect(Collectors.toList());
     }
 
-    // Modify this method to use the non-static toEntity method
     public List<OrderItem> toEntityList(List<OrderItemDto> dtoList) {
         return dtoList.stream()
-                .map(this::toEntity) // Use 'this::toEntity' to call the non-static method
+                .map(this::toEntity)
                 .collect(Collectors.toList());
     }
 }

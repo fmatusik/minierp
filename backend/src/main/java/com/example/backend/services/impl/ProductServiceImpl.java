@@ -1,6 +1,5 @@
 package com.example.backend.services.impl;
 
-import com.example.backend.dto.ImageDto;
 import com.example.backend.dto.ProductAddDto;
 import com.example.backend.dto.ProductFindDto;
 import com.example.backend.entity.*;
@@ -55,7 +54,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductFindDto updateProduct(Long id, ProductAddDto updatedProductDto) {
-        var existing = productRepository.findById(id).orElseThrow(()->new RuntimeException("Nie znaleziono produktu o podanym ID"));
+        Product existing = productRepository.findById(id).orElseThrow(()->new RuntimeException("Nie znaleziono produktu o podanym ID"));
 
         existing.setName(updatedProductDto.getName());
         existing.setPrice(updatedProductDto.getPrice());
@@ -85,8 +84,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         try {
-            // Delete image files associated with the product
-            var images = imageRepository.findAllByProductId(id);
+            List<Image> images = imageRepository.findAllByProductId(id);
             if (images != null && !images.isEmpty()) {
                 for (Image image : images) {
                     if (image.getPath() != null) {
@@ -94,16 +92,13 @@ public class ProductServiceImpl implements ProductService {
                         Files.deleteIfExists(filePath);
                     }
                 }
-                // Optionally delete the image metadata from the database (if needed)
-                imageRepository.deleteAllByProductId(id); // You need to implement this method in your repository
+                imageRepository.deleteAllByProductId(id);
             }
 
-            // Finally delete the product
             productRepository.deleteById(id);
             return "Pomyślnie usunięto produkt oraz powiązane obrazy.";
 
         } catch (IOException e) {
-            // Log the exception (if using logging)
             return "Błąd podczas usuwania plików obrazu: " + e.getMessage();
         } catch (Exception e) {
             return "Wystąpił błąd podczas usuwania produktu: " + e.getMessage();

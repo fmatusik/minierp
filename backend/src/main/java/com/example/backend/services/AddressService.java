@@ -12,7 +12,7 @@ public interface AddressService {
     //bardziej chodzi ze nie tu logika ale w impl (ale no wiadomo)
     //jak nie ma gotowca to w repo tworze własne rzeczy
     AddressDto addAddress(AddressDto  addressDto);
-    Boolean deleteAddress(Long id);
+    String deleteAddress(Long id);
     List<AddressDto> findByClientId(Long clientId);
     AddressDto updateAddress(AddressDto addressDto);
     AddressDto addWarehouseAddress(AddressDto addressDto);

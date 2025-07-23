@@ -1,13 +1,10 @@
 package com.example.backend.dto;
 
-import com.example.backend.entity.Address;
-import com.example.backend.entity.Client;
 import com.example.backend.entity.Data;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.List;
 
 @Builder
 @AllArgsConstructor

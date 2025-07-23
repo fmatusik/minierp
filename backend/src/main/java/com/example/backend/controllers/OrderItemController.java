@@ -1,7 +1,6 @@
 package com.example.backend.controllers;
 
 import com.example.backend.dto.OrderItemDto;
-import com.example.backend.mapper.OrderItemMapper;
 import com.example.backend.services.OrderItemService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +12,6 @@ import java.util.List;
 @RequestMapping("/api/orderItems")
 public class OrderItemController {
 
-    private final OrderItemMapper orderItemMapper;
     private final OrderItemService orderItemService;
 
 

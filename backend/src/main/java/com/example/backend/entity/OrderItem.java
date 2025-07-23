@@ -5,7 +5,6 @@ import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 
 @Builder
 @Setter

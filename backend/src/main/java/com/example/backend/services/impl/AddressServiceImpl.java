@@ -10,7 +10,6 @@ import com.example.backend.repository.ClientRepository;
 import com.example.backend.repository.DataRepository;
 import com.example.backend.services.AddressService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -21,15 +20,10 @@ import java.util.List;
 @Service
 @Component
 public class AddressServiceImpl implements AddressService {
-    @Autowired
     private final AddressRepository addressRepository;
-    @Autowired
     private final ClientRepository clientRepository;
-    @Autowired
     private DataRepository dataRepository;
 
-    //basically convert z dto na entity i potem dodanie do bazy
-    //return dto
     @Override
     public AddressDto addAddress(AddressDto addressDto) {
         System.out.println(addressDto.getClientId());
@@ -46,15 +40,15 @@ public class AddressServiceImpl implements AddressService {
 
 
     @Override
-    public Boolean deleteAddress(Long id) {
+    public String deleteAddress(Long id) {
         try {
             if (!addressRepository.existsById(id)) {
-                return false;
+                return "Nie odnaleziono adresu o podanym ID";
             }
             addressRepository.deleteById(id);
-            return true;
+            return "Pomyślnie usunięto adres";
         } catch (Exception e) {
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
@@ -67,7 +61,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public AddressDto updateAddress(AddressDto addressDto) {
-        var existingAddress = addressRepository.findById((long) addressDto.getId());
+        Address existingAddress = addressRepository.findById((long) addressDto.getId());
 
         existingAddress.setBuildingNumber(addressDto.getBuildingNumber());
         existingAddress.setApartmentNumber(addressDto.getApartmentNumber());
@@ -76,7 +70,7 @@ public class AddressServiceImpl implements AddressService {
         existingAddress.setProvince(addressDto.getProvince());
         existingAddress.setStreet(addressDto.getStreet());
 
-        Data data = dataRepository.findById((long) addressDto.getData().getId());
+        Data data = dataRepository.findById(addressDto.getData().getId());
         data.setUpdatedAt(LocalDateTime.now());
         existingAddress.setData(data);
         addressRepository.save(existingAddress);

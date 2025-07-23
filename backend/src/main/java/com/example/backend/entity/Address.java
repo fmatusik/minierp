@@ -4,10 +4,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
 
 @Builder
 @Setter

@@ -83,7 +83,7 @@ public class ProductMapper {
                 .images(productFindDto.getImagesDto() != null
                         ? ImageMapper.toEntityList(productFindDto.getImagesDto())
                         : null)
-                .category(null) // Avoids circular reference
+                .category(null)
                 .build();
     }
 

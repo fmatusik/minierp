@@ -2,10 +2,8 @@ package com.example.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
-import com.example.backend.entity.Status;
 import java.time.LocalDateTime;
 import java.util.List;
 

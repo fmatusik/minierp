@@ -25,6 +25,5 @@ public class OrderAddDto {
     private String documentNumber;
     private String salePlace;
     private List<OrderItemDto> orderItems;
-
 }
 

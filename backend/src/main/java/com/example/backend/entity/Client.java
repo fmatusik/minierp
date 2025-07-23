@@ -3,8 +3,6 @@ package com.example.backend.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,7 +30,6 @@ public class Client {
     @Column(length = 4000)
     private String notes;
 
-    //client contact
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<ClientContact> clientContacts;

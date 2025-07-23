@@ -26,9 +26,6 @@ public class ImageController {
     private final ImageService imageService;
 
 
-    @Value("${uploads.directory}")
-    private String uploadDir;
-
     @PostMapping("/add")
     public ImageDto addImage(ImageDto imageDto) {
         return imageService.addImage(imageDto);
@@ -45,63 +42,20 @@ public class ImageController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteImage(@PathVariable Long id) {
-        try {
-
-            ImageDto imageDto = imageService.getImageById(id);
-            if (imageDto == null) {
-                return ResponseEntity.notFound().build();
-            }
-
-            // Ścieżka do pliku na dysku
-            Path filePath = Paths.get(uploadDir, Paths.get(imageDto.getPath()).getFileName().toString());
-
-            // Usuń plik, jeśli istnieje
-            Files.deleteIfExists(filePath);
-
-            // Usuń rekord z bazy
-            imageService.deleteImage(id);
-
-            return ResponseEntity.ok("Obraz został usunięty.");
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body("Błąd przy usuwaniu pliku: " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Błąd: " + e.getMessage());
-        }
+    public String deleteImage(@PathVariable Long id) {
+        return imageService.deleteImage(id);
     }
 
 
     @PostMapping("/upload/files")
-    public ResponseEntity<?> handleFileUpload(@RequestParam("images") MultipartFile[] files, @RequestParam("productId") Long productId)
-    {
-        List<String> savedFiles = new ArrayList<>();
-
-        for (MultipartFile file : files) {
-            try {
-                String originalFilename = file.getOriginalFilename();
-                String uniqueName = UUID.randomUUID() + "_" + originalFilename;
-
-                Path path = Paths.get(uploadDir, uniqueName);
-                Files.createDirectories(path.getParent());
-                Files.write(path, file.getBytes());
-
-                ImageDto imageDto = ImageDto.builder()
-                        .path("/uploads/" + uniqueName)
-                        .alt(uniqueName)
-                        .size(file.getSize())
-                        .productId(productId)
-                        .build();
-
-                imageService.addImage(imageDto);  // Save metadata in DB
-
-                savedFiles.add("/uploads/" + uniqueName);
-
-            } catch (IOException e) {
-                return ResponseEntity.status(500).body("Błąd przy zapisie pliku.");
-            }
+    public ResponseEntity<?> handleFileUpload(@RequestParam("images") MultipartFile[] files, @RequestParam("productId") Long productId) {
+        try {
+            List<String> savedFiles = imageService.uploadFiles(files, productId);
+            return ResponseEntity.ok(savedFiles);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(500).body(e.getMessage());
         }
-
-        return ResponseEntity.ok(savedFiles);
     }
+
 
 }
