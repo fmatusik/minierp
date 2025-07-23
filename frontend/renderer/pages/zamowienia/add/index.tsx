@@ -288,14 +288,26 @@ const handleAddOrderItemToList = () => {
         </div>
 
         {/* Payment Status */}
-        <LabeledInput
-          icon={<CreditCard className="w-4 h-4 text-gray-400" />}
-          label="Status Płatności"
-          name="paymentStatus"
-          value={formData.paymentStatus}
-          onChange={handleChange}
-          required
-        />
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-gray-700">Płatność</label>
+          <div className="flex items-center border rounded-md px-3 py-2">
+            <CreditCard className="w-4 h-4 text-gray-400" />
+            <select
+              name="paymentStatus"
+              value={formData.paymentStatus}
+              onChange={handleChange}
+              className="ml-2 w-full outline-none"
+              required
+            >
+              <option value="">Wybierz metodę płatności</option>
+              <option value="karta">Karta</option>
+              <option value="gotówka">Gotówka</option>
+              <option value="przelew">Przelew</option>
+              <option value="blik">Blik</option>
+            </select>
+          </div>
+        </div>
+
 
         {/* Delivery Date */}
         <LabeledInput

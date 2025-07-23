@@ -23,6 +23,7 @@ import WarehousesPage from "./magazyny/warehouses";
 import StatusesPage from "./statusy/statuses";
 import axios from "axios";
 import clsx from "clsx";
+import { RefreshCcw } from "lucide-react";
 
 export default function HomePage() {
   const [activeView, setActiveView] = useState("home");
@@ -85,6 +86,11 @@ export default function HomePage() {
     })
   }
 
+  const handleReload = () => {
+    fetchProducts();
+    fetchCategories();
+  }
+
   const renderContent = () => {
     if (activeView === "home") {
       return (
@@ -94,7 +100,14 @@ export default function HomePage() {
             <button className="px-4 py-1 bg-gray-100 rounded">Tab</button>
             <button className="px-4 py-1 bg-gray-100 rounded">Tab</button>
             <button className="px-4 py-1 bg-gray-100 rounded">Tab</button>
-          </div>*/}
+          </div>*/} 
+                  <button
+          onClick={handleReload}
+          title="Odśwież zamówienia"
+          className="p-2 transition-all hover:-rotate-180 hover:text-primaryhover"
+        >
+          <RefreshCcw className="w-5 h-5" />
+        </button>
 
           {/* Produkty */}
           <div className="flex justify-between items-center mb-6">
@@ -106,7 +119,7 @@ export default function HomePage() {
 
           <section className="mb-10">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {products.map((product) => (
+              {products.slice(0,4).map((product) => (
                         <div
                           key={product.id}
                           className="cursor-pointer border rounded-lg shadow-sm hover:shadow-md transition"
@@ -148,7 +161,7 @@ export default function HomePage() {
               <p className="text-gray-600 text-sm cursor-pointer hover:text-primary transition-all" onClick={() => setActiveView("categories")}>Zobacz więcej</p>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {categories.map((cat) => (
+              {categories.slice(0,6).map((cat) => (
                           <div
                             key={cat.id}
                             className="rounded-lg border shadow-sm p-4 hover:shadow-md transition flex flex-col items-center text-center cursor-pointer"

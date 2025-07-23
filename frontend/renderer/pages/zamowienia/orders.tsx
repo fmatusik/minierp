@@ -396,18 +396,18 @@ const handleExportCSV = () => {
                   <th className="px-4 py-2 text-left">Miasto</th>
                   <th className="px-4 py-2 text-left">Ulica</th>
                   <th className="px-4 py-2 text-left">Numer budynku</th>
-                  <th className="px-4 py-2 text-left">Numer pokoju</th>
+                  <th className="px-4 py-2 text-left">Numer mieszkania</th>
                   <th className="px-4 py-2 text-left">Kod pocztowy</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="border-t">
-                  <td className="px-4 py-2">{selectedOrder.addressDto.province}</td>
-                  <td className="px-4 py-2">{selectedOrder.addressDto.city}</td>
-                  <td className="px-4 py-2">{selectedOrder.addressDto.street}</td>
-                  <td className="px-4 py-2">{selectedOrder.addressDto.buildingNumber}</td>
-                  <td className="px-4 py-2">{selectedOrder.addressDto.apartmentNumber}</td>
-                  <td className="px-4 py-2">{selectedOrder.addressDto.postalCode}</td>
+                  <td className="px-4 py-2">{selectedOrder.addressDto?.province || "-"}</td>
+                  <td className="px-4 py-2">{selectedOrder.addressDto?.city || "-"}</td>
+                  <td className="px-4 py-2">{selectedOrder.addressDto?.street || "-"}</td>
+                  <td className="px-4 py-2">{selectedOrder.addressDto?.buildingNumber || "-"}</td>
+                  <td className="px-4 py-2">{selectedOrder.addressDto?.apartmentNumber || "-"}</td>
+                  <td className="px-4 py-2">{selectedOrder.addressDto?.postalCode || "-"}</td>
                 </tr>
               </tbody>
             </table>

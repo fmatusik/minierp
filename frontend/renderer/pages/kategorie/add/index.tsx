@@ -34,7 +34,7 @@ export default function AddCategoryPage() {
   };
 
   const handleCancel = () => {
-    router.back();
+    window.close();
   };
 
   return (

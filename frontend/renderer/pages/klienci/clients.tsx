@@ -210,7 +210,7 @@ export default function KlienciPage() {
                     <tr>
                       <th className="px-4 py-2 text-left">Ulica</th>
                       <th className="px-4 py-2 text-left">Numer budynku</th>
-                      <th className="px-4 py-2 text-left">Numer pokoju</th>
+                      <th className="px-4 py-2 text-left">Numer mieszkania</th>
                       <th className="px-4 py-2 text-left">Miasto</th>
                       <th className="px-4 py-2 text-left">Kod pocztowy</th>
                       <th className="px-4 py-2 text-left">Województwo</th>
